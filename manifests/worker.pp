@@ -153,7 +153,8 @@ class seed_stack::worker (
     require     => Service['nginx'],
   }
 
-  # dnsmasq to serve DNS requests, sending requests in the Consul domain to Consul
+  # dnsmasq to serve DNS requests, sending requests for the Consul domain to
+  # Consul
   if ! controller {
     $dnsmasq_server = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'
     package { 'dnsmasq': }

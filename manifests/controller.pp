@@ -67,7 +67,8 @@ class seed_stack::controller (
   validate_ip_address($consul_client_addr)
   validate_integer($consular_sync_interval)
   if ! member($controller_addresses, $address) {
-    fail("The address for this node (${address}) must be one of the controller addresses (${controller_addresses}).")
+    fail("The address for this node (${address}) must be one of the controller
+      addresses (${controller_addresses}).")
   }
 
   class { 'zookeeper':
