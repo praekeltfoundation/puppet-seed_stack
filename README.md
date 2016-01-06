@@ -18,6 +18,9 @@ To try out Seed Stack, a Vagrant Box is available [here](https://github.com/prae
 
 This module was designed for use on Ubuntu 14.04.
 
+## Work in progress
+This module is still a **work in progress**. We are waiting on new releases of a few of its dependencies. Some things are not done as nicely as they could be yet. There are no tests.
+
 ## Usage
 A Seed Stack node can either be a controller (i.e. a Mesos master), a worker (a Mesos slave), or a combination of the two.
 
