@@ -137,7 +137,7 @@ class seed_stack::controller (
   package { 'dnsmasq': }
   ~>
   file { '/etc/dnsmasq.d/consul':
-    content => "cache-size=0\nserver=/${dnsmasq_server}/${consul_advertise_addr}#8600",
+    content => "cache-size=0\nserver=/${dnsmasq_server}/${address}#8600",
   }
   ~>
   service { 'dnsmasq': }
