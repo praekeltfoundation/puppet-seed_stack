@@ -1,0 +1,26 @@
+{
+  "name": "praekeltfoundation-seed_stack",
+  "version": "0.1.0",
+  "author": "Jamie Hewland",
+  "summary": "Meta-module for deploying the Seed Stack",
+  "license": "BSD",
+  "source": "http://github.com/praekeltfoundation/puppet-seed_stack",
+  "project_page": "https://github.com/praekeltfoundation/puppet-seed_stack",
+  "issues_url": "https://github.com/praekeltfoundation/puppet-seed_stack/issues",
+  "dependencies": [],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">=3.4.0 < 4.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
+    }
+  ]
+}
