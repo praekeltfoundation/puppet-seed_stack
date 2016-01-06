@@ -67,7 +67,7 @@ class seed_stack::controller (
   validate_ip_address($consul_client_addr)
   validate_integer($consular_sync_interval)
   if ! member($controller_addresses, $address) {
-    fail("The address for this node ($address) must be one of the controller addresses ($controller_addresses).")
+    fail("The address for this node (${address}) must be one of the controller addresses (${controller_addresses}).")
   }
 
   class { 'zookeeper':
@@ -131,7 +131,7 @@ class seed_stack::controller (
   package { 'dnsmasq': }
   ~>
   file { '/etc/dnsmasq.d/consul':
-    content => "cache-size=0\nserver=/$dnsmasq_server/$consul_advertise_addr#8600",
+    content => "cache-size=0\nserver=/${dnsmasq_server}/${consul_advertise_addr}#8600",
   }
   ~>
   service { 'dnsmasq': }
@@ -139,12 +139,12 @@ class seed_stack::controller (
   class { 'consular':
     ensure        => $consular_ensure,
     consular_args => [
-      "--host=$address",
-      "--sync-interval=$consular_sync_interval",
+      "--host=${address}",
+      "--sync-interval=${consular_sync_interval}",
       '--purge', # TODO: Make configurable
-      "--registration-id=$hostname",
-      "--consul=http://$address:8500",
-      "--marathon=http://$address:8080",
+      "--registration-id=${hostname}",
+      "--consul=http://${address}:8500",
+      "--marathon=http://${address}:8080",
     ],
   }
 }
