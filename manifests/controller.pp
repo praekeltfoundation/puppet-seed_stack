@@ -106,7 +106,7 @@ class seed_stack::controller (
   Apt::Source['mesosphere'] -> Package['marathon']
 
   class { 'consul':
-    version => $consul_version,
+    version     => $consul_version,
     config_hash => {
       'server'           => true,
       'bootstrap_expect' => size($controller_addresses),
@@ -119,12 +119,18 @@ class seed_stack::controller (
       'domain'           => $consul_domain,
       'encrypt'          => $consul_encrypt,
     },
-    services => {
-      'marathon'        => { port => 8080 },
-      'mesos-master'    => { port => 5050 },
-      'zookeeper'       => { port => 2181 },
+    services    => {
+      'marathon'     => {
+        port => 8080
+      },
+      'mesos-master' => {
+        port => 5050
+      },
+      'zookeeper'    => {
+        port => 2181
+      },
     },
-    require => Package['unzip']
+    require     => Package['unzip']
   }
 
   $dnsmasq_server = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'

@@ -103,7 +103,9 @@ class seed_stack::worker (
         'encrypt'          => $consul_encrypt,
       },
       services    => {
-        'mesos-slave' => { port => 5051 },
+        'mesos-slave' => {
+          port => 5051
+        },
       },
     }
   }
@@ -114,17 +116,17 @@ class seed_stack::worker (
 
   # Consul Template to dynamically configure Nginx
   class { 'consul_template':
-    version          => $consul_template_version,
-    config_dir       => '/etc/consul-template',
-    user             => 'root',
-    group            => 'root',
-    consul_host      => $address,
-    consul_port      => 8500,
-    consul_retry     => '10s',
+    version      => $consul_template_version,
+    config_dir   => '/etc/consul-template',
+    user         => 'root',
+    group        => 'root',
+    consul_host  => $address,
+    consul_port  => 8500,
+    consul_retry => '10s',
     # For some reason, consul-template doesn't like this option.
     # consul_max_stale => '10m',
-    log_level        => 'warn',
-    require          => Package['unzip']
+    log_level    => 'warn',
+    require      => Package['unzip']
   }
 
   # Configure Nginx to load-balance across uptream services
