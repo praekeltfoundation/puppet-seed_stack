@@ -16,4 +16,3 @@ mod 'gdhbashton/consul_template', '>= 0.2.4'
 mod 'KyleAnderson/consul',
   :git => 'https://github.com/solarkennedy/puppet-consul.git',
   :ref => 'a84e75c33f71259455375065957ce27098e06d70'
-mod 'stankevich/python', '>= 1.10.0'

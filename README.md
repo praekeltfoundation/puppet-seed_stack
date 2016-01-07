@@ -72,7 +72,6 @@ Then there are some 3rd party modules:
 * [garethr/docker](https://forge.puppetlabs.com/garethr/docker)
 * [gdhbashton/consul_template](https://forge.puppetlabs.com/gdhbashton/consul_template)
 * [KyleAnderson/consul](https://forge.puppetlabs.com/KyleAnderson/consul)
-* [stankevich/python](https://forge.puppetlabs.com/stankevich/python)
 
 ## Default package versions
 The package versions can be seen in the [params class source](manifests/params.pp). All of these versions can be adjusted using parameters in the controller and worker classes. These versions are reasonably well-tested and known to work together.
