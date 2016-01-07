@@ -66,7 +66,6 @@ Firstly, we wrote some modules ourselves:
 * [praekeltfoundation/marathon](https://github.com/praekeltfoundation/puppet-marathon)
 
 Then there are some 3rd party modules:
-* [camptocamp/openssl](https://forge.puppetlabs.com/camptocamp/openssl)
 * [deric/mesos](https://forge.puppetlabs.com/deric/mesos)
 * [deric/zookeeper](https://forge.puppetlabs.com/deric/zookeeper)
 * [garethr/docker](https://forge.puppetlabs.com/garethr/docker)

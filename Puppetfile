@@ -7,7 +7,6 @@ mod 'praekeltfoundation/marathon', '0.1.0',
   :github_tarball => 'praekeltfoundation/puppet-marathon'
 
 # 3rd party modules
-mod 'camptocamp/openssl', '>= 1.5.0'
 mod 'deric/mesos', '>= 0.6.4'
 mod 'deric/zookeeper', '>= 0.4.0'
 mod 'garethr/docker', '>= 4.1.0'
