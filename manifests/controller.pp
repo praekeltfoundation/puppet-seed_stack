@@ -11,6 +11,9 @@
 # [*hostname*]
 #   The hostname for the node.
 #
+# [*install_java*]
+#   Whether or not to install Oracle Java 8.
+#
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
 #
@@ -43,6 +46,7 @@ class seed_stack::controller (
   $controller_addresses   = ['127.0.0.1'],
   $address                = '127.0.0.1',
   $hostname               = 'localhost',
+  $install_java           = true,
 
   # Mesos
   $mesos_ensure           = $seed_stack::params::mesos_ensure,
@@ -64,11 +68,20 @@ class seed_stack::controller (
 
   # Basic parameter validation
   validate_ip_address($address)
+  validate_bool($install_java)
   validate_ip_address($consul_client_addr)
   validate_integer($consular_sync_interval)
   if ! member($controller_addresses, $address) {
     fail("The address for this node (${address}) must be one of the controller
       addresses (${controller_addresses}).")
+  }
+
+  if $install_java {
+    include webupd8_oracle_java
+    # Ensure Java is installed before any of the things that depend on it
+    Package['oracle-java8-installer'] -> Package['zookeeper']
+    Package['oracle-java8-installer'] -> Package['mesos']
+    Package['oracle-java8-installer'] -> Package['marathon']
   }
 
   class { 'zookeeper':
