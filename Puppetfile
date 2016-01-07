@@ -5,6 +5,8 @@ mod 'praekeltfoundation/consular', '0.1.0',
   :github_tarball => 'praekeltfoundation/puppet-consular'
 mod 'praekeltfoundation/marathon', '0.1.0',
   :github_tarball => 'praekeltfoundation/puppet-marathon'
+mod 'praekeltfoundation/webupd8_oracle_java', '0.1.1',
+  :github_tarball => 'praekeltfoundation/puppet-webupd8_oracle_java'
 
 # 3rd party modules
 mod 'deric/mesos', '>= 0.6.4'

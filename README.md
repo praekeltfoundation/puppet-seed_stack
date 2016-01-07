@@ -64,6 +64,7 @@ We make use of quite a few Puppet modules to manage all the various pieces of so
 Firstly, we wrote some modules ourselves:
 * [praekeltfoundation/consular](https://github.com/praekeltfoundation/puppet-consular)
 * [praekeltfoundation/marathon](https://github.com/praekeltfoundation/puppet-marathon)
+* [praekeltfoundation/webupd8_oracle_java](https://github.com/praekeltfoundation/puppet-webupd8_oracle_java)
 
 Then there are some 3rd party modules:
 * [deric/mesos](https://forge.puppetlabs.com/deric/mesos)
@@ -71,6 +72,11 @@ Then there are some 3rd party modules:
 * [garethr/docker](https://forge.puppetlabs.com/garethr/docker)
 * [gdhbashton/consul_template](https://forge.puppetlabs.com/gdhbashton/consul_template)
 * [KyleAnderson/consul](https://forge.puppetlabs.com/KyleAnderson/consul)
+
+## Java 8
+Java 8 is a dependency of Marathon version 0.12.0+. Ubuntu 14.04 does not have a package for this in the standard repositories. `seed_stack::controller` will install [Oracle Java 8 from the WebUpd8 PPA](https://github.com/praekeltfoundation/puppet-webupd8_oracle_java). This can be disabled by passing `install_java => false`.
+
+Note that Java is also a dependency of Mesos and Zookeeper. If you are managing your own Java installation you should ensure that Java is installed before any of the packages that depend on it so as to prevent multiple versions of Java being installed.
 
 ## Default package versions
 The package versions can be seen in the [params class source](manifests/params.pp). All of these versions can be adjusted using parameters in the controller and worker classes. These versions are reasonably well-tested and known to work together.
