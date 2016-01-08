@@ -106,6 +106,7 @@ class seed_stack::worker (
         'client_addr'      => $consul_client_addr,
         'domain'           => $consul_domain,
         'encrypt'          => $consul_encrypt,
+        'ui'               => $consul_ui,
       },
       services    => {
         'mesos-slave' => {
