@@ -89,6 +89,11 @@ class seed_stack::worker (
   }
 
   if ! $controller {
+    # Consul requires unzip to install
+    package { 'unzip':
+      ensure => installed,
+    }
+
     class { 'consul':
       version     => $consul_version,
       config_hash => {
