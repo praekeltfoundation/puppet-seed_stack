@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "source": "http://github.com/praekeltfoundation/puppet-seed_stack",
   "project_page": "https://github.com/praekeltfoundation/puppet-seed_stack",
   "issues_url": "https://github.com/praekeltfoundation/puppet-seed_stack/issues",
