@@ -119,6 +119,11 @@ class seed_stack::controller (
   # Ensure Mesos repo is added before installing Marathon
   Apt::Source['mesosphere'] -> Package['marathon']
 
+  # Consul requires unzip to install
+  package { 'unzip':
+    ensure => installed,
+  }
+
   class { 'consul':
     version     => $consul_version,
     config_hash => {
