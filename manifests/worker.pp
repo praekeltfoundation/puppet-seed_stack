@@ -33,6 +33,9 @@
 # [*consul_encrypt*]
 #   The secret key to use for encryption of Consul network traffic.
 #
+# [*consul_ui*]
+#   Whether or not to enable the Consul web UI.
+#
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
@@ -54,6 +57,7 @@ class seed_stack::worker (
   $consul_client_addr      = $seed_stack::params::consul_client_addr,
   $consul_domain           = $seed_stack::params::consul_domain,
   $consul_encrypt          = undef,
+  $consul_ui               = false,
 
   # Consul Template
   $consul_template_version = $seed_stack::params::consul_template_version,
@@ -67,6 +71,7 @@ class seed_stack::worker (
   validate_bool($controller)
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
+  validate_bool($consul_ui)
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
   if ! $controller {
