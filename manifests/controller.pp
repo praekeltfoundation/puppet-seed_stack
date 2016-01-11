@@ -47,9 +47,9 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addresses   = ['127.0.0.1'],
-  $address                = '127.0.0.1',
-  $hostname               = 'localhost',
+  $controller_addresses   = [$::ipaddress_lo],
+  $address                = $::ipaddress_lo,
+  $hostname               = $::hostname,
   $install_java           = true,
 
   # Mesos
