@@ -82,6 +82,10 @@ class seed_stack::worker (
       listen_address => $address,
       zookeeper      => $mesos_zk,
     }
+
+    # We need this because mesos::install doesn't wait for apt::update before
+    # trying to install the package.
+    Class['apt::update'] -> Package['mesos']
   }
 
   class { 'mesos::slave':
@@ -119,6 +123,7 @@ class seed_stack::worker (
           port => 5051
         },
       },
+      require     => Package['unzip'],
     }
   }
 
