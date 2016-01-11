@@ -11,6 +11,9 @@
 # [*hostname*]
 #   The hostname for the node.
 #
+# [*controller_worker*]
+#   Whether or not this node is a combination controller/worker.
+#
 # [*install_java*]
 #   Whether or not to install Oracle Java 8.
 #
@@ -53,6 +56,7 @@ class seed_stack::controller (
   $controller_addresses   = [$::ipaddress_lo],
   $address                = $::ipaddress_lo,
   $hostname               = $::hostname,
+  $controller_worker      = false,
   $install_java           = true,
 
   # Mesos
@@ -77,6 +81,7 @@ class seed_stack::controller (
 
   # Basic parameter validation
   validate_ip_address($address)
+  validate_bool($controller_worker)
   validate_bool($install_java)
   validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
@@ -114,6 +119,25 @@ class seed_stack::controller (
       hostname => $hostname,
       quorum   => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
     },
+  }
+
+  if ! $controller_worker {
+    # Make Puppet stop the mesos-slave service
+    service { 'mesos-slave':
+      ensure  => stopped,
+      require => Package['mesos'],
+    }
+  }
+
+  # Stop mesos-slave service from starting at startup
+  $slave_override_ensure = $controller_worker ? {
+    true  => 'absent',
+    false => 'present',
+  }
+  file { '/etc/init/mesos-slave.override':
+    ensure  => $slave_override_ensure,
+    content => 'manual',
+    notify  => Service['mesos-slave'],
   }
 
   $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
