@@ -129,26 +129,28 @@ class seed_stack::worker (
     class { 'consul':
       version     => $consul_version,
       config_hash => {
-        'server'           => false,
-        'retry_join'       => $controller_addresses,
-        'data_dir'         => '/var/consul',
-        'log_level'        => 'INFO',
-        'advertise_addr'   => $address,
-        'client_addr'      => $consul_client_addr,
-        'domain'           => $consul_domain,
-        'encrypt'          => $consul_encrypt,
-        'ui'               => $consul_ui,
+        'server'         => false,
+        'retry_join'     => $controller_addresses,
+        'data_dir'       => '/var/consul',
+        'log_level'      => 'INFO',
+        'advertise_addr' => $address,
+        'client_addr'    => $consul_client_addr,
+        'domain'         => $consul_domain,
+        'encrypt'        => $consul_encrypt,
+        'ui'             => $consul_ui,
       },
       require     => Package['unzip'],
     }
   }
   consul::service { 'mesos-slave':
-    port  => 5051,
-    check => {
-      http     => "http://${mesos_listen_addr}:5051/slave(1)/health",
-      interval => '10s',
-      timeout  => '1s',
-    }
+    port   => 5051,
+    checks => [
+      {
+        http     => "http://${mesos_listen_addr}:5051/slave(1)/health",
+        interval => '10s',
+        timeout  => '1s',
+      },
+    ],
   }
 
   package { 'nginx-light': }
