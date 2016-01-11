@@ -86,6 +86,17 @@ class seed_stack::worker (
     # We need this because mesos::install doesn't wait for apt::update before
     # trying to install the package.
     Class['apt::update'] -> Package['mesos']
+
+    # Make Puppet stop the mesos-master service
+    service { 'mesos-master':
+      ensure => stopped,
+    }
+
+    # Stop mesos-master service from starting at startup
+    file { '/etc/init/mesos-master.override':
+        content => 'manual',
+        notify  => Service['mesos-master']
+    }
   }
 
   class { 'mesos::slave':
@@ -124,17 +135,6 @@ class seed_stack::worker (
         },
       },
       require     => Package['unzip'],
-    }
-
-    # Make Puppet stop the mesos-master service
-    service { 'mesos-master':
-      ensure => stopped,
-    }
-
-    # Stop mesos-master service from starting at startup
-    file { '/etc/init/mesos-master.override':
-        content => 'manual',
-        notify  => Service['mesos-master']
     }
   }
 
