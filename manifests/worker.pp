@@ -44,9 +44,9 @@
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addresses    = ['127.0.0.1'],
-  $address                 = '127.0.0.1',
-  $hostname                = 'localhost',
+  $controller_addresses    = [$::ipaddress_lo],
+  $address                 = $::ipaddress_lo,
+  $hostname                = $::hostname,
   $controller_worker       = false,
 
   # Mesos
