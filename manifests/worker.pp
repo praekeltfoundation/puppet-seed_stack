@@ -97,12 +97,17 @@ class seed_stack::worker (
       ensure  => stopped,
       require => Package['mesos'],
     }
+  }
 
-    # Stop mesos-master service from starting at startup
-    file { '/etc/init/mesos-master.override':
-        content => 'manual',
-        notify  => Service['mesos-master']
-    }
+  # Stop mesos-master service from starting at startup
+  $master_override_ensure = $controller_worker ? {
+    true  => 'absent',
+    false => 'present',
+  }
+  file { '/etc/init/mesos-master.override':
+      ensure  => $master_override_ensure,
+      content => 'manual',
+      notify  => Service['mesos-master'],
   }
 
   class { 'mesos::slave':

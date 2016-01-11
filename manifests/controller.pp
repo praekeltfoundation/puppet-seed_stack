@@ -127,12 +127,17 @@ class seed_stack::controller (
       ensure  => stopped,
       require => Package['mesos'],
     }
+  }
 
-    # Stop mesos-slave service from starting at startup
-    file { '/etc/init/mesos-slave.override':
-        content => 'manual',
-        notify  => Service['mesos-slave']
-    }
+  # Stop mesos-slave service from starting at startup
+  $slave_override_ensure = $controller_worker ? {
+    true  => 'absent',
+    false => 'present',
+  }
+  file { '/etc/init/mesos-slave.override':
+    ensure  => $slave_override_ensure,
+    content => 'manual',
+    notify  => Service['mesos-slave'],
   }
 
   $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
