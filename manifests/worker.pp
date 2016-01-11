@@ -51,6 +51,7 @@ class seed_stack::worker (
 
   # Mesos
   $mesos_ensure            = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr       = $seed_stack::params::mesos_listen_addr,
   $mesos_resources         = $seed_stack::params::mesos_resources,
 
   # Consul
@@ -70,6 +71,7 @@ class seed_stack::worker (
   # Basic parameter validation
   validate_ip_address($address)
   validate_bool($controller)
+  validate_ip_address($mesos_listen_addr)
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
@@ -79,7 +81,7 @@ class seed_stack::worker (
     class { 'mesos':
       ensure         => $mesos_ensure,
       repo           => 'mesosphere',
-      listen_address => $address,
+      listen_address => $mesos_listen_addr,
       zookeeper      => $mesos_zk,
     }
 
