@@ -123,6 +123,7 @@ class seed_stack::worker (
           port => 5051
         },
       },
+      require     => Package['unzip'],
     }
   }
 
