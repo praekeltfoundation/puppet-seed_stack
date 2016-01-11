@@ -5,6 +5,7 @@ class seed_stack::params {
   $docker_ensure            = '1.9.1*'
 
   $mesos_ensure             = '0.24.1*'
+  $mesos_listen_addr        = '0.0.0.0'
   $mesos_cluster            = 'seed-stack'
   $mesos_resources          = {}
 
@@ -14,7 +15,6 @@ class seed_stack::params {
   }
 
   $consul_version           = '0.6.1'
-  $consul_advertise_addr    = '127.0.0.1'
   $consul_client_addr       = '0.0.0.0'
   $consul_domain            = 'consul.'
 
