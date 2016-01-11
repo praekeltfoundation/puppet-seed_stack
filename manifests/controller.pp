@@ -20,6 +20,9 @@
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
 #
+# [*mesos_listen_addr*]
+#   The address that Mesos will listen on.
+#
 # [*mesos_cluster*]
 #   The Mesos cluster name.
 #
@@ -58,6 +61,7 @@ class seed_stack::controller (
 
   # Mesos
   $mesos_ensure           = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr      = $seed_stack::params::mesos_listen_addr,
   $mesos_cluster          = $seed_stack::params::mesos_cluster,
 
   # Marathon
@@ -79,6 +83,7 @@ class seed_stack::controller (
   validate_ip_address($address)
   validate_bool($controller_worker)
   validate_bool($install_java)
+  validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
   validate_integer($consular_sync_interval)
@@ -104,7 +109,7 @@ class seed_stack::controller (
   class { 'mesos':
     ensure         => $mesos_ensure,
     repo           => 'mesosphere',
-    listen_address => $address,
+    listen_address => $mesos_listen_addr,
     zookeeper      => $mesos_zk,
   }
 
