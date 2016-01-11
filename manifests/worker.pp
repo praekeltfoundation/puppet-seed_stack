@@ -125,6 +125,17 @@ class seed_stack::worker (
       },
       require     => Package['unzip'],
     }
+
+    # Make Puppet stop the mesos-master service
+    service { 'mesos-master':
+      ensure => stopped,
+    }
+
+    # Stop mesos-master service from starting at startup
+    file { '/etc/init/mesos-master.override':
+        content => 'manual',
+        notify  => Service['mesos-master']
+    }
   }
 
   package { 'nginx-light': }
