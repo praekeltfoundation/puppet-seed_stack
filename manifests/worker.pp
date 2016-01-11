@@ -11,8 +11,8 @@
 # [*hostname*]
 #   The hostname for the node.
 #
-# [*controller*]
-#   Whether or not this worker node is also a controller.
+# [*controller_worker*]
+#   Whether or not this node is a combination controller/worker.
 #
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
@@ -47,7 +47,7 @@ class seed_stack::worker (
   $controller_addresses    = ['127.0.0.1'],
   $address                 = '127.0.0.1',
   $hostname                = 'localhost',
-  $controller              = false,
+  $controller_worker       = false,
 
   # Mesos
   $mesos_ensure            = $seed_stack::params::mesos_ensure,
@@ -69,13 +69,13 @@ class seed_stack::worker (
 
   # Basic parameter validation
   validate_ip_address($address)
-  validate_bool($controller)
+  validate_bool($controller_worker)
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
-  if ! $controller {
+  if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
       repo           => 'mesosphere',
@@ -98,7 +98,7 @@ class seed_stack::worker (
     },
   }
 
-  if ! $controller {
+  if ! $controller_worker {
     # Consul requires unzip to install
     package { 'unzip':
       ensure => installed,

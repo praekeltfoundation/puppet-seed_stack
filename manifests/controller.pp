@@ -11,8 +11,8 @@
 # [*hostname*]
 #   The hostname for the node.
 #
-# [*worker*]
-#   Whether or not this controller node is also a worker.
+# [*controller_worker*]
+#   Whether or not this node is a combination controller/worker.
 #
 # [*install_java*]
 #   Whether or not to install Oracle Java 8.
@@ -53,7 +53,7 @@ class seed_stack::controller (
   $controller_addresses   = ['127.0.0.1'],
   $address                = '127.0.0.1',
   $hostname               = 'localhost',
-  $worker                 = false,
+  $controller_worker      = false,
   $install_java           = true,
 
   # Mesos
@@ -115,7 +115,7 @@ class seed_stack::controller (
     },
   }
 
-  if ! $worker {
+  if ! $controller_worker {
     # Make Puppet stop the mesos-slave service
     service { 'mesos-slave':
       ensure => stopped,
