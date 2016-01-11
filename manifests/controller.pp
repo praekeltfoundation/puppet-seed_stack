@@ -77,6 +77,7 @@ class seed_stack::controller (
 
   # Basic parameter validation
   validate_ip_address($address)
+  validate_bool($controller_worker)
   validate_bool($install_java)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
