@@ -129,9 +129,8 @@ class seed_stack::worker (
     class { 'consul':
       version     => $consul_version,
       config_hash => {
-        'bootstrap_expect' => size($controller_addresses),
-        'retry_join'       => $controller_addresses,
         'server'           => false,
+        'retry_join'       => $controller_addresses,
         'data_dir'         => '/var/consul',
         'log_level'        => 'INFO',
         'advertise_addr'   => $address,
