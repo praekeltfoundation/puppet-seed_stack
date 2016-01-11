@@ -89,7 +89,8 @@ class seed_stack::worker (
 
     # Make Puppet stop the mesos-master service
     service { 'mesos-master':
-      ensure => stopped,
+      ensure  => stopped,
+      require => Package['mesos'],
     }
 
     # Stop mesos-master service from starting at startup

@@ -119,7 +119,8 @@ class seed_stack::controller (
   if ! $controller_worker {
     # Make Puppet stop the mesos-slave service
     service { 'mesos-slave':
-      ensure => stopped,
+      ensure  => stopped,
+      require => Package['mesos'],
     }
 
     # Stop mesos-slave service from starting at startup
