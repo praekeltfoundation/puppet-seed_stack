@@ -17,6 +17,9 @@
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
 #
+# [*mesos_listen_addr*]
+#   The address that Mesos will listen on.
+#
 # [*mesos_cluster*]
 #   The Mesos cluster name.
 #
