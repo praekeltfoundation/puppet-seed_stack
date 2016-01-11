@@ -175,13 +175,28 @@ class seed_stack::controller (
     },
     services    => {
       'marathon'     => {
-        port => 8080
+        port  => 8080,
+        check => {
+          # Marathon listens on all interfaces by default
+          http     => "http://${::ipaddress_lo}:8080/ping",
+          interval => '10s',
+          timeout  => '1s',
+        }
       },
       'mesos-master' => {
-        port => 5050
+        port => 5050,
+        check => {
+          http     => "http://${mesos_listen_addr}:5050/master/health",
+          interval => '10s',
+          timeout  => '1s',
+        }
       },
       'zookeeper'    => {
-        port => 2181
+        port => 2181,
+        check => {
+          script   => '/usr/share/zookeeper/bin/zkServer.sh status',
+          interval => '30s',
+        }
       },
     },
     require     => Package['unzip']

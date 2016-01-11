@@ -143,7 +143,12 @@ class seed_stack::worker (
     }
   }
   consul::service { 'mesos-slave':
-    port => 5051
+    port  => 5051,
+    check => {
+      http     => "http://${mesos_listen_addr}:5051/slave(1)/health",
+      interval => '10s',
+      timeout  => '1s',
+    }
   }
 
   package { 'nginx-light': }
