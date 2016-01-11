@@ -135,13 +135,11 @@ class seed_stack::worker (
         'encrypt'          => $consul_encrypt,
         'ui'               => $consul_ui,
       },
-      services    => {
-        'mesos-slave' => {
-          port => 5051
-        },
-      },
       require     => Package['unzip'],
     }
+  }
+  consul::service { 'mesos-slave':
+    port => 5051
   }
 
   package { 'nginx-light': }
