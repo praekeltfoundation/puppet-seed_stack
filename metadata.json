@@ -7,7 +7,40 @@
   "source": "http://github.com/praekeltfoundation/puppet-seed_stack",
   "project_page": "https://github.com/praekeltfoundation/puppet-seed_stack",
   "issues_url": "https://github.com/praekeltfoundation/puppet-seed_stack/issues",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "name": "praekeltfoundation/consular",
+      "version_requirement": ">=0.1.1"
+    },
+    {
+      "name": "praekeltfoundation/marathon",
+      "version_requirement": ">=0.1.1"
+    },
+    {
+      "name": "praekeltfoundation/webupd8_oracle_java",
+      "version_requirement": ">=0.1.2"
+    },
+    {
+      "name": "deric/mesos",
+      "version_requirement": ">=0.6.4"
+    },
+    {
+      "name": "deric/zookeeper",
+      "version_requirement": ">=0.4.0"
+    },
+    {
+      "name": "garethr/docker",
+      "version_requirement": ">=4.1.0"
+    },
+    {
+      "name": "gdhbashton/consul_template",
+      "version_requirement": ">=0.2.4"
+    },
+    {
+      "name": "KyleAnderson/consul",
+      "version_requirement": ">=1.0.4"
+    }
+  ],
   "requirements": [
     {
       "name": "puppet",
