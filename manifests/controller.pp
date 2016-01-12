@@ -219,7 +219,7 @@ class seed_stack::controller (
         port   => 2181,
         checks => [
           {
-            script   => '/usr/share/zookeeper/bin/zkServer.sh status',
+            script   => "echo \"srvr\" | nc ${zookeeper_client_addr} 2181",
             interval => '30s',
           },
         ],
