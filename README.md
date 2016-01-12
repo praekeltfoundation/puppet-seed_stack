@@ -71,9 +71,9 @@ Different parts of the class can be disabled if the node it is being included on
 We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [Puppetfile](Puppetfile) for a complete listing with version information.
 
 Firstly, we wrote some modules ourselves:
-* [praekeltfoundation/consular](https://github.com/praekeltfoundation/puppet-consular)
-* [praekeltfoundation/marathon](https://github.com/praekeltfoundation/puppet-marathon)
-* [praekeltfoundation/webupd8_oracle_java](https://github.com/praekeltfoundation/puppet-webupd8_oracle_java)
+* [praekeltfoundation/consular](https://forge.puppetlabs.com/praekeltfoundation/consular)
+* [praekeltfoundation/marathon](https://forge.puppetlabs.com/praekeltfoundation/marathon)
+* [praekeltfoundation/webupd8_oracle_java](https://forge.puppetlabs.com/praekeltfoundation/webupd8_oracle_java)
 
 Then there are some 3rd party modules:
 * [deric/mesos](https://forge.puppetlabs.com/deric/mesos)
