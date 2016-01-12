@@ -17,6 +17,10 @@
 # [*install_java*]
 #   Whether or not to install Oracle Java 8.
 #
+# [*zookeeper_ensure*]
+#   The package ensure value for Zookeeper (note this is for all Zookeeper
+#   packages - i.e. 'zookeeper' and 'zookeeperd').
+#
 # [*zookeeper_client_addr*]
 #   The address that Zookeeper will listen for clients on.
 #
@@ -63,6 +67,7 @@ class seed_stack::controller (
   $install_java           = true,
 
   # Zookeeper
+  $zookeeper_ensure       = $seed_stack::params::zookeeper_ensure,
   $zookeeper_client_addr  = $seed_stack::params::zookeeper_client_addr,
 
   # Mesos
@@ -107,6 +112,7 @@ class seed_stack::controller (
   }
 
   class { 'zookeeper':
+    ensure    => $zookeeper_ensure,
     servers   => $controller_addresses,
     client_ip => $zookeeper_client_addr
   }
