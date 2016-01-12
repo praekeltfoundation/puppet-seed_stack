@@ -1,12 +1,15 @@
 forge "https://forgeapi.puppetlabs.com"
 
 # Praekelt Foundation modules
-mod 'praekeltfoundation/consular', '0.1.0',
-  :github_tarball => 'praekeltfoundation/puppet-consular'
-mod 'praekeltfoundation/marathon', '0.1.0',
-  :github_tarball => 'praekeltfoundation/puppet-marathon'
-mod 'praekeltfoundation/webupd8_oracle_java', '0.1.1',
-  :github_tarball => 'praekeltfoundation/puppet-webupd8_oracle_java'
+mod 'praekeltfoundation/consular',
+  :git => 'https://github.com/praekeltfoundation/puppet-consular.git',
+  :ref => '0.1.0'
+mod 'praekeltfoundation/marathon',
+  :git => 'https://github.com/praekeltfoundation/puppet-marathon.git',
+  :ref => '0.1.0'
+mod 'praekeltfoundation/webupd8_oracle_java',
+  :git => 'https://github.com/praekeltfoundation/puppet-webupd8_oracle_java.git',
+  :ref => '0.1.1'
 
 # 3rd party modules
 mod 'deric/mesos', '>= 0.6.4'

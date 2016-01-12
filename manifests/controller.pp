@@ -3,7 +3,8 @@
 # === Parameters
 #
 # [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster.
+#   A list of IP addresses for all controllers in the cluster. NOTE: This list
+#   must be identical (same elements, same order) for ALL controller nodes.
 #
 # [*address*]
 #   The IP address for the node. All services will be exposed on this address.
@@ -11,11 +12,24 @@
 # [*hostname*]
 #   The hostname for the node.
 #
+# [*controller_worker*]
+#   Whether or not this node is a combination controller/worker.
+#
 # [*install_java*]
 #   Whether or not to install Oracle Java 8.
 #
+# [*zookeeper_ensure*]
+#   The package ensure value for Zookeeper (note this is for all Zookeeper
+#   packages - i.e. 'zookeeper' and 'zookeeperd').
+#
+# [*zookeeper_client_addr*]
+#   The address that Zookeeper will listen for clients on.
+#
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
+#
+# [*mesos_listen_addr*]
+#   The address that Mesos will listen on.
 #
 # [*mesos_cluster*]
 #   The Mesos cluster name.
@@ -47,13 +61,19 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addresses   = ['127.0.0.1'],
-  $address                = '127.0.0.1',
-  $hostname               = 'localhost',
+  $controller_addresses   = [$::ipaddress_lo],
+  $address                = $::ipaddress_lo,
+  $hostname               = $::hostname,
+  $controller_worker      = false,
   $install_java           = true,
+
+  # Zookeeper
+  $zookeeper_ensure       = $seed_stack::params::zookeeper_ensure,
+  $zookeeper_client_addr  = $seed_stack::params::zookeeper_client_addr,
 
   # Mesos
   $mesos_ensure           = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr      = $seed_stack::params::mesos_listen_addr,
   $mesos_cluster          = $seed_stack::params::mesos_cluster,
 
   # Marathon
@@ -73,7 +93,9 @@ class seed_stack::controller (
 
   # Basic parameter validation
   validate_ip_address($address)
+  validate_bool($controller_worker)
   validate_bool($install_java)
+  validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
   validate_integer($consular_sync_interval)
@@ -90,16 +112,24 @@ class seed_stack::controller (
     Package['oracle-java8-installer'] -> Package['marathon']
   }
 
+  $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
   class { 'zookeeper':
-    servers   => $controller_addresses,
-    client_ip => $address
+    ensure                  => $zookeeper_ensure,
+    id                      => $zk_id,
+    servers                 => $controller_addresses,
+    client_ip               => $zookeeper_client_addr,
+    # FIXME: The deric/zookeeper module uses the old default value for
+    # `maxClientCnxns` of 10. Since Zookeeper 3.4.0 the default has been 60.
+    # Ubuntu 14.04 ships with Zookeeper 3.4.5. With a 2-node controller/worker
+    # setup, there are already 8 Zookeeper client connections open.
+    max_allowed_connections => 60,
   }
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
   class { 'mesos':
     ensure         => $mesos_ensure,
     repo           => 'mesosphere',
-    listen_address => $address,
+    listen_address => $mesos_listen_addr,
     zookeeper      => $mesos_zk,
   }
 
@@ -109,6 +139,25 @@ class seed_stack::controller (
       hostname => $hostname,
       quorum   => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
     },
+  }
+
+  if ! $controller_worker {
+    # Make Puppet stop the mesos-slave service
+    service { 'mesos-slave':
+      ensure  => stopped,
+      require => Package['mesos'],
+    }
+  }
+
+  # Stop mesos-slave service from starting at startup
+  $slave_override_ensure = $controller_worker ? {
+    true  => 'absent',
+    false => 'present',
+  }
+  file { '/etc/init/mesos-slave.override':
+    ensure  => $slave_override_ensure,
+    content => 'manual',
+    notify  => Service['mesos-slave'],
   }
 
   $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
@@ -146,13 +195,34 @@ class seed_stack::controller (
     },
     services    => {
       'marathon'     => {
-        port => 8080
+        port   => 8080,
+        checks => [
+          {
+            # Marathon listens on all interfaces by default
+            http     => "http://${::ipaddress_lo}:8080/ping",
+            interval => '10s',
+            timeout  => '1s',
+          },
+        ],
       },
       'mesos-master' => {
-        port => 5050
+        port   => 5050,
+        checks => [
+          {
+            http     => "http://${mesos_listen_addr}:5050/master/health",
+            interval => '10s',
+            timeout  => '1s',
+          },
+        ],
       },
       'zookeeper'    => {
-        port => 2181
+        port   => 2181,
+        checks => [
+          {
+            script   => "echo \"srvr\" | nc ${zookeeper_client_addr} 2181",
+            interval => '30s',
+          },
+        ],
       },
     },
     require     => Package['unzip']

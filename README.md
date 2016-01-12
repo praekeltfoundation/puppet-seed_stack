@@ -50,13 +50,22 @@ A node can be both a controller and a worker. This is useful for single-node set
 class { 'seed_stack::controller':
   address              => $ipaddress_eth0,
   controller_addresses => [$ipaddress_eth0],
+  controller_worker    => true,
 }
 class { 'seed_stack::worker':
-  address    => $ipaddress_eth0,
-  controller => true,
+  address           => $ipaddress_eth0,
+  controller_worker => true,
 }
 ```
-**NOTE:** For combination controller/workers it is necessary to set `controller => true` for the `seed_stack::worker` class so that the controller and worker classes do not conflict.
+**NOTE:** For combination controller/workers it is necessary to set `controller_worker => true` for both the `seed_stack::controller` class and the `seed_stack::worker` class so that the two classes do not conflict.
+
+#### Load balancers
+If you need to expose apps running on Seed Stack to the outside world, Nginx can be used to load-balance between app instances and expose the apps from an accessible endpoint. To set up Nginx to be dynamically configured to do this, use the `seed_stack::load_balancer` class.
+
+```puppet
+include seed_stack::load_balancer
+```
+Different parts of the class can be disabled if the node it is being included on already has Nginx or Consul Template installed. See the [manifest source](manifests/load_balancer.pp) for more information.
 
 ## Upstream modules
 We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [Puppetfile](Puppetfile) for a complete listing with version information.

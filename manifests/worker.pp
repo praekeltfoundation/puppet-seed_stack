@@ -11,11 +11,14 @@
 # [*hostname*]
 #   The hostname for the node.
 #
-# [*controller*]
-#   Whether or not this worker node is also a controller.
+# [*controller_worker*]
+#   Whether or not this node is a combination controller/worker.
 #
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
+#
+# [*mesos_listen_addr*]
+#   The address that Mesos will listen on.
 #
 # [*mesos_resources*]
 #   A hash of the available Mesos resources for the node.
@@ -44,13 +47,14 @@
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addresses    = ['127.0.0.1'],
-  $address                 = '127.0.0.1',
-  $hostname                = 'localhost',
-  $controller              = false,
+  $controller_addresses    = [$::ipaddress_lo],
+  $address                 = $::ipaddress_lo,
+  $hostname                = $::hostname,
+  $controller_worker       = false,
 
   # Mesos
   $mesos_ensure            = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr       = $seed_stack::params::mesos_listen_addr,
   $mesos_resources         = $seed_stack::params::mesos_resources,
 
   # Consul
@@ -69,19 +73,41 @@ class seed_stack::worker (
 
   # Basic parameter validation
   validate_ip_address($address)
-  validate_bool($controller)
+  validate_bool($controller_worker)
+  validate_ip_address($mesos_listen_addr)
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
-  if ! $controller {
+  if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
       repo           => 'mesosphere',
-      listen_address => $address,
+      listen_address => $mesos_listen_addr,
       zookeeper      => $mesos_zk,
     }
+
+    # We need this because mesos::install doesn't wait for apt::update before
+    # trying to install the package.
+    Class['apt::update'] -> Package['mesos']
+
+    # Make Puppet stop the mesos-master service
+    service { 'mesos-master':
+      ensure  => stopped,
+      require => Package['mesos'],
+    }
+  }
+
+  # Stop mesos-master service from starting at startup
+  $master_override_ensure = $controller_worker ? {
+    true  => 'absent',
+    false => 'present',
+  }
+  file { '/etc/init/mesos-master.override':
+      ensure  => $master_override_ensure,
+      content => 'manual',
+      notify  => Service['mesos-master'],
   }
 
   class { 'mesos::slave':
@@ -94,7 +120,7 @@ class seed_stack::worker (
     },
   }
 
-  if ! $controller {
+  if ! $controller_worker {
     # Consul requires unzip to install
     package { 'unzip':
       ensure => installed,
@@ -103,23 +129,28 @@ class seed_stack::worker (
     class { 'consul':
       version     => $consul_version,
       config_hash => {
-        'bootstrap_expect' => size($controller_addresses),
-        'retry_join'       => $controller_addresses,
-        'server'           => false,
-        'data_dir'         => '/var/consul',
-        'log_level'        => 'INFO',
-        'advertise_addr'   => $address,
-        'client_addr'      => $consul_client_addr,
-        'domain'           => $consul_domain,
-        'encrypt'          => $consul_encrypt,
-        'ui'               => $consul_ui,
+        'server'         => false,
+        'retry_join'     => $controller_addresses,
+        'data_dir'       => '/var/consul',
+        'log_level'      => 'INFO',
+        'advertise_addr' => $address,
+        'client_addr'    => $consul_client_addr,
+        'domain'         => $consul_domain,
+        'encrypt'        => $consul_encrypt,
+        'ui'             => $consul_ui,
       },
-      services    => {
-        'mesos-slave' => {
-          port => 5051
-        },
-      },
+      require     => Package['unzip'],
     }
+  }
+  consul::service { 'mesos-slave':
+    port   => 5051,
+    checks => [
+      {
+        http     => "http://${mesos_listen_addr}:5051/slave(1)/health",
+        interval => '10s',
+        timeout  => '1s',
+      },
+    ],
   }
 
   package { 'nginx-light': }
