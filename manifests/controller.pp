@@ -3,7 +3,8 @@
 # === Parameters
 #
 # [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster.
+#   A list of IP addresses for all controllers in the cluster. NOTE: This list
+#   must be identical (same elements, same order) for ALL controller nodes.
 #
 # [*address*]
 #   The IP address for the node. All services will be exposed on this address.
@@ -111,8 +112,10 @@ class seed_stack::controller (
     Package['oracle-java8-installer'] -> Package['marathon']
   }
 
+  $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
   class { 'zookeeper':
     ensure    => $zookeeper_ensure,
+    id        => $zk_id,
     servers   => $controller_addresses,
     client_ip => $zookeeper_client_addr,
     # FIXME: The deric/zookeeper module uses the old default value for
