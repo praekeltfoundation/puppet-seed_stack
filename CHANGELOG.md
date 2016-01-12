@@ -1,4 +1,4 @@
-## 0.2.0 - UNRELEASED
+## 0.2.0 - 2016/01/12
 ### Features
 * `seed_stack::load_balancer` added for exposing services externally (#11)
 * Mesos listen address now configurable (#13)
