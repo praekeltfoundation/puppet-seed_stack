@@ -1,3 +1,7 @@
+## 0.2.1 - UNRELEASED
+### Changes
+* Source praekeltfoundation modules from Puppet Forge (#10)
+
 ## 0.2.0 - 2016/01/12
 ### Features
 * `seed_stack::load_balancer` added for exposing services externally (#11)
