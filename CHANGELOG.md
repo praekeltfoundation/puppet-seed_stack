@@ -1,4 +1,4 @@
-## 0.2.1 - UNRELEASED
+## 0.2.1 - 2016/01/12
 ### Changes
 * Source praekeltfoundation modules from Puppet Forge (#10)
 
