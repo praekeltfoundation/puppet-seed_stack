@@ -4,6 +4,9 @@ class seed_stack::params {
 
   $docker_ensure            = '1.9.1*'
 
+  $zookeeper_ensure         = 'present'
+  $zookeeper_client_addr    = '0.0.0.0'
+
   $mesos_ensure             = '0.24.1*'
   $mesos_listen_addr        = '0.0.0.0'
   $mesos_cluster            = 'seed-stack'

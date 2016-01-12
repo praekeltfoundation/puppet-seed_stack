@@ -3,7 +3,8 @@
 # === Parameters
 #
 # [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster.
+#   A list of IP addresses for all controllers in the cluster. NOTE: This list
+#   must be identical (same elements, same order) for ALL controller nodes.
 #
 # [*address*]
 #   The IP address for the node. All services will be exposed on this address.
@@ -16,6 +17,13 @@
 #
 # [*install_java*]
 #   Whether or not to install Oracle Java 8.
+#
+# [*zookeeper_ensure*]
+#   The package ensure value for Zookeeper (note this is for all Zookeeper
+#   packages - i.e. 'zookeeper' and 'zookeeperd').
+#
+# [*zookeeper_client_addr*]
+#   The address that Zookeeper will listen for clients on.
 #
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
@@ -59,6 +67,10 @@ class seed_stack::controller (
   $controller_worker      = false,
   $install_java           = true,
 
+  # Zookeeper
+  $zookeeper_ensure       = $seed_stack::params::zookeeper_ensure,
+  $zookeeper_client_addr  = $seed_stack::params::zookeeper_client_addr,
+
   # Mesos
   $mesos_ensure           = $seed_stack::params::mesos_ensure,
   $mesos_listen_addr      = $seed_stack::params::mesos_listen_addr,
@@ -100,9 +112,17 @@ class seed_stack::controller (
     Package['oracle-java8-installer'] -> Package['marathon']
   }
 
+  $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
   class { 'zookeeper':
-    servers   => $controller_addresses,
-    client_ip => $address
+    ensure                  => $zookeeper_ensure,
+    id                      => $zk_id,
+    servers                 => $controller_addresses,
+    client_ip               => $zookeeper_client_addr,
+    # FIXME: The deric/zookeeper module uses the old default value for
+    # `maxClientCnxns` of 10. Since Zookeeper 3.4.0 the default has been 60.
+    # Ubuntu 14.04 ships with Zookeeper 3.4.5. With a 2-node controller/worker
+    # setup, there are already 8 Zookeeper client connections open.
+    max_allowed_connections => 60,
   }
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
