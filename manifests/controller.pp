@@ -17,6 +17,9 @@
 # [*install_java*]
 #   Whether or not to install Oracle Java 8.
 #
+# [*zookeeper_client_addr*]
+#   The address that Zookeeper will listen for clients on.
+#
 # [*mesos_ensure*]
 #   The package ensure value for Mesos.
 #
@@ -58,6 +61,9 @@ class seed_stack::controller (
   $hostname               = $::hostname,
   $controller_worker      = false,
   $install_java           = true,
+
+  # Zookeeper
+  $zookeeper_client_addr  = $seed_stack::params::zookeeper_client_addr,
 
   # Mesos
   $mesos_ensure           = $seed_stack::params::mesos_ensure,
@@ -102,7 +108,7 @@ class seed_stack::controller (
 
   class { 'zookeeper':
     servers   => $controller_addresses,
-    client_ip => $address
+    client_ip => $zookeeper_client_addr
   }
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
