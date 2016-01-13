@@ -115,7 +115,10 @@ class seed_stack::worker (
     resources => $mesos_resources,
     options   => {
       hostname                      => $hostname,
-      advertise_ip                  => $address,
+      # FIXME: --advertise_ip for slaves was supposed to be added in Mesos 0.26
+      # but never actually made it in. Enable this if/when we get to 0.27.
+      # https://issues.apache.org/jira/browse/MESOS-3809
+      #advertise_ip                  => $address,
       containerizers                => 'docker,mesos',
       executor_registration_timeout => '5mins',
     },
