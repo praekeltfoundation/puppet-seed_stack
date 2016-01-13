@@ -1,3 +1,8 @@
+## 0.2.2 - UNRELEASED
+### Changes
+* Set Mesos master `advertise_ip` to the node address (#19)
+* Consul Template 0.12.1 (#22)
+
 ## 0.2.1 - 2016/01/12
 ### Changes
 * Source praekeltfoundation modules from Puppet Forge (#10)
