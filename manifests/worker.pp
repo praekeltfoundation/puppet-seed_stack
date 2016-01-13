@@ -115,6 +115,7 @@ class seed_stack::worker (
     resources => $mesos_resources,
     options   => {
       hostname                      => $hostname,
+      advertise_ip                  => $address,
       containerizers                => 'docker,mesos',
       executor_registration_timeout => '5mins',
     },
