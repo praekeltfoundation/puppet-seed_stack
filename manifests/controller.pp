@@ -136,8 +136,9 @@ class seed_stack::controller (
   class { 'mesos::master':
     cluster => $mesos_cluster,
     options => {
-      hostname => $hostname,
-      quorum   => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
+      hostname     => $hostname,
+      advertise_ip => $address,
+      quorum       => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
     },
   }
 
