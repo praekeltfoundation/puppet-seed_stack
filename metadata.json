@@ -14,7 +14,7 @@
     },
     {
       "name": "praekeltfoundation/marathon",
-      "version_requirement": ">=0.1.1"
+      "version_requirement": ">=0.2.0"
     },
     {
       "name": "praekeltfoundation/webupd8_oracle_java",

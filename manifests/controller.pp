@@ -163,11 +163,11 @@ class seed_stack::controller (
 
   $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
   class { 'marathon':
-    ensure      => $marathon_ensure,
-    manage_repo => false,
-    zookeeper   => $marathon_zk,
-    master      => $mesos_zk,
-    options     => {
+    package_ensure => $marathon_ensure,
+    repo_manage    => false,
+    zookeeper      => $marathon_zk,
+    master         => $mesos_zk,
+    options        => {
       hostname         => $hostname,
       event_subscriber => 'http_callback',
     },
