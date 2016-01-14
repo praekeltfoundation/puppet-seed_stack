@@ -136,8 +136,9 @@ class seed_stack::controller (
   class { 'mesos::master':
     cluster => $mesos_cluster,
     options => {
-      hostname => $hostname,
-      quorum   => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
+      hostname     => $hostname,
+      advertise_ip => $address,
+      quorum       => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
     },
   }
 
@@ -162,11 +163,11 @@ class seed_stack::controller (
 
   $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
   class { 'marathon':
-    ensure      => $marathon_ensure,
-    manage_repo => false,
-    zookeeper   => $marathon_zk,
-    master      => $mesos_zk,
-    options     => {
+    package_ensure => $marathon_ensure,
+    repo_manage    => false,
+    zookeeper      => $marathon_zk,
+    master         => $mesos_zk,
+    options        => {
       hostname         => $hostname,
       event_subscriber => 'http_callback',
     },
