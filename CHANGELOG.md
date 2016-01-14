@@ -1,3 +1,10 @@
+## 0.2.2 - 2016/01/14
+### Changes
+* Mesos master `advertise_ip` now set to `address` (#19)
+
+### Fixes
+* Marathon module updated to 0.2.2 with fixes (#23)
+
 ## 0.2.1 - 2016/01/12
 ### Changes
 * Source praekeltfoundation modules from Puppet Forge (#10)
