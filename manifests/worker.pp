@@ -145,11 +145,6 @@ class seed_stack::worker (
       },
       require     => Package['unzip'],
     }
-
-    class { 'seed_stack::template_nginx':
-      consul_template_version => $consul_template_version,
-      consul_address          => $consul_client_addr,
-    }
   }
   consul::service { 'mesos-slave':
     port   => 5051,
@@ -162,6 +157,10 @@ class seed_stack::worker (
     ],
   }
 
+  class { 'seed_stack::template_nginx':
+    consul_template_version => $consul_template_version,
+    consul_address          => $consul_client_addr,
+  }
   include seed_stack::router
 
   # dnsmasq to serve DNS requests, sending requests for the Consul domain to
