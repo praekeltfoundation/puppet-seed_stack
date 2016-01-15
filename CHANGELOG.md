@@ -1,7 +1,14 @@
-## 0.2.2 - UNRELEASED
+## 0.2.3 - UNRELEASED
 ### Changes
-* Set Mesos master `advertise_ip` to the node address (#19)
+* deric/zookeeper module version 0.4.2 - Zookeeper `maxClientCnxns` is no longer set. The default is used. This should have no effect as we were previously setting it to the default. (#21)
 * Consul Template 0.12.1 (#22)
+
+## 0.2.2 - 2016/01/14
+### Changes
+* Mesos master `advertise_ip` now set to `address` (#19)
+
+### Fixes
+* Marathon module updated to 0.2.2 with fixes (#23)
 
 ## 0.2.1 - 2016/01/12
 ### Changes

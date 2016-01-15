@@ -1,6 +1,6 @@
 {
   "name": "praekeltfoundation-seed_stack",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
   "license": "BSD-3-Clause",
@@ -14,7 +14,7 @@
     },
     {
       "name": "praekeltfoundation/marathon",
-      "version_requirement": ">=0.1.1"
+      "version_requirement": ">=0.2.0"
     },
     {
       "name": "praekeltfoundation/webupd8_oracle_java",
@@ -26,7 +26,7 @@
     },
     {
       "name": "deric/zookeeper",
-      "version_requirement": ">=0.4.0"
+      "version_requirement": ">=0.4.2"
     },
     {
       "name": "garethr/docker",
