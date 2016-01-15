@@ -95,19 +95,9 @@ class seed_stack::worker (
     # Make Puppet stop the mesos-master service
     service { 'mesos-master':
       ensure  => stopped,
+      enable  => false,
       require => Package['mesos'],
     }
-  }
-
-  # Stop mesos-master service from starting at startup
-  $master_override_ensure = $controller_worker ? {
-    true  => 'absent',
-    false => 'present',
-  }
-  file { '/etc/init/mesos-master.override':
-      ensure  => $master_override_ensure,
-      content => 'manual',
-      notify  => Service['mesos-master'],
   }
 
   class { 'mesos::slave':
