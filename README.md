@@ -98,5 +98,5 @@ The package versions can be seen in the [params class source](manifests/params.p
 | Docker          | 1.9.1   |
 | Consul          | 0.6.1   |
 | Consular        | 1.2.0   |
-| Consul Template | 0.12.0  |
+| Consul Template | 0.12.1  |
 | Nginx           | System  |

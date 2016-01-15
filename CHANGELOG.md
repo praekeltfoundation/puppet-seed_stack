@@ -1,6 +1,7 @@
 ## 0.2.3 - UNRELEASED
 ### Changes
 * deric/zookeeper module version 0.4.2 - Zookeeper `maxClientCnxns` is no longer set. The default is used. This should have no effect as we were previously setting it to the default. (#21)
+* Consul Template 0.12.1 (#22)
 
 ## 0.2.2 - 2016/01/14
 ### Changes

@@ -24,5 +24,5 @@ class seed_stack::params {
   $consular_ensure          = '1.2.0*'
   $consular_sync_interval   = '300'
 
-  $consul_template_version  = '0.12.0'
+  $consul_template_version  = '0.12.1'
 }
