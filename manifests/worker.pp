@@ -145,6 +145,11 @@ class seed_stack::worker (
       },
       require     => Package['unzip'],
     }
+
+    class { 'seed_stack::template_nginx':
+      consul_template_version => $consul_template_version,
+      consul_address          => $consul_client_addr,
+    }
   }
   consul::service { 'mesos-slave':
     port   => 5051,
@@ -157,48 +162,7 @@ class seed_stack::worker (
     ],
   }
 
-  package { 'nginx-light': }
-  ~>
-  service { 'nginx': }
-
-  # Consul Template to dynamically configure Nginx
-  class { 'consul_template':
-    version      => $consul_template_version,
-    config_dir   => '/etc/consul-template',
-    user         => 'root',
-    group        => 'root',
-    consul_host  => $address,
-    consul_port  => 8500,
-    consul_retry => '10s',
-    # For some reason, consul-template doesn't like this option.
-    # consul_max_stale => '10m',
-    log_level    => 'warn',
-    require      => Package['unzip']
-  }
-
-  # Configure Nginx to load-balance across uptream services
-  file { '/etc/consul-template/nginx-upstreams.ctmpl':
-    source => 'puppet:///modules/seed_stack/nginx-upstreams.ctmpl',
-  }
-  ~>
-  consul_template::watch { 'nginx-upstreams':
-    source      => '/etc/consul-template/nginx-upstreams.ctmpl',
-    destination => '/etc/nginx/sites-enabled/seed-upstreams.conf',
-    command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
-  }
-
-  # Configure Nginx to route to upstream services
-  file { '/etc/consul-template/nginx-services.ctmpl':
-    source => 'puppet:///modules/seed_stack/nginx-services.ctmpl',
-  }
-  ~>
-  consul_template::watch { 'nginx-services':
-    source      => '/etc/consul-template/nginx-services.ctmpl',
-    destination => '/etc/nginx/sites-enabled/seed-services.conf',
-    command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
-  }
+  include seed_stack::router
 
   # dnsmasq to serve DNS requests, sending requests for the Consul domain to
   # Consul
