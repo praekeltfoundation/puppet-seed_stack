@@ -11,11 +11,8 @@
 # [*consul_domain*]
 #   The domain for which DNS lookups should be sent to Consul.
 #
-# [*consul_address*]
+# [*consul_client_addr*]
 #   The address for the Consul DNS service.
-#
-# [*consul_port*]
-#   The port for the Consul DNS service.
 class seed_stack::dnsmasq_consul (
   $ensure             = 'installed',
   $consul_domain      = $seed_stack::params::consul_domain,
