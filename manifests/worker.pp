@@ -190,17 +190,11 @@ class seed_stack::worker (
     require     => Service['nginx'],
   }
 
-  # dnsmasq to serve DNS requests, sending requests for the Consul domain to
-  # Consul
   if ! $controller_worker {
-    $dnsmasq_server = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'
-    package { 'dnsmasq': }
-    ~>
-    file { '/etc/dnsmasq.d/consul':
-      content => "cache-size=0\nserver=/${dnsmasq_server}/${address}#8600",
+    class { 'seed_stack::dnsmasq_consul':
+      consul_domain      => $consul_domain,
+      consul_client_addr => $consul_client_addr,
     }
-    ~>
-    service { 'dnsmasq': }
   }
 
   # Docker, using the host for DNS
