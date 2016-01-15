@@ -114,15 +114,10 @@ class seed_stack::controller (
 
   $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
   class { 'zookeeper':
-    ensure                  => $zookeeper_ensure,
-    id                      => $zk_id,
-    servers                 => $controller_addresses,
-    client_ip               => $zookeeper_client_addr,
-    # FIXME: The deric/zookeeper module uses the old default value for
-    # `maxClientCnxns` of 10. Since Zookeeper 3.4.0 the default has been 60.
-    # Ubuntu 14.04 ships with Zookeeper 3.4.5. With a 2-node controller/worker
-    # setup, there are already 8 Zookeeper client connections open.
-    max_allowed_connections => 60,
+    ensure    => $zookeeper_ensure,
+    id        => $zk_id,
+    servers   => $controller_addresses,
+    client_ip => $zookeeper_client_addr,
   }
 
   $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
