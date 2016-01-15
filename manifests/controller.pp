@@ -141,19 +141,9 @@ class seed_stack::controller (
     # Make Puppet stop the mesos-slave service
     service { 'mesos-slave':
       ensure  => stopped,
+      enable  => false,
       require => Package['mesos'],
     }
-  }
-
-  # Stop mesos-slave service from starting at startup
-  $slave_override_ensure = $controller_worker ? {
-    true  => 'absent',
-    false => 'present',
-  }
-  file { '/etc/init/mesos-slave.override':
-    ensure  => $slave_override_ensure,
-    content => 'manual',
-    notify  => Service['mesos-slave'],
   }
 
   $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
