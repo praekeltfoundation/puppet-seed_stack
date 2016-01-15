@@ -17,18 +17,17 @@
 # [*consul_port*]
 #   The port for the Consul DNS service.
 class seed_stack::dnsmasq_consul (
-  $ensure         = 'installed',
-  $consul_domain  = 'consul.',
-  $consul_address = $::ipaddress_lo,
-  $consul_port    = 8600,
-) {
+  $ensure             = 'installed',
+  $consul_domain      = $seed_stack::params::consul_domain,
+  $consul_client_addr = $seed_stack::params::consul_client_addr,
+) inherits seed_stack::params {
   $dnsmasq_domain = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'
   package { 'dnsmasq':
     ensure => $ensure
   }
   ->
   file { '/etc/dnsmasq.d/consul':
-    content => "cache-size=0\nserver=/${dnsmasq_domain}/${consul_address}#${consul_port}",
+    content => "cache-size=0\nserver=/${dnsmasq_domain}/${consul_client_addr}#8600",
   }
   ~>
   service { 'dnsmasq': }

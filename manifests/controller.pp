@@ -225,8 +225,8 @@ class seed_stack::controller (
   }
 
   class { 'seed_stack::dnsmasq_consul':
-    consul_domain  => $consul_domain,
-    consul_address => $consul_client_addr,
+    consul_domain      => $consul_domain,
+    consul_client_addr => $consul_client_addr,
   }
 
   class { 'consular':

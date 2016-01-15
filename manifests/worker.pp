@@ -202,8 +202,8 @@ class seed_stack::worker (
 
   if ! $controller_worker {
     class { 'seed_stack::dnsmasq_consul':
-      consul_domain  => $consul_domain,
-      consul_address => $consul_client_addr,
+      consul_domain      => $consul_domain,
+      consul_client_addr => $consul_client_addr,
     }
   }
 
