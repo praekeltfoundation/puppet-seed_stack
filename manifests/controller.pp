@@ -63,7 +63,7 @@ class seed_stack::controller (
   # Common
   $controller_addresses   = [$::ipaddress_lo],
   $address                = $::ipaddress_lo,
-  $hostname               = $::hostname,
+  $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
 
