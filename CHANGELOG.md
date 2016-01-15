@@ -1,6 +1,7 @@
 ## 0.2.3 - UNRELEASED
 ### Changes
 * deric/zookeeper module version 0.4.2 - Zookeeper `maxClientCnxns` is no longer set. The default is used. This should have no effect as we were previously setting it to the default. (#21)
+* Consul Template 0.12.1 (#22)
 * Default the `hostname` parameter to `$::fqdn`. This makes it easier for Marathon/Mesos/Nginx to look up other nodes, especially on a public network (although you probably shouldn't be doing that). (#24)
 
 ## 0.2.2 - 2016/01/14

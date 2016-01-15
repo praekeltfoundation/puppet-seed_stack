@@ -202,7 +202,7 @@ class seed_stack::worker (
 
   # dnsmasq to serve DNS requests, sending requests for the Consul domain to
   # Consul
-  if ! controller {
+  if ! $controller_worker {
     $dnsmasq_server = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'
     package { 'dnsmasq': }
     ~>
