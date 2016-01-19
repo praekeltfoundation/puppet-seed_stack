@@ -68,7 +68,7 @@ include seed_stack::load_balancer
 Different parts of the class can be disabled if the node it is being included on already has Nginx or Consul Template installed. See the [manifest source](manifests/load_balancer.pp) for more information.
 
 #### Consul DNS
-It's often useful to use Consul's DNS for service discovery on nodes that aren't controllers or workers. For example, a node could run a database  To do this, use the `seed_stack::consul_dns` class. The class needs a few parameters so that it knows how to join the Consul cluster:
+It's often useful to use Consul's DNS for service discovery on nodes that aren't controllers or workers. For example, a database node could advertise it's service to other nodes using Consul. To do this, use the `seed_stack::consul_dns` class. The class needs a few parameters so that it knows how to join the Consul cluster:
 ```puppet
 class { 'seed_stack::consul_dns':
   advertise_addr => $ipaddress_eth0, # Address to advertise for services on this node
