@@ -115,25 +115,15 @@ class seed_stack::worker (
   }
 
   if ! $controller_worker {
-    # Consul requires unzip to install
-    package { 'unzip':
-      ensure => installed,
-    }
-
-    class { 'consul':
-      version     => $consul_version,
-      config_hash => {
-        'server'         => false,
-        'retry_join'     => $controller_addresses,
-        'data_dir'       => '/var/consul',
-        'log_level'      => 'INFO',
-        'advertise_addr' => $address,
-        'client_addr'    => $consul_client_addr,
-        'domain'         => $consul_domain,
-        'encrypt'        => $consul_encrypt,
-        'ui'             => $consul_ui,
-      },
-      require     => Package['unzip'],
+    class { 'seed_stack::consul_dns':
+      consul_version => $consul_version,
+      server         => false,
+      join           => $controller_addresses,
+      advertise_addr => $address,
+      client_addr    => $consul_client_addr,
+      domain         => $consul_domain,
+      encrypt        => $consul_encrypt,
+      ui             => $consul_ui,
     }
   }
   consul::service { 'mesos-slave':
@@ -152,13 +142,6 @@ class seed_stack::worker (
     consul_address          => $consul_client_addr,
   }
   include seed_stack::router
-
-  if ! $controller_worker {
-    class { 'seed_stack::dnsmasq_consul':
-      consul_domain      => $consul_domain,
-      consul_client_addr => $consul_client_addr,
-    }
-  }
 
   # Docker, using the host for DNS
   class { 'docker':

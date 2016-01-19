@@ -160,63 +160,48 @@ class seed_stack::controller (
   # Ensure Mesos repo is added before installing Marathon
   Apt::Source['mesosphere'] -> Package['marathon']
 
-  # Consul requires unzip to install
-  package { 'unzip':
-    ensure => installed,
+  class { 'seed_stack::consul_dns':
+    consul_version   => $consul_version,
+    server           => true,
+    join             => delete($controller_addresses, $address),
+    bootstrap_expect => size($controller_addresses),
+    advertise_addr   => $address,
+    client_addr      => $consul_client_addr,
+    domain           => $consul_domain,
+    encrypt          => $consul_encrypt,
+    ui               => $consul_ui,
   }
 
-  class { 'consul':
-    version     => $consul_version,
-    config_hash => {
-      'server'           => true,
-      'bootstrap_expect' => size($controller_addresses),
-      'retry_join'       => delete($controller_addresses, $address),
-      'data_dir'         => '/var/consul',
-      'log_level'        => 'INFO',
-      'advertise_addr'   => $address,
-      'client_addr'      => $consul_client_addr,
-      'domain'           => $consul_domain,
-      'encrypt'          => $consul_encrypt,
-      'ui'               => $consul_ui,
-    },
-    services    => {
-      'marathon'     => {
-        port   => 8080,
-        checks => [
-          {
-            # Marathon listens on all interfaces by default
-            http     => "http://${::ipaddress_lo}:8080/ping",
-            interval => '10s',
-            timeout  => '1s',
-          },
-        ],
-      },
-      'mesos-master' => {
-        port   => 5050,
-        checks => [
-          {
-            http     => "http://${mesos_listen_addr}:5050/master/health",
-            interval => '10s',
-            timeout  => '1s',
-          },
-        ],
-      },
-      'zookeeper'    => {
-        port   => 2181,
-        checks => [
-          {
-            script   => "echo \"srvr\" | nc ${zookeeper_client_addr} 2181",
-            interval => '30s',
-          },
-        ],
-      },
-    },
-    require     => Package['unzip']
-  }
+  consul::service {
+    'marathon':
+      port   => 8080,
+      checks => [
+        {
+          # Marathon listens on all interfaces by default
+          http     => "http://${::ipaddress_lo}:8080/ping",
+          interval => '10s',
+          timeout  => '1s',
+        },
+      ];
 
-  class { 'seed_stack::dnsmasq_consul':
-    consul_domain      => $consul_domain,
-    consul_client_addr => $consul_client_addr,
+    'mesos-master':
+      port   => 5050,
+      checks => [
+        {
+          http     => "http://${mesos_listen_addr}:5050/master/health",
+          interval => '10s',
+          timeout  => '1s',
+        },
+      ];
+
+    'zookeeper':
+      port   => 2181,
+      checks => [
+        {
+          script   => "echo \"srvr\" | nc ${zookeeper_client_addr} 2181",
+          interval => '30s',
+        },
+      ];
   }
 
   class { 'consular':
