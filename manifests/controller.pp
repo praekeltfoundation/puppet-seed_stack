@@ -112,6 +112,8 @@ class seed_stack::controller (
     Package['oracle-java8-installer'] -> Package['marathon']
   }
 
+  # There is no `find_index` equivalent in Puppet stdlib
+  # $zk_id = hash(zip($controller_addresses, range(1, size($controller_addresses))))[$address] # :trollface:
   $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
   class { 'zookeeper':
     ensure    => $zookeeper_ensure,
@@ -120,7 +122,8 @@ class seed_stack::controller (
     client_ip => $zookeeper_client_addr,
   }
 
-  $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
+  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $mesos_zk = "zk://${zk_base}/mesos"
   class { 'mesos':
     ensure         => $mesos_ensure,
     repo           => 'mesosphere',
@@ -133,7 +136,7 @@ class seed_stack::controller (
     options => {
       hostname     => $hostname,
       advertise_ip => $address,
-      quorum       => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
+      quorum       => size($controller_addresses) / 2 + 1 # Note: integer division
     },
   }
 
@@ -146,7 +149,7 @@ class seed_stack::controller (
     }
   }
 
-  $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
+  $marathon_zk = "zk://${zk_base}/marathon"
   class { 'marathon':
     package_ensure => $marathon_ensure,
     repo_manage    => false,

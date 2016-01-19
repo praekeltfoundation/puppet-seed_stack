@@ -79,7 +79,8 @@ class seed_stack::worker (
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
 
-  $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
+  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $mesos_zk = "zk://${zk_base}/mesos"
   if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
