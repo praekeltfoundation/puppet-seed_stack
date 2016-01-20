@@ -10,7 +10,7 @@
   "dependencies": [
     {
       "name": "praekeltfoundation/consular",
-      "version_requirement": ">=0.1.1"
+      "version_requirement": ">=0.2.0"
     },
     {
       "name": "praekeltfoundation/marathon",
