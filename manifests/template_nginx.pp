@@ -51,8 +51,9 @@ class seed_stack::template_nginx (
     # For some reason, consul-template doesn't like this option.
     # consul_max_stale => '10m',
     log_level    => 'warn',
-    require      => Package['unzip']
   }
+  # FIXME: See gdhbashton/puppet-consul_template#61
+  Package['unzip'] -> Class['consul_template::install']
 
   # Configure Nginx to load-balance across uptream services
   file { '/etc/consul-template/nginx-upstreams.ctmpl':
