@@ -208,14 +208,9 @@ class seed_stack::controller (
   }
 
   class { 'consular':
-    ensure        => $consular_ensure,
-    consular_args => [
-      "--host=${address}",
-      "--sync-interval=${consular_sync_interval}",
-      '--purge', # TODO: Make configurable
-      "--registration-id=${hostname}",
-      "--consul=http://${address}:8500",
-      "--marathon=http://${address}:8080",
-    ],
+    package_ensure => $consular_ensure,
+    consul         => "http://${consul_client_addr}:8500",
+    sync_interval  => $consular_sync_interval,
+    purge          => true,
   }
 }
