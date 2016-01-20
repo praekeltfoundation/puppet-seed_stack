@@ -79,7 +79,8 @@ class seed_stack::worker (
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
 
-  $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
+  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $mesos_zk = "zk://${zk_base}/mesos"
   if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
@@ -95,19 +96,9 @@ class seed_stack::worker (
     # Make Puppet stop the mesos-master service
     service { 'mesos-master':
       ensure  => stopped,
+      enable  => false,
       require => Package['mesos'],
     }
-  }
-
-  # Stop mesos-master service from starting at startup
-  $master_override_ensure = $controller_worker ? {
-    true  => 'absent',
-    false => 'present',
-  }
-  file { '/etc/init/mesos-master.override':
-      ensure  => $master_override_ensure,
-      content => 'manual',
-      notify  => Service['mesos-master'],
   }
 
   class { 'mesos::slave':
@@ -125,25 +116,15 @@ class seed_stack::worker (
   }
 
   if ! $controller_worker {
-    # Consul requires unzip to install
-    package { 'unzip':
-      ensure => installed,
-    }
-
-    class { 'consul':
-      version     => $consul_version,
-      config_hash => {
-        'server'         => false,
-        'retry_join'     => $controller_addresses,
-        'data_dir'       => '/var/consul',
-        'log_level'      => 'INFO',
-        'advertise_addr' => $address,
-        'client_addr'    => $consul_client_addr,
-        'domain'         => $consul_domain,
-        'encrypt'        => $consul_encrypt,
-        'ui'             => $consul_ui,
-      },
-      require     => Package['unzip'],
+    class { 'seed_stack::consul_dns':
+      consul_version => $consul_version,
+      server         => false,
+      join           => $controller_addresses,
+      advertise_addr => $address,
+      client_addr    => $consul_client_addr,
+      domain         => $consul_domain,
+      encrypt        => $consul_encrypt,
+      ui             => $consul_ui,
     }
   }
   consul::service { 'mesos-slave':
@@ -157,61 +138,11 @@ class seed_stack::worker (
     ],
   }
 
-  package { 'nginx-light': }
-  ~>
-  service { 'nginx': }
-
-  # Consul Template to dynamically configure Nginx
-  class { 'consul_template':
-    version      => $consul_template_version,
-    config_dir   => '/etc/consul-template',
-    user         => 'root',
-    group        => 'root',
-    consul_host  => $address,
-    consul_port  => 8500,
-    consul_retry => '10s',
-    # For some reason, consul-template doesn't like this option.
-    # consul_max_stale => '10m',
-    log_level    => 'warn',
-    require      => Package['unzip']
+  class { 'seed_stack::template_nginx':
+    consul_template_version => $consul_template_version,
+    consul_address          => $consul_client_addr,
   }
-
-  # Configure Nginx to load-balance across uptream services
-  file { '/etc/consul-template/nginx-upstreams.ctmpl':
-    source => 'puppet:///modules/seed_stack/nginx-upstreams.ctmpl',
-  }
-  ~>
-  consul_template::watch { 'nginx-upstreams':
-    source      => '/etc/consul-template/nginx-upstreams.ctmpl',
-    destination => '/etc/nginx/sites-enabled/seed-upstreams.conf',
-    command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
-  }
-
-  # Configure Nginx to route to upstream services
-  file { '/etc/consul-template/nginx-services.ctmpl':
-    source => 'puppet:///modules/seed_stack/nginx-services.ctmpl',
-  }
-  ~>
-  consul_template::watch { 'nginx-services':
-    source      => '/etc/consul-template/nginx-services.ctmpl',
-    destination => '/etc/nginx/sites-enabled/seed-services.conf',
-    command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
-  }
-
-  # dnsmasq to serve DNS requests, sending requests for the Consul domain to
-  # Consul
-  if ! $controller_worker {
-    $dnsmasq_server = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'
-    package { 'dnsmasq': }
-    ~>
-    file { '/etc/dnsmasq.d/consul':
-      content => "cache-size=0\nserver=/${dnsmasq_server}/${address}#8600",
-    }
-    ~>
-    service { 'dnsmasq': }
-  }
+  include seed_stack::router
 
   # Docker, using the host for DNS
   class { 'docker':

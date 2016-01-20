@@ -112,6 +112,8 @@ class seed_stack::controller (
     Package['oracle-java8-installer'] -> Package['marathon']
   }
 
+  # There is no `find_index` equivalent in Puppet stdlib
+  # $zk_id = hash(zip($controller_addresses, range(1, size($controller_addresses))))[$address] # :trollface:
   $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
   class { 'zookeeper':
     ensure    => $zookeeper_ensure,
@@ -120,7 +122,8 @@ class seed_stack::controller (
     client_ip => $zookeeper_client_addr,
   }
 
-  $mesos_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/mesos')
+  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $mesos_zk = "zk://${zk_base}/mesos"
   class { 'mesos':
     ensure         => $mesos_ensure,
     repo           => 'mesosphere',
@@ -133,7 +136,7 @@ class seed_stack::controller (
     options => {
       hostname     => $hostname,
       advertise_ip => $address,
-      quorum       => inline_template('<%= (@controller_addresses.size() / 2 + 1).floor() %>'),
+      quorum       => size($controller_addresses) / 2 + 1 # Note: integer division
     },
   }
 
@@ -141,22 +144,12 @@ class seed_stack::controller (
     # Make Puppet stop the mesos-slave service
     service { 'mesos-slave':
       ensure  => stopped,
+      enable  => false,
       require => Package['mesos'],
     }
   }
 
-  # Stop mesos-slave service from starting at startup
-  $slave_override_ensure = $controller_worker ? {
-    true  => 'absent',
-    false => 'present',
-  }
-  file { '/etc/init/mesos-slave.override':
-    ensure  => $slave_override_ensure,
-    content => 'manual',
-    notify  => Service['mesos-slave'],
-  }
-
-  $marathon_zk = inline_template('zk://<%= @controller_addresses.map { |c| "#{c}:2181"}.join(",") %>/marathon')
+  $marathon_zk = "zk://${zk_base}/marathon"
   class { 'marathon':
     package_ensure => $marathon_ensure,
     repo_manage    => false,
@@ -170,78 +163,54 @@ class seed_stack::controller (
   # Ensure Mesos repo is added before installing Marathon
   Apt::Source['mesosphere'] -> Package['marathon']
 
-  # Consul requires unzip to install
-  package { 'unzip':
-    ensure => installed,
+  class { 'seed_stack::consul_dns':
+    consul_version   => $consul_version,
+    server           => true,
+    join             => delete($controller_addresses, $address),
+    bootstrap_expect => size($controller_addresses),
+    advertise_addr   => $address,
+    client_addr      => $consul_client_addr,
+    domain           => $consul_domain,
+    encrypt          => $consul_encrypt,
+    ui               => $consul_ui,
   }
 
-  class { 'consul':
-    version     => $consul_version,
-    config_hash => {
-      'server'           => true,
-      'bootstrap_expect' => size($controller_addresses),
-      'retry_join'       => delete($controller_addresses, $address),
-      'data_dir'         => '/var/consul',
-      'log_level'        => 'INFO',
-      'advertise_addr'   => $address,
-      'client_addr'      => $consul_client_addr,
-      'domain'           => $consul_domain,
-      'encrypt'          => $consul_encrypt,
-      'ui'               => $consul_ui,
-    },
-    services    => {
-      'marathon'     => {
-        port   => 8080,
-        checks => [
-          {
-            # Marathon listens on all interfaces by default
-            http     => "http://${::ipaddress_lo}:8080/ping",
-            interval => '10s',
-            timeout  => '1s',
-          },
-        ],
-      },
-      'mesos-master' => {
-        port   => 5050,
-        checks => [
-          {
-            http     => "http://${mesos_listen_addr}:5050/master/health",
-            interval => '10s',
-            timeout  => '1s',
-          },
-        ],
-      },
-      'zookeeper'    => {
-        port   => 2181,
-        checks => [
-          {
-            script   => "echo \"srvr\" | nc ${zookeeper_client_addr} 2181",
-            interval => '30s',
-          },
-        ],
-      },
-    },
-    require     => Package['unzip']
-  }
+  consul::service {
+    'marathon':
+      port   => 8080,
+      checks => [
+        {
+          # Marathon listens on all interfaces by default
+          http     => "http://${::ipaddress_lo}:8080/ping",
+          interval => '10s',
+          timeout  => '1s',
+        },
+      ];
 
-  $dnsmasq_server = inline_template('<%= @consul_domain.chop() %>') # Remove trailing '.'
-  package { 'dnsmasq': }
-  ~>
-  file { '/etc/dnsmasq.d/consul':
-    content => "cache-size=0\nserver=/${dnsmasq_server}/${address}#8600",
+    'mesos-master':
+      port   => 5050,
+      checks => [
+        {
+          http     => "http://${mesos_listen_addr}:5050/master/health",
+          interval => '10s',
+          timeout  => '1s',
+        },
+      ];
+
+    'zookeeper':
+      port   => 2181,
+      checks => [
+        {
+          script   => "echo \"srvr\" | nc ${zookeeper_client_addr} 2181",
+          interval => '30s',
+        },
+      ];
   }
-  ~>
-  service { 'dnsmasq': }
 
   class { 'consular':
-    ensure        => $consular_ensure,
-    consular_args => [
-      "--host=${address}",
-      "--sync-interval=${consular_sync_interval}",
-      '--purge', # TODO: Make configurable
-      "--registration-id=${hostname}",
-      "--consul=http://${address}:8500",
-      "--marathon=http://${address}:8080",
-    ],
+    package_ensure => $consular_ensure,
+    consul         => "http://${consul_client_addr}:8500",
+    sync_interval  => $consular_sync_interval,
+    purge          => true,
   }
 }
