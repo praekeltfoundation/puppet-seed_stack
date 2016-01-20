@@ -1,3 +1,20 @@
+## 0.3.0 - 2016/01/20
+### Features
+* `seed_stack::consul_dns` class makes it easy to set up Consul with DNS on a node outside the Mesos cluster (#32)
+* Marathon 0.14.0 and Mesos 0.26.0 (#34)
+
+### Changes
+* Simplified Mesos service management (#27)
+* Changes to the way `seed_stack::load_balancer` is structured that affect configuration (#28)
+* praekeltfoundation/consular 0.2.0 module (#29)
+* Consul 0.6.3 and Consul Template 0.12.2 (#30)
+* Greater use of Puppet stdlib functions instead of `inline_template` (#33)
+
+### Fixes
+* Dnsmasq should now work when Consul listen address is not localhost (#26)
+* Consular should now work when the Consul listen address is not localhost (#29)
+* Unzip should now definitely be installed before installing Consul or Consul Template (#32, #36)
+
 ## 0.2.3 - 2016/01/15
 ### Changes
 * deric/zookeeper module version 0.4.2 - Zookeeper `maxClientCnxns` is no longer set. The default is used. This should have no effect as we were previously setting it to the default. (#21)
