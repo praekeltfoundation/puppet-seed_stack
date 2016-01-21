@@ -11,6 +11,8 @@ class seed_stack::params {
   $mesos_listen_addr        = '0.0.0.0'
   $mesos_cluster            = 'seed-stack'
   $mesos_resources          = {}
+  $mesos_reserved_mem       = 1024
+  $mesos_minimum_mem        = 256
 
   $marathon_ensure          = '0.14.0*'
   $marathon_default_options = { # TODO

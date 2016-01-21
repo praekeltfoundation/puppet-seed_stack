@@ -23,6 +23,20 @@
 # [*mesos_resources*]
 #   A hash of the available Mesos resources for the node.
 #
+# [*mesos_reserved_mem*]
+#   The amount of memory in MB that should *not* be made available to Mesos
+#   tasks and instead used for other processes. This value will be used to
+#   calculate the memory resources for *all* roles (i.e. `mem(*)`) by
+#   subtracting this value from the total amount of memory available on the
+#   system. NOTE: `mesos_resources` can override any effect of this parameter.
+#
+# [*mesos_minimum_mem*]
+#   The minimum amount of memory that can be allocated to Mesos tasks. If
+#   `mesos_reserved_mem` is used to calculate an amount less than this minimum,
+#   no memory resources will be set for the Mesos slave process and the default
+#   memory allocation determined by Mesos will be used instead. NOTE:
+#   `mesos_resources` can override any effect of this parameter.
+#
 # [*consul_version*]
 #   The version of Consul to install.
 #
@@ -56,6 +70,8 @@ class seed_stack::worker (
   $mesos_ensure            = $seed_stack::params::mesos_ensure,
   $mesos_listen_addr       = $seed_stack::params::mesos_listen_addr,
   $mesos_resources         = $seed_stack::params::mesos_resources,
+  $mesos_reserved_mem      = $seed_stack::params::mesos_reserved_mem,
+  $mesos_minimum_mem       = $seed_stack::params::mesos_minimum_mem,
 
   # Consul
   $consul_version          = $seed_stack::params::consul_version,
@@ -76,6 +92,8 @@ class seed_stack::worker (
   validate_bool($controller_worker)
   validate_ip_address($mesos_listen_addr)
   validate_hash($mesos_resources)
+  validate_integer($mesos_reserved_mem, undef, 1) # >= 1
+  validate_integer($mesos_minimum_mem, undef, 1)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
 
@@ -101,9 +119,23 @@ class seed_stack::worker (
     }
   }
 
+  # Calculate the amount of memory to make available to Mesos tasks
+  $mesos_requested_mem = floor($::memorysize_mb - $mesos_reserved_mem)
+  if $mesos_requested_mem < $mesos_minimum_mem {
+    $mesos_mem_resources = {
+      'mem(*)' => $mesos_requested_mem
+    }
+  } else {
+    $mesos_mem_resources = {}
+    warning("The requested memory (${mesos_requested_mem}MB) for Mesos is less
+      than the minimum amount allowed (${mesos_minimum_mem}MB). The default
+      Mesos memory resources will be made available instead.")
+  }
+  $mesos_final_resources = merge($mesos_mem_resources, $mesos_resources)
+
   class { 'mesos::slave':
     master    => $mesos_zk,
-    resources => $mesos_resources,
+    resources => $mesos_final_resources,
     options   => {
       hostname                      => $hostname,
       # FIXME: --advertise_ip for slaves was supposed to be added in Mesos 0.26
