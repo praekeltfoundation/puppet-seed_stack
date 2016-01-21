@@ -59,6 +59,15 @@
 #
 # [*consular_sync_interval*]
 #   The interval in seconds between Consular syncs.
+#
+# [*consul_template_version*]
+#   The version of Consul Template to install.
+#
+# [*nginx_package_name*]
+#   The name of the Nginx package to install.
+#
+# [*nginx_ensure*]
+#   The ensure value for the Nginx package.
 class seed_stack::controller (
   # Common
   $controller_addresses   = [$::ipaddress_lo],
@@ -89,6 +98,13 @@ class seed_stack::controller (
   # Consular
   $consular_ensure        = $seed_stack::params::consular_ensure,
   $consular_sync_interval = $seed_stack::params::consular_sync_interval,
+
+  # Consul Template
+  $consul_template_version = $seed_stack::params::consul_template_version,
+
+  # Nginx
+  $nginx_ensure           = $seed_stack::params::nginx_ensure,
+  $nginx_package_name     = $seed_stack::params::nginx_package_name,
 ) inherits seed_stack::params {
 
   # Basic parameter validation
@@ -213,4 +229,12 @@ class seed_stack::controller (
     sync_interval  => $consular_sync_interval,
     purge          => true,
   }
+
+  class { 'seed_stack::template_nginx':
+    nginx_package_name      => $nginx_package_name,
+    nginx_package_ensure    => $nginx_ensure,
+    consul_template_version => $consul_template_version,
+    consul_address          => $consul_client_addr,
+  }
+  include seed_stack::load_balancer
 }

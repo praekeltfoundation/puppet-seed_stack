@@ -25,4 +25,7 @@ class seed_stack::params {
   $consular_sync_interval   = '300'
 
   $consul_template_version  = '0.12.2'
+
+  $nginx_ensure             = 'present'
+  $nginx_package_name       = 'nginx-light'
 }

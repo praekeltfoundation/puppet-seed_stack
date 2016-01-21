@@ -59,14 +59,6 @@ class { 'seed_stack::worker':
 ```
 **NOTE:** For combination controller/workers it is necessary to set `controller_worker => true` for both the `seed_stack::controller` class and the `seed_stack::worker` class so that the two classes do not conflict.
 
-#### Load balancers
-If you need to expose apps running on Seed Stack to the outside world, Nginx can be used to load-balance between app instances and expose the apps from an accessible endpoint. To set up Nginx to be dynamically configured to do this, use the `seed_stack::load_balancer` class.
-
-```puppet
-include seed_stack::load_balancer
-```
-Different parts of the class can be disabled if the node it is being included on already has Nginx or Consul Template installed. See the [manifest source](manifests/load_balancer.pp) for more information.
-
 #### Consul DNS
 It's often useful to use Consul's DNS for service discovery on nodes that aren't controllers or workers. For example, a database node could advertise it's service to other nodes using Consul. To do this, use the `seed_stack::consul_dns` class. The class needs a few parameters so that it knows how to join the Consul cluster:
 ```puppet
