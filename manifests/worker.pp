@@ -43,6 +43,12 @@
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
+# [*nginx_package_name*]
+#   The name of the Nginx package to install.
+#
+# [*nginx_ensure*]
+#   The ensure value for the Nginx package.
+#
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
@@ -66,6 +72,10 @@ class seed_stack::worker (
 
   # Consul Template
   $consul_template_version = $seed_stack::params::consul_template_version,
+
+  # Nginx
+  $nginx_ensure           = $seed_stack::params::nginx_ensure,
+  $nginx_package_name     = $seed_stack::params::nginx_package_name,
 
   # Docker
   $docker_ensure           = $seed_stack::params::docker_ensure,
@@ -126,6 +136,13 @@ class seed_stack::worker (
       encrypt        => $consul_encrypt,
       ui             => $consul_ui,
     }
+
+    class { 'seed_stack::template_nginx':
+      nginx_package_name      => $nginx_package_name,
+      nginx_package_ensure    => $nginx_ensure,
+      consul_template_version => $consul_template_version,
+      consul_address          => $consul_client_addr,
+    }
   }
   consul::service { 'mesos-slave':
     port   => 5051,
@@ -138,10 +155,6 @@ class seed_stack::worker (
     ],
   }
 
-  class { 'seed_stack::template_nginx':
-    consul_template_version => $consul_template_version,
-    consul_address          => $consul_client_addr,
-  }
   include seed_stack::router
 
   # Docker, using the host for DNS
