@@ -2,15 +2,22 @@
 #
 # Roughly taken from: https://github.com/hesco/hesco-weave/blob/master/manifests/firewall/docker.pp
 class seed_stack::docker_firewall (
-  $accept_icmp = true,
-  $accept_lo   = true,
-  $accept_eth0 = false,
-  $accept_eth1 = false,
+  $accept_icmp                 = true,
+  $accept_lo                   = true,
+  $accept_eth0                 = false,
+  $accept_eth1                 = false,
+  $forward_filter_purge_ignore = [],
 ) {
   include firewall
 
   # filter table
   # ============
+
+  # Purge Docker's forwarding rules before we add our own
+  firewallchain { 'FORWARD:filter:IPv4':
+    purge  => true,
+    ignore => $forward_filter_purge_ignore,
+  }
 
   # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
   firewall { '00100 accept related, established traffic returning to docker0 bridge in FORWARD chain':
@@ -110,53 +117,5 @@ class seed_stack::docker_firewall (
       proto   => 'all',
       jump    => 'DOCKER',
     }
-  }
-
-  # This is a rule that we don't actually want but Docker adds if it is not
-  # present. Set the priority really low so that it comes last.
-  # -A FORWARD -o docker0 -j DOCKER
-  firewall { '00999 DOCKER chain, docker0 traffic':
-    table    => 'filter',
-    chain    => 'FORWARD',
-    outiface => 'docker0',
-    proto    => 'all',
-    jump     => 'DOCKER',
-  }
-
-
-  # nat table
-  # =========
-
-  # -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
-  firewall { '00100 DOCKER chain PREROUTING LOCAL traffic':
-    table    => 'nat',
-    chain    => 'PREROUTING',
-    dst_type => 'LOCAL',
-    proto    => 'all',
-    jump     => 'DOCKER',
-  }
-
-  # -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER
-  firewall { '00100 DOCKER chain, route LOCAL non-loopback traffic to DOCKER':
-    table       => 'nat',
-    chain       => 'OUTPUT',
-    destination => "! ${::network_lo}/8",
-    dst_type    => 'LOCAL',
-    proto       => 'all',
-    jump        => 'DOCKER',
-  }
-
-  # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
-  firewall { '00100 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
-    table    => 'nat',
-    chain    => 'POSTROUTING',
-    source   => "${::network_docker0}/16",
-    outiface => '! docker0',
-    proto    => 'all',
-    jump     => 'MASQUERADE',
-  }
-
-  firewallchain { 'DOCKER:nat:IPv4':
-    ensure => present,
   }
 }
