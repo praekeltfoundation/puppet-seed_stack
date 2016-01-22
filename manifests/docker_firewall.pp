@@ -7,6 +7,7 @@ class seed_stack::docker_firewall (
   $accept_eth0 = false,
   $accept_eth1 = false,
 ) {
+  include firewall
 
   # filter table
   # ============
