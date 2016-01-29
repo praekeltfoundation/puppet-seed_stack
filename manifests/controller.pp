@@ -161,7 +161,7 @@ class seed_stack::controller (
     },
   }
   # Ensure Mesos repo is added before installing Marathon
-  Apt::Source['mesosphere'] -> Package['marathon']
+  Class['mesos::repo'] -> Package['marathon']
 
   class { 'seed_stack::consul_dns':
     consul_version   => $consul_version,

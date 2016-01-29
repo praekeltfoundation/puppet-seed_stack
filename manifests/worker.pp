@@ -89,10 +89,6 @@ class seed_stack::worker (
       zookeeper      => $mesos_zk,
     }
 
-    # We need this because mesos::install doesn't wait for apt::update before
-    # trying to install the package.
-    Class['apt::update'] -> Package['mesos']
-
     # Make Puppet stop the mesos-master service
     service { 'mesos-master':
       ensure  => stopped,
