@@ -33,10 +33,6 @@
       "version_requirement": ">=4.1.0"
     },
     {
-      "name": "gdhbashton/consul_template",
-      "version_requirement": ">=0.2.4"
-    },
-    {
       "name": "KyleAnderson/consul",
       "version_requirement": ">=1.0.4"
     }
