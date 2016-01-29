@@ -12,7 +12,7 @@ class seed_stack::params {
   $mesos_cluster            = 'seed-stack'
   $mesos_resources          = {}
 
-  $marathon_ensure          = '0.14.0*'
+  $marathon_ensure          = '0.14.1*'
   $marathon_default_options = { # TODO
     'event_subscriber' => 'http_callback' # HTTP callbacks for Consular
   }
