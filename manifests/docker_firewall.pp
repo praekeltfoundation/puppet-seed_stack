@@ -10,6 +10,7 @@ class seed_stack::docker_firewall (
   $postrouting_nat_policy       = undef,
   $forward_filter_purge_ignore  = [],
   $forward_filter_policy        = undef,
+
   $accept_icmp                  = true,
   $accept_lo                    = true,
   $accept_eth0                  = false,
@@ -19,33 +20,48 @@ class seed_stack::docker_firewall (
 
   # nat table
   # =========
+
   # PREROUTING
-  $default_prerouting_nat_purge_ignore = [
-    '^-A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER$',
-  ]
-  $final_prerouting_nat_purge_ignore = concat($default_prerouting_nat_purge_ignore, $prerouting_nat_purge_ignore)
   firewallchain { 'PREROUTING:nat:IPv4':
     ensure => present,
     purge  => true,
-    ignore => $final_prerouting_nat_purge_ignore,
+    ignore => $prerouting_nat_purge_ignore,
     policy => $prerouting_nat_policy,
+  }
+  # -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
+  firewall { '100 DOCKER table PREROUTING LOCAL traffic':
+    table    => 'nat',
+    chain    => 'PREROUTING',
+    dst_type => 'LOCAL',
+    proto    => 'all',
+    jump     => 'DOCKER',
   }
 
   # OUTPUT
-  $default_output_nat_purge_ignore = [
-    '^-A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER$',
-  ]
-  $final_output_nat_purge_ignore = concat($default_output_nat_purge_ignore, $output_nat_purge_ignore)
   firewallchain { 'OUTPUT:nat:IPv4':
     ensure => present,
     purge  => true,
-    ignore => $final_output_nat_purge_ignore,
+    ignore => $output_nat_purge_ignore,
     policy => $output_nat_policy,
+  }
+  # -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER
+  firewall { '100 DOCKER chain, route LOCAL non-loopback traffic to DOCKER':
+    table       => 'nat',
+    chain       => 'OUTPUT',
+    destination => "! ${::network_lo}/8",
+    dst_type    => 'LOCAL',
+    proto       => 'all',
+    jump        => 'DOCKER',
   }
 
   # POSTROUTING
+  # Docker dynamically adds masquerade rules per container. These are difficult
+  # to match on accurately. This regex matches a POSTROUTING rule with identical
+  # source (-s) and destination IPv4 addresses (-d), plus some other parameters
+  # (likely to be a match on the TCP or UDP port), that jumps to the MASQUERADE
+  # action.
   $default_postrouting_nat_purge_ignore = [
-    '-j MASQUERADE', # Ignore all MASQUERADE rules - they are too complicated for us to do a better match :-/
+    '^-A POSTROUTING -s (?<source>(?:[0-9]{1,3}\.){3}[0-9]{1,3})\/32 -d (\g<source>)\/32 .* -j MASQUERADE$',
   ]
   $final_postrouting_nat_purge_ignore = concat($default_postrouting_nat_purge_ignore, $postrouting_nat_purge_ignore)
   firewallchain { 'POSTROUTING:nat:IPv4':
@@ -53,6 +69,15 @@ class seed_stack::docker_firewall (
     purge  => true,
     ignore => $final_postrouting_nat_purge_ignore,
     policy => $postrouting_nat_policy,
+  }
+  # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
+  firewall { '100 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
+    table    => 'nat',
+    chain    => 'POSTROUTING',
+    source   => "${::network_docker0}/16",
+    outiface => '! docker0',
+    proto    => 'all',
+    jump     => 'MASQUERADE',
   }
 
   # DOCKER - let Docker manage this chain completely
@@ -63,18 +88,25 @@ class seed_stack::docker_firewall (
   # filter table
   # ============
 
-  # Purge Docker's forwarding rules before we add our own
-  $default_forward_filter_purge_ignore = [
-    #'^-A FORWARD -o docker0 -j DOCKER$', # This allows unfettered access to containers
-    #'^-A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT$', # Move to DOCKER_INPUT
-    '^-A FORWARD -i docker0 ! -o docker0 -j ACCEPT$',
-    #'^-A FORWARD -i docker0 -o docker0 -j ACCEPT$', # Move to DOCKER_INPUT
-  ]
-  $final_forward_filter_purge_ignore = concat($default_forward_filter_purge_ignore, $forward_filter_purge_ignore)
+  # FORWARD
   firewallchain { 'FORWARD:filter:IPv4':
     purge  => true,
-    ignore => $final_forward_filter_purge_ignore,
+    ignore => $forward_filter_purge_ignore,
     policy => $forward_filter_policy,
+  }
+  # -A FORWARD -i docker0 ! -o docker0 -j ACCEPT
+  firewall { '100 accept docker0 traffic to other interfaces on FORWARD chain':
+    table    => 'filter',
+    chain    => 'FORWARD',
+    iniface  => 'docker0',
+    outiface => '! docker0',
+    proto    => 'all',
+    action   => 'accept',
+  }
+
+  # DOCKER - let Docker manage this chain completely
+  firewallchain { 'DOCKER:filter:IPv4':
+    ensure => present,
   }
 
   # DOCKER_INPUT
@@ -106,7 +138,7 @@ class seed_stack::docker_firewall (
   firewall { '100 accept related, established traffic in DOCKER_INPUT chain':
     table   => 'filter',
     chain   => 'DOCKER_INPUT',
-    ctstate => ['RELATED','ESTABLISHED'],
+    ctstate => ['RELATED', 'ESTABLISHED'],
     proto   => 'all',
     action  => 'accept',
   }
@@ -118,11 +150,6 @@ class seed_stack::docker_firewall (
     iniface => 'docker0',
     proto   => 'all',
     action  => 'accept',
-  }
-
-  # DOCKER - let Docker manage this chain completely
-  firewallchain { 'DOCKER:filter:IPv4':
-    ensure => present,
   }
 
   if $accept_icmp {
