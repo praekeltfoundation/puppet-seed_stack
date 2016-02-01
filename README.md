@@ -96,6 +96,7 @@ For example:
 ```puppet
 class { 'seed_stack::docker_firewall':
   accept_eth1 => true,
+  subscribe   => Service['docker'],
 }
 ```
 This sets up the Docker iptables rules and allows access to containers from connections incoming from the `eth1` interface, while dropping external connections from other interfaces.
