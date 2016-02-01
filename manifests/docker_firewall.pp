@@ -16,6 +16,15 @@ class seed_stack::docker_firewall (
   $accept_eth0                  = false,
   $accept_eth1                  = false,
 ) {
+  validate_array($prerouting_nat_purge_ignore)
+  validate_array($output_nat_purge_ignore)
+  validate_array($postrouting_nat_purge_ignore)
+  validate_array($forward_filter_purge_ignore)
+  validate_bool($accept_icmp)
+  validate_bool($accept_lo)
+  validate_bool($accept_eth0)
+  validate_bool($accept_eth1)
+
   include firewall
 
   # nat table
