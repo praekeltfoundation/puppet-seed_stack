@@ -68,9 +68,6 @@
 # [*output_nat_policy*]
 #   The default policy for the OUTPUT chain in the nat table.
 #
-# [*accept_icmp*]
-#   Whether or not to accept ICMP packets destined for Docker containers.
-#
 # [*accept_lo*]
 #   Whether or not to accept connections to Docker containers from the loopback
 #   interface.
@@ -92,7 +89,6 @@ class seed_stack::docker_firewall (
   $forward_filter_purge_ignore  = [],
   $forward_filter_policy        = undef,
 
-  $accept_icmp                  = true,
   $accept_lo                    = true,
   $accept_eth0                  = false,
   $accept_eth1                  = false,
@@ -101,7 +97,6 @@ class seed_stack::docker_firewall (
   validate_array($output_nat_purge_ignore)
   validate_array($postrouting_nat_purge_ignore)
   validate_array($forward_filter_purge_ignore)
-  validate_bool($accept_icmp)
   validate_bool($accept_lo)
   validate_bool($accept_eth0)
   validate_bool($accept_eth1)
@@ -240,16 +235,6 @@ class seed_stack::docker_firewall (
     iniface => 'docker0',
     proto   => 'all',
     action  => 'accept',
-  }
-
-  if $accept_icmp {
-    # -A DOCKER_INPUT -p icmp -j DOCKER
-    firewall { '200 DOCKER chain, ICMP DOCKER_INPUT traffic':
-      table => 'filter',
-      chain => 'DOCKER_INPUT',
-      proto => 'icmp',
-      jump  => 'DOCKER',
-    }
   }
 
   if $accept_lo {
