@@ -120,6 +120,7 @@ Then there are some 3rd party modules:
 * [garethr/docker](https://forge.puppetlabs.com/garethr/docker)
 * [gdhbashton/consul_template](https://forge.puppetlabs.com/gdhbashton/consul_template)
 * [KyleAnderson/consul](https://forge.puppetlabs.com/KyleAnderson/consul)
+* [puppetlabs/firewall](https://forge.puppetlabs.com/puppetlabs/firewall)
 
 ## Java 8
 Java 8 is a dependency of Marathon version 0.12.0+. Ubuntu 14.04 does not have a package for this in the standard repositories. `seed_stack::controller` will install [Oracle Java 8 from the WebUpd8 PPA](https://github.com/praekeltfoundation/puppet-webupd8_oracle_java). This can be disabled by passing `install_java => false`.
