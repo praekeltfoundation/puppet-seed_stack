@@ -1,6 +1,87 @@
 # == Class: seed_stack::docker_firewall
 #
-# Roughly taken from: https://github.com/hesco/hesco-weave/blob/master/manifests/firewall/docker.pp
+# Manages Docker firewall (iptables) rules. This class keeps a few of the
+# standard Docker iptables rules and rewrites a few of the others to prevent
+# access to Docker containers from the outside world.
+#
+# The major functionality of the class (limiting outside connections to
+# containers) works by adding a chain called DOCKER_INPUT that handles
+# connections destined for the docker0 interface. This chain can be used much
+# like the INPUT chain in the filter table is typically used to whitelist
+# connections, but instead of ACCEPT-ing connections, rather jump to the DOCKER
+# chain.
+#
+# For example, for a regular input rule that allows connections from
+# 192.168.0.1 you could do something like:
+# -A INPUT -s 192.168.0.1/32 -j ACCEPT
+#
+# To allow access to Docker containers you would do:
+# -A DOCKER_INPUT -s 192.168.0.1/32 -j DOCKER
+#
+# This class manages all the iptables chains that Docker typically would:
+# --nat table:--
+# * PREROUTING
+# * OUTPUT
+# * POSTROUTING
+#
+# --filter table:--
+# * FORWARD
+#
+# All 4 of the above chains are purged by Puppet. Any rules in those chains that
+# aren't managed by Puppet and aren't matched by one of the ignore patterns will
+# be deleted.
+#
+# The management of the DOCKER nat and filter chains is left up to the Docker
+# daemon. As such, this class should be used in combination with the
+# `--iptables=true` flag (the default) when starting the Docker daemon.
+#
+# Many of these firewall rules were adapted from:
+# https://github.com/hesco/hesco-weave/blob/v0.8.7/manifests/firewall/docker.pp
+#
+# === Parameters
+#
+# [*prerouting_nat_purge_ignore*]
+#   A list of regexes to use when purging the PREROUTING chain in the nat table.
+#   Rules that match one or more of the regexes will not be deleted.
+#
+# [*prerouting_nat_policy*]
+#   The default policy for the PREROUTING chain in the nat table.
+#
+# [*output_nat_purge_ignore*]
+#   A list of regexes to use when purging the OUTPUT chain in the nat table.
+#   Rules that match one or more of the regexes will not be deleted.
+#
+# [*output_nat_policy*]
+#   The default policy for the OUTPUT chain in the nat table.
+#
+# [*postrouting_nat_purge_ignore*]
+#   A list of regexes to use when purging the POSTROUTING chain in the nat
+#   table. Rules that match one or more of the regexes will not be deleted.
+#
+# [*output_nat_policy*]
+#   The default policy for the POSTROUTING chain in the nat table.
+#
+# [*forward_filter_purge_ignore*]
+#   A list of regexes to use when purging the OUTPUT chain in the nat table.
+#   Rules that match one or more of the regexes will not be deleted.
+#
+# [*output_nat_policy*]
+#   The default policy for the OUTPUT chain in the nat table.
+#
+# [*accept_icmp*]
+#   Whether or not to accept ICMP packets destined for Docker containers.
+#
+# [*accept_lo*]
+#   Whether or not to accept connections to Docker containers from the loopback
+#   interface.
+#
+# [*accept_eth0*]
+#   Whether or not to accept connections to Docker containers from the eth0
+#   interface.
+#
+# [*accept_eth1*]
+#   Whether or not to accept connections to Docker containers from the eth1
+#   interface.
 class seed_stack::docker_firewall (
   $prerouting_nat_purge_ignore  = [],
   $prerouting_nat_policy        = undef,
