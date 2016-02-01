@@ -149,7 +149,7 @@ class seed_stack::docker_firewall (
     ignore => $final_postrouting_nat_purge_ignore,
     policy => $postrouting_nat_policy,
   }
-  if has_ip_network('docker0') {
+  if has_interface_with('docker0') {
     # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
     firewall { '100 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
       table    => 'nat',
@@ -160,8 +160,9 @@ class seed_stack::docker_firewall (
       jump     => 'MASQUERADE',
     }
   } else {
-    warning('The docker0 interface has not been detected by Facter yet. You may
-      need to re-run Puppet and/or ensure that the Docker service is started.')
+    warning('The docker0 interface has not been detected by Facter yet. You '\
+      'may need to re-run Puppet and/or ensure that the Docker service is '\
+      'started.')
   }
 
   # DOCKER - let Docker manage this chain completely
