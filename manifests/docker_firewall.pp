@@ -84,7 +84,7 @@ class seed_stack::docker_firewall (
   }
 
   # -A FORWARD -o docker0 -j DOCKER_INPUT
-  firewall { '00101 send FORWARD traffic for docker0 to DOCKER_INPUT chain':
+  firewall { '101 send FORWARD traffic for docker0 to DOCKER_INPUT chain':
     table    => 'filter',
     chain    => 'FORWARD',
     outiface => 'docker0',
@@ -95,7 +95,7 @@ class seed_stack::docker_firewall (
   # This is a way to achieve "default DROP" for incoming traffic to the docker0
   # interface.
   # -A DOCKER_INPUT -j DROP
-  firewall { '00999 drop DOCKER_INPUT traffic':
+  firewall { '999 drop DOCKER_INPUT traffic':
     table  => 'filter',
     chain  => 'DOCKER_INPUT',
     proto  => 'all',
@@ -103,7 +103,7 @@ class seed_stack::docker_firewall (
   }
 
   # -A DOCKER_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-  firewall { '00100 accept related, established traffic in DOCKER_INPUT chain':
+  firewall { '100 accept related, established traffic in DOCKER_INPUT chain':
     table   => 'filter',
     chain   => 'DOCKER_INPUT',
     ctstate => ['RELATED','ESTABLISHED'],
@@ -112,7 +112,7 @@ class seed_stack::docker_firewall (
   }
 
   # -A DOCKER_INPUT -i docker0 -j ACCEPT
-  firewall { '0100 accept traffic from docker0 DOCKER_INPUT chain':
+  firewall { '100 accept traffic from docker0 DOCKER_INPUT chain':
     table   => 'filter',
     chain   => 'DOCKER_INPUT',
     iniface => 'docker0',
@@ -127,7 +127,7 @@ class seed_stack::docker_firewall (
 
   if $accept_icmp {
     # -A DOCKER_INPUT -p icmp -j DOCKER
-    firewall { '00200 DOCKER chain, ICMP DOCKER_INPUT traffic':
+    firewall { '200 DOCKER chain, ICMP DOCKER_INPUT traffic':
       table => 'filter',
       chain => 'DOCKER_INPUT',
       proto => 'icmp',
@@ -137,7 +137,7 @@ class seed_stack::docker_firewall (
 
   if $accept_lo {
     # -A DOCKER_INPUT -i lo -j DOCKER
-    firewall { '00200 DOCKER chain, DOCKER_INPUT traffic from localhost':
+    firewall { '200 DOCKER chain, DOCKER_INPUT traffic from localhost':
       table   => 'filter',
       chain   => 'DOCKER_INPUT',
       iniface => 'lo',
@@ -148,7 +148,7 @@ class seed_stack::docker_firewall (
 
   if $accept_eth0 {
     # -A DOCKER_INPUT -i eth0 -j DOCKER
-    firewall { '00200 DOCKER chain, DOCKER_INPUT traffic from eth0':
+    firewall { '200 DOCKER chain, DOCKER_INPUT traffic from eth0':
       table   => 'filter',
       chain   => 'DOCKER_INPUT',
       iniface => 'eth0',
@@ -159,7 +159,7 @@ class seed_stack::docker_firewall (
 
   if $accept_eth1 {
     # -A DOCKER_INPUT -i eth1 -j DOCKER
-    firewall { '00200 DOCKER chain, DOCKER_INPUT traffic from eth1':
+    firewall { '200 DOCKER chain, DOCKER_INPUT traffic from eth1':
       table   => 'filter',
       chain   => 'DOCKER_INPUT',
       iniface => 'eth1',
