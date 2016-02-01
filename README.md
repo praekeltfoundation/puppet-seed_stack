@@ -87,6 +87,25 @@ consul::service { 'postgresql':
 ```
 After the above example is applied, the address `postgresql.service.consul` is available in the Consul cluster and will point to the node's advertise address. For full documentation on all the configuration parameters available for Consul, see the [manifest source](manifests/consul_dns.pp).
 
+### Docker firewall
+Docker makes extensive use of iptables to enable features like port-forwarding and inter-container communication when using bridge-mode networking. Unfortunately, the way Docker configures iptables makes it difficult to limit access to containers from the outside world.
+
+The `seed_stack::docker_firewall` class aims to make running custom iptables rules alongside Docker easier. It manages the static rules that Docker creates in iptables and allows Docker to continue creating dynamic, container-specific rules.
+
+For example:
+```puppet
+class { 'seed_stack::docker_firewall':
+  accept_eth1 => true,
+}
+```
+This sets up the Docker iptables rules and allows access to containers from connections incoming from the `eth1` interface, while dropping external connections from other interfaces.
+
+There are two important things to note here:
+ 1. This class will purge several iptables chains. Your unmanaged rules in those chains will be deleted.
+ 2. Using this class at the same time as you install Docker may require multiple runs of Puppet as Facter will need a chance to pick up details about Docker's bridge interface (`docker0`).
+
+Note that currently this class is not automatically included in `seed_stack::worker`. For more information, see the [manifest source](manifests/docker_firewall.pp).
+
 ## Upstream modules
 We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [Puppetfile](Puppetfile) for a complete listing with version information.
 
