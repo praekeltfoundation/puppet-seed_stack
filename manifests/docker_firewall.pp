@@ -160,9 +160,9 @@ class seed_stack::docker_firewall (
       jump     => 'MASQUERADE',
     }
   } else {
-    warning('The docker0 interface has not been detected by Facter yet. You '\
-      'may need to re-run Puppet and/or ensure that the Docker service is '\
-      'started.')
+    warning('The docker0 interface has not been detected by Facter yet. You \
+      may need to re-run Puppet and/or ensure that the Docker service is \
+      started.')
   }
 
   # DOCKER - let Docker manage this chain completely
