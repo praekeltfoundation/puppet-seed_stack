@@ -18,7 +18,8 @@
 #   when starting up.
 #
 # [*advertise_addr*]
-#   The address for Consul to use when advertising services on this node.
+#   The address for Consul to use when advertising services on this node. Also
+#   used for the Dnsmasq host alias.
 #
 # [*client_addr*]
 #   The address Consul should use to expose the client. i.e. Consul's listen
@@ -43,22 +44,27 @@
 # [*dnsmasq_ensure*]
 #   The ensure value for the Dnsmasq package.
 #
+# [*dnsmasq_host_alias*]
+#   An alias for the host (advertise) address that Dnsmasq will serve. This
+#   should match the domain for the Nginx service router if one is being used.
+#
 # [*dnsmasq_opts*]
 #   A hash of extra options to configure Dnsmasq with. e.g.
 #   { 'listen-address' => $::ipaddress_lo, }.
 class seed_stack::consul_dns (
-  $consul_version   = $seed_stack::params::consul_version,
-  $server           = false,
-  $join             = [$::ipaddress_lo],
-  $advertise_addr   = $::ipaddress_lo,
-  $client_addr      = $seed_stack::params::consul_client_addr,
-  $domain           = $seed_stack::params::consul_domain,
-  $encrypt          = undef,
-  $bootstrap_expect = undef,
-  $ui               = true,
+  $consul_version     = $seed_stack::params::consul_version,
+  $server             = false,
+  $join               = [$::ipaddress_lo],
+  $advertise_addr     = $::ipaddress_lo,
+  $client_addr        = $seed_stack::params::consul_client_addr,
+  $domain             = $seed_stack::params::consul_domain,
+  $encrypt            = undef,
+  $bootstrap_expect   = undef,
+  $ui                 = true,
 
-  $dnsmasq_ensure = 'installed',
-  $dnsmasq_opts   = {},
+  $dnsmasq_ensure     = 'installed',
+  $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
+  $dnsmasq_opts       = {},
 ) inherits seed_stack::params {
   validate_bool($server)
   validate_array($join)
@@ -119,6 +125,7 @@ class seed_stack::consul_dns (
   $dnsmasq_base_opts = {
     'cache-size' => '0',
     'server'     => "/${domain}/${client_addr}#8600",
+    'address'    => "/${dnsmasq_host_alias}/${advertise_addr}",
   }
   $dnsmasq_final_opts = merge($dnsmasq_base_opts, $dnsmasq_opts)
   $dnsmasq_config = join(join_keys_to_values($dnsmasq_final_opts, '='), "\n")
