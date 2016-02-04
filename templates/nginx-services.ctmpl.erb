@@ -8,7 +8,8 @@
 #       list of services in the Nginx config.
 
 server {
-    listen 80;
+    listen <%= @listen_addr %>:<%= @listen_port %>;
+    server_name <%= @domain %>
     {{range services}}{{$labels := ls (print "consular/" .Name) | explode}}{{if $labels.location}}
     location {{$labels.location | parseJSON}} {
         proxy_pass http://{{.Name}};
