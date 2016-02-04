@@ -19,7 +19,7 @@ class seed_stack::router (
   $domain      = $seed_stack::params::nginx_router_domain,
 ) inherits seed_stack::params {
   validate_ip_address($listen_addr)
-  validate_integer($listen_port, 65535, 0)
+  validate_integer($listen_port, 65535, 1)
 
   include seed_stack::template_nginx
 
