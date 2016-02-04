@@ -4,7 +4,7 @@ class seed_stack::params {
 
   $docker_ensure            = '1.9.1*'
 
-  $zookeeper_ensure         = 'present'
+  $zookeeper_ensure         = 'installed'
   $zookeeper_client_addr    = '0.0.0.0'
 
   $mesos_ensure             = '0.26.0*'
@@ -25,4 +25,9 @@ class seed_stack::params {
   $consular_sync_interval   = '300'
 
   $consul_template_version  = '0.12.2'
+
+  $nginx_ensure             = 'installed'
+  $nginx_router_listen_addr = '0.0.0.0'
+  $nginx_router_listen_port = 80
+  $nginx_router_domain      = 'servicehost'
 }

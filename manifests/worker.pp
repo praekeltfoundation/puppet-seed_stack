@@ -43,32 +43,46 @@
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
+# [*nginx_ensure*]
+#   The ensure value for the Nginx package.
+#
+# [*nginx_router_listen_addr*]
+#   The address that Nginx should listen on when serving routing requests.
+#
+# [*nginx_router_domain*]
+#   The domain name that Nginx should server for the router.
+#
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addresses    = [$::ipaddress_lo],
-  $address                 = $::ipaddress_lo,
-  $hostname                = $::hostname,
-  $controller_worker       = false,
+  $controller_addresses     = [$::ipaddress_lo],
+  $address                  = $::ipaddress_lo,
+  $hostname                 = $::hostname,
+  $controller_worker        = false,
 
   # Mesos
-  $mesos_ensure            = $seed_stack::params::mesos_ensure,
-  $mesos_listen_addr       = $seed_stack::params::mesos_listen_addr,
-  $mesos_resources         = $seed_stack::params::mesos_resources,
+  $mesos_ensure             = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr        = $seed_stack::params::mesos_listen_addr,
+  $mesos_resources          = $seed_stack::params::mesos_resources,
 
   # Consul
-  $consul_version          = $seed_stack::params::consul_version,
-  $consul_client_addr      = $seed_stack::params::consul_client_addr,
-  $consul_domain           = $seed_stack::params::consul_domain,
-  $consul_encrypt          = undef,
-  $consul_ui               = false,
+  $consul_version           = $seed_stack::params::consul_version,
+  $consul_client_addr       = $seed_stack::params::consul_client_addr,
+  $consul_domain            = $seed_stack::params::consul_domain,
+  $consul_encrypt           = undef,
+  $consul_ui                = false,
 
   # Consul Template
-  $consul_template_version = $seed_stack::params::consul_template_version,
+  $consul_template_version  = $seed_stack::params::consul_template_version,
+
+  # Nginx
+  $nginx_ensure             = $seed_stack::params::nginx_ensure,
+  $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
+  $nginx_router_domain      = $seed_stack::params::nginx_router_domain,
 
   # Docker
-  $docker_ensure           = $seed_stack::params::docker_ensure,
+  $docker_ensure            = $seed_stack::params::docker_ensure,
 ) inherits seed_stack::params {
 
   # Basic parameter validation
@@ -78,6 +92,7 @@ class seed_stack::worker (
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
+  validate_ip_address($nginx_router_listen_addr)
 
   $zk_base = join(suffix($controller_addresses, ':2181'), ',')
   $mesos_zk = "zk://${zk_base}/mesos"
@@ -135,10 +150,14 @@ class seed_stack::worker (
   }
 
   class { 'seed_stack::template_nginx':
+    nginx_package_ensure    => $nginx_ensure,
     consul_template_version => $consul_template_version,
     consul_address          => $consul_client_addr,
   }
-  include seed_stack::router
+  class { 'seed_stack::router':
+    listen_addr => $nginx_router_listen_addr,
+    domain      => $nginx_router_domain,
+  }
 
   # Docker, using the host for DNS
   class { 'docker':

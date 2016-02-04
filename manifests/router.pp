@@ -5,7 +5,7 @@
 #
 # === Parameters
 #
-# [*listen_address*]
+# [*listen_addr*]
 #   The address that Nginx should listen on when serving requests.
 #
 # [*listen_port*]
@@ -14,11 +14,11 @@
 # [*domain*]
 #   The domain that Nginx should serve for routing.
 class seed_stack::router (
-  $listen_address = '0.0.0.0',
-  $listen_port    = 80,
-  $domain         = 'servicehost',
-) {
-  validate_ip_address($listen_address)
+  $listen_addr = $seed_stack::params::nginx_router_listen_addr,
+  $listen_port = $seed_stack::params::nginx_router_listen_port,
+  $domain      = $seed_stack::params::nginx_router_domain,
+) inherits seed_stack::params {
+  validate_ip_address($listen_addr)
   validate_integer($listen_port, 65535, 0)
 
   include seed_stack::template_nginx
