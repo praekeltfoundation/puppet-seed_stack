@@ -84,12 +84,10 @@ class { 'seed_stack::consul_dns':
 
 consul::service { 'postgresql':
   port   => 5432,
-  checks => [
-    {
-      script   => '/usr/bin/pg_isready',
-      interval => '30s',
-    }
-  ]
+  checks => [{
+    script   => '/usr/bin/pg_isready',
+    interval => '30s',
+  }],
 }
 ```
 After the above example is applied, the address `postgresql.service.consul` is available in the Consul cluster and will point to the node's advertise address. For full documentation on all the configuration parameters available for Consul, see the [manifest source](manifests/consul_dns.pp).
