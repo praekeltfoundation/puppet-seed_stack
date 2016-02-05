@@ -62,7 +62,7 @@ class { 'seed_stack::worker':
 #### External load balancers and routers
 We use Nginx to load balance and route between containers. Sometimes it is useful to do this outside of the Mesos cluster itself. For instance, an external host could be the load balancer for a web service or some service running on the host could need to be routed to containers directly.
 
-Nginx is dynamically-configured using Consul Template in these cases. First, set that up:
+Nginx is dynamically configured using Consul Template in these cases. First, set that up:
 ```puppet
 class { 'seed_stack::template_nginx':
   consul_address => '192.168.0.5', # Consul address for Consul Template to connect to
