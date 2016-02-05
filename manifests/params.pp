@@ -2,7 +2,7 @@
 #
 class seed_stack::params {
 
-  $docker_ensure            = '1.9.1*'
+  $docker_ensure            = '1.10.0*'
 
   $zookeeper_ensure         = 'installed'
   $zookeeper_client_addr    = '0.0.0.0'
