@@ -39,7 +39,7 @@ The `seed_stack::worker` class is responsible for configuring a Seed Stack worke
 
 ```puppet
 class { 'seed_stack::worker':
-  address    => $ipaddress_eth0,
+  address => $ipaddress_eth0,
 }
 ```
 
@@ -79,14 +79,14 @@ It's often useful to use Consul's DNS for service discovery on nodes that aren't
 ```puppet
 class { 'seed_stack::consul_dns':
   advertise_addr => $ipaddress_eth0, # Address to advertise for services on this node
-  join => ['10.215.32.11', '10.215.32.12'], # List of any Consul nodes already in the cluster
+  join           => ['10.215.32.11', '10.215.32.12'], # List of any Consul nodes already in the cluster
 }
 
 consul::service { 'postgresql':
-  port => 5432,
+  port   => 5432,
   checks => [
     {
-      script => '/usr/bin/pg_isready',
+      script   => '/usr/bin/pg_isready',
       interval => '30s',
     }
   ]
