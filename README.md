@@ -88,7 +88,7 @@ consul::service { 'postgresql':
 After the above example is applied, the address `postgresql.service.consul` is available in the Consul cluster and will point to the node's advertise address. For full documentation on all the configuration parameters available for Consul, see the [manifest source](manifests/consul_dns.pp).
 
 ## Upstream modules
-We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [Puppetfile](Puppetfile) for a complete listing with version information.
+We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [metadata file](metadata.json) for a complete listing with version information.
 
 Firstly, we wrote some modules ourselves:
 * [praekeltfoundation/consular](https://forge.puppetlabs.com/praekeltfoundation/consular)
