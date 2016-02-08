@@ -58,7 +58,7 @@ class seed_stack::worker (
   # Common
   $controller_addresses     = [$::ipaddress_lo],
   $address                  = $::ipaddress_lo,
-  $hostname                 = $::hostname,
+  $hostname                 = $::fqdn,
   $controller_worker        = false,
 
   # Mesos
