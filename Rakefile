@@ -9,14 +9,10 @@ task :spec_prep => :librarian_spec_prep
 # Override puppetlabs_spec_helper's default lint settings
 # * Don't want to ignore so many tests
 # * Don't want to run lint on upstream modules
+# See the .puppet-lint.rc file for checks that are skipped
 Rake::Task[:lint].clear
 PuppetLint::RakeTask.new(:lint) do |config|
   config.fail_on_warnings = true
-  config.disable_checks = [
-      '80chars',
-      'class_inherits_from_params_class',
-      'autoloader_layout',
-  ]
   config.ignore_paths = ["vendor/**/*.pp", "spec/**/*.pp", "modules/**/*.pp"]
 end
 
