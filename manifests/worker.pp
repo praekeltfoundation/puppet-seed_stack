@@ -169,6 +169,6 @@ class seed_stack::worker (
   # Docker, using the host for DNS
   class { 'docker':
     ensure => $docker_ensure,
-    dns    => $address,
+    dns    => $advertise_addr,
   }
 }
