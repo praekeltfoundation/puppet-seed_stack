@@ -40,6 +40,13 @@
 #   Whether or not to enable the Consul web UI. FIXME: Setting this false
 #   doesn't seem to disable the UI. Consul 0.6.1 bug? See #7.
 #
+# [*dnsmasq_ensure*]
+#   The ensure value for the Dnsmasq package.
+#
+# [*dnsmasq_host_alias*]
+#   An alias for the host (advertise) address that Dnsmasq will serve. This
+#   will also be used for the Nginx service router's domain.
+#
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
@@ -48,9 +55,6 @@
 #
 # [*nginx_router_listen_addr*]
 #   The address that Nginx should listen on when serving routing requests.
-#
-# [*nginx_router_domain*]
-#   The domain name that Nginx should server for the router.
 #
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
@@ -73,13 +77,16 @@ class seed_stack::worker (
   $consul_encrypt           = undef,
   $consul_ui                = false,
 
+  # Dnsmasq
+  $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias     = $seed_stack::params::dnsmasq_host_alias,
+
   # Consul Template
   $consul_template_version  = $seed_stack::params::consul_template_version,
 
   # Nginx
   $nginx_ensure             = $seed_stack::params::nginx_ensure,
   $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
-  $nginx_router_domain      = $seed_stack::params::nginx_router_domain,
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
@@ -125,14 +132,16 @@ class seed_stack::worker (
 
   if ! $controller_worker {
     class { 'seed_stack::consul_dns':
-      consul_version => $consul_version,
-      server         => false,
-      join           => $controller_addresses,
-      advertise_addr => $address,
-      client_addr    => $consul_client_addr,
-      domain         => $consul_domain,
-      encrypt        => $consul_encrypt,
-      ui             => $consul_ui,
+      consul_version     => $consul_version,
+      server             => false,
+      join               => $controller_addresses,
+      advertise_addr     => $address,
+      client_addr        => $consul_client_addr,
+      domain             => $consul_domain,
+      encrypt            => $consul_encrypt,
+      ui                 => $consul_ui,
+      dnsmasq_ensure     => $dnsmasq_ensure,
+      dnsmasq_host_alias => $dnsmasq_host_alias,
     }
   }
   consul::service { 'mesos-slave':
@@ -153,7 +162,7 @@ class seed_stack::worker (
   }
   class { 'seed_stack::router':
     listen_addr => $nginx_router_listen_addr,
-    domain      => $nginx_router_domain,
+    domain      => $dnsmasq_host_alias,
   }
 
   # Docker, using the host for DNS

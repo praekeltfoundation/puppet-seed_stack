@@ -54,6 +54,12 @@
 #   Whether or not to enable the Consul web UI. FIXME: Setting this false
 #   doesn't seem to disable the UI. Consul 0.6.1 bug? See #7.
 #
+# [*dnsmasq_ensure*]
+#   The ensure value for the Dnsmasq package.
+#
+# [*dnsmasq_host_alias*]
+#   An alias for the host (advertise) address that Dnsmasq will serve.
+#
 # [*consular_ensure*]
 #   The package ensure value for Consular.
 #
@@ -85,6 +91,10 @@ class seed_stack::controller (
   $consul_domain          = $seed_stack::params::consul_domain,
   $consul_encrypt         = undef,
   $consul_ui              = true,
+
+  # Dnsmasq
+  $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias     = $seed_stack::params::dnsmasq_host_alias,
 
   # Consular
   $consular_ensure        = $seed_stack::params::consular_ensure,
@@ -164,15 +174,17 @@ class seed_stack::controller (
   Class['mesos::repo'] -> Package['marathon']
 
   class { 'seed_stack::consul_dns':
-    consul_version   => $consul_version,
-    server           => true,
-    join             => delete($controller_addresses, $address),
-    bootstrap_expect => size($controller_addresses),
-    advertise_addr   => $address,
-    client_addr      => $consul_client_addr,
-    domain           => $consul_domain,
-    encrypt          => $consul_encrypt,
-    ui               => $consul_ui,
+    consul_version     => $consul_version,
+    server             => true,
+    join               => delete($controller_addresses, $address),
+    bootstrap_expect   => size($controller_addresses),
+    advertise_addr     => $address,
+    client_addr        => $consul_client_addr,
+    domain             => $consul_domain,
+    encrypt            => $consul_encrypt,
+    ui                 => $consul_ui,
+    dnsmasq_ensure     => $dnsmasq_ensure,
+    dnsmasq_host_alias => $dnsmasq_host_alias,
   }
 
   consul::service {
