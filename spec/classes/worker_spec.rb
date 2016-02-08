@@ -7,7 +7,7 @@ describe 'seed_stack::worker' do
         facts.merge({:concat_basedir => '/tmp/puppetconcat'})
       end
 
-      describe 'compiles when controller_addresses and address are specified' do
+      describe 'controller_addresses and address are specified' do
         let(:params) do
           {
             :controller_addresses => ['192.168.0.2'],
@@ -17,12 +17,12 @@ describe 'seed_stack::worker' do
         it { should compile }
       end
 
-      describe 'controller_addresses must be specified' do
+      describe 'controller_addresses not specified' do
         let(:params) { { :address => '192.168.0.2', } }
         it { should compile.and_raise_error(/Must pass controller_addresses/) }
       end
 
-      describe 'address must be specified' do
+      describe 'address not specified' do
         let(:params) { { :controller_addresses => ['192.168.0.2'], } }
         it { should compile.and_raise_error(/Must pass address/) }
       end
