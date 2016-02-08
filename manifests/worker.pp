@@ -2,13 +2,13 @@
 #
 # === Parameters
 #
-# [*controller_addrs*]
-#   A list of IP addresses for all controllers in the cluster (i.e. a list of
-#   each controller's advertise_addr).
-#
 # [*advertise_addr*]
 #   The advertise IP address for the node. All services will be exposed on this
 #   address.
+#
+# [*controller_addrs*]
+#   A list of IP addresses for all controllers in the cluster (i.e. a list of
+#   each controller's advertise_addr).
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -62,8 +62,8 @@
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addrs,
   $advertise_addr,
+  $controller_addrs,
   $hostname                 = $::fqdn,
   $controller_worker        = false,
 
@@ -93,8 +93,8 @@ class seed_stack::worker (
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
 ) inherits seed_stack::params {
-  validate_array($controller_addrs)
   validate_ip_address($advertise_addr)
+  validate_array($controller_addrs)
   validate_bool($controller_worker)
   validate_ip_address($mesos_listen_addr)
   validate_hash($mesos_resources)

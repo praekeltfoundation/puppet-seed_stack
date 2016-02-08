@@ -2,14 +2,14 @@
 #
 # === Parameters
 #
+# [*advertise_addr*]
+#   The advertise IP address for the node. All services will be exposed on this
+#   address.
+#
 # [*controller_addrs*]
 #   A list of IP addresses for all controllers in the cluster (i.e. a list of
 #   each controller's advertise_addr). NOTE: This list must be identical (same
 #   elements, same order) for ALL controller nodes.
-#
-# [*advertise_addr*]
-#   The advertise IP address for the node. All services will be exposed on this
-#   address.
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -69,8 +69,8 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addrs,
   $advertise_addr,
+  $controller_addrs,
   $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
@@ -102,8 +102,8 @@ class seed_stack::controller (
   $consular_ensure        = $seed_stack::params::consular_ensure,
   $consular_sync_interval = $seed_stack::params::consular_sync_interval,
 ) inherits seed_stack::params {
-  validate_array($controller_addrs)
   validate_ip_address($advertise_addr)
+  validate_array($controller_addrs)
   validate_bool($controller_worker)
   validate_bool($install_java)
   validate_ip_address($zookeeper_client_addr)
