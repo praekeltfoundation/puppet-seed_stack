@@ -4,7 +4,7 @@
 
 {{range services}}{{$labels := ls (print "consular/" .Name) | explode}}{{if or $labels.domain $labels.location}}
 upstream {{.Name}} { {{range service .Name}}
-    server {{.Address}}:{{.Port}};{{end}}
+    server {{.NodeAddress}}:{{.Port}}; # {{.Address}}{{end}}
 }
 {{else}}
 # Skipped service {{.Name}} as it does not have a KV domain or location entry.

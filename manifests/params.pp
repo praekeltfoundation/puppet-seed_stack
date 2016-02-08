@@ -7,7 +7,7 @@ class seed_stack::params {
   $zookeeper_ensure         = 'installed'
   $zookeeper_client_addr    = '0.0.0.0'
 
-  $mesos_ensure             = '0.26.0*'
+  $mesos_ensure             = '0.27.0*'
   $mesos_listen_addr        = '0.0.0.0'
   $mesos_cluster            = 'seed-stack'
   $mesos_resources          = {}
