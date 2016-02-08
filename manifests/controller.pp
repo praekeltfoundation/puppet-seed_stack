@@ -101,11 +101,11 @@ class seed_stack::controller (
   $consular_ensure        = $seed_stack::params::consular_ensure,
   $consular_sync_interval = $seed_stack::params::consular_sync_interval,
 ) inherits seed_stack::params {
-
-  # Basic parameter validation
+  validate_array($controller_addresses)
   validate_ip_address($address)
   validate_bool($controller_worker)
   validate_bool($install_java)
+  validate_ip_address($zookeeper_client_addr)
   validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
