@@ -53,8 +53,9 @@ class { 'seed_stack::controller':
   controller_worker    => true,
 }
 class { 'seed_stack::worker':
-  address           => $ipaddress_eth0,
-  controller_worker => true,
+  address              => $ipaddress_eth0,
+  controller_addresses => [$ipaddress_eth0],
+  controller_worker    => true,
 }
 ```
 **NOTE:** For combination controller/workers it is necessary to set `controller_worker => true` for both the `seed_stack::controller` class and the `seed_stack::worker` class so that the two classes do not conflict.

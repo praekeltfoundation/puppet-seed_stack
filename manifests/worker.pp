@@ -6,7 +6,8 @@
 #   A list of IP addresses for all controllers in the cluster.
 #
 # [*address*]
-#   The IP address for the node. All services will be exposed on this address.
+#   The advertise IP address for the node. All services will be exposed on this
+#   address.
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -60,8 +61,8 @@
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addresses     = [$::ipaddress_lo],
-  $address                  = $::ipaddress_lo,
+  $controller_addresses,
+  $address,
   $hostname                 = $::fqdn,
   $controller_worker        = false,
 
@@ -91,8 +92,7 @@ class seed_stack::worker (
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
 ) inherits seed_stack::params {
-
-  # Basic parameter validation
+  validate_array($controller_addresses)
   validate_ip_address($address)
   validate_bool($controller_worker)
   validate_ip_address($mesos_listen_addr)

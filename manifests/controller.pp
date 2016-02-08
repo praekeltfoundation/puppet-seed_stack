@@ -7,7 +7,8 @@
 #   must be identical (same elements, same order) for ALL controller nodes.
 #
 # [*address*]
-#   The IP address for the node. All services will be exposed on this address.
+#   The advertise IP address for the node. All services will be exposed on this
+#   address.
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -67,8 +68,8 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addresses   = [$::ipaddress_lo],
-  $address                = $::ipaddress_lo,
+  $controller_addresses,
+  $address,
   $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
@@ -100,11 +101,11 @@ class seed_stack::controller (
   $consular_ensure        = $seed_stack::params::consular_ensure,
   $consular_sync_interval = $seed_stack::params::consular_sync_interval,
 ) inherits seed_stack::params {
-
-  # Basic parameter validation
+  validate_array($controller_addresses)
   validate_ip_address($address)
   validate_bool($controller_worker)
   validate_bool($install_java)
+  validate_ip_address($zookeeper_client_addr)
   validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
