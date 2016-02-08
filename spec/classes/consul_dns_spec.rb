@@ -7,7 +7,7 @@ describe 'seed_stack::consul_dns' do
         facts
       end
 
-      it { should compile }
+      it { is_expected.to compile }
     end
   end
 end

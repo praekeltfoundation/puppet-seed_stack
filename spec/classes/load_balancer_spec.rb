@@ -7,7 +7,7 @@ describe 'seed_stack::load_balancer' do
         facts.merge({:concat_basedir => '/tmp/puppetconcat'})
       end
 
-      it { should compile }
+      it { is_expected.to compile }
     end
   end
 end
