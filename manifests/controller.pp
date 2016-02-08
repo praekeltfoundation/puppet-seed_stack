@@ -2,11 +2,12 @@
 #
 # === Parameters
 #
-# [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster. NOTE: This list
-#   must be identical (same elements, same order) for ALL controller nodes.
+# [*controller_addrs*]
+#   A list of IP addresses for all controllers in the cluster (i.e. a list of
+#   each controller's advertise_addr). NOTE: This list must be identical (same
+#   elements, same order) for ALL controller nodes.
 #
-# [*address*]
+# [*advertise_addr*]
 #   The advertise IP address for the node. All services will be exposed on this
 #   address.
 #
@@ -68,8 +69,8 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addresses,
-  $address,
+  $controller_addrs,
+  $advertise_addr,
   $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
@@ -101,8 +102,8 @@ class seed_stack::controller (
   $consular_ensure        = $seed_stack::params::consular_ensure,
   $consular_sync_interval = $seed_stack::params::consular_sync_interval,
 ) inherits seed_stack::params {
-  validate_array($controller_addresses)
-  validate_ip_address($address)
+  validate_array($controller_addrs)
+  validate_ip_address($advertise_addr)
   validate_bool($controller_worker)
   validate_bool($install_java)
   validate_ip_address($zookeeper_client_addr)
@@ -110,9 +111,9 @@ class seed_stack::controller (
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
   validate_integer($consular_sync_interval)
-  if ! member($controller_addresses, $address) {
-    fail("The address for this node (${address}) must be one of the controller
-      addresses (${controller_addresses}).")
+  if ! member($controller_addrs, $advertise_addr) {
+    fail("The address for this node (${advertise_addr}) must be one of the
+      controller addresses (${controller_addrs}).")
   }
 
   if $install_java {
@@ -124,16 +125,16 @@ class seed_stack::controller (
   }
 
   # There is no `find_index` equivalent in Puppet stdlib
-  # $zk_id = hash(zip($controller_addresses, range(1, size($controller_addresses))))[$address] # :trollface:
-  $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
+  # $zk_id = hash(zip($controller_addrs, range(1, size($controller_addrs))))[$advertise_addr] # :trollface:
+  $zk_id = inline_template('<%= (@controller_addrs.find_index(@advertise_addr) || 0) + 1 %>')
   class { 'zookeeper':
     ensure    => $zookeeper_ensure,
     id        => $zk_id,
-    servers   => $controller_addresses,
+    servers   => $controller_addrs,
     client_ip => $zookeeper_client_addr,
   }
 
-  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
   $mesos_zk = "zk://${zk_base}/mesos"
   class { 'mesos':
     ensure         => $mesos_ensure,
@@ -146,8 +147,8 @@ class seed_stack::controller (
     cluster => $mesos_cluster,
     options => {
       hostname     => $hostname,
-      advertise_ip => $address,
-      quorum       => size($controller_addresses) / 2 + 1 # Note: integer division
+      advertise_ip => $advertise_addr,
+      quorum       => size($controller_addrs) / 2 + 1 # Note: integer division
     },
   }
 
@@ -177,9 +178,9 @@ class seed_stack::controller (
   class { 'seed_stack::consul_dns':
     consul_version     => $consul_version,
     server             => true,
-    join               => delete($controller_addresses, $address),
-    bootstrap_expect   => size($controller_addresses),
-    advertise_addr     => $address,
+    join               => delete($controller_addrs, $advertise_addr),
+    bootstrap_expect   => size($controller_addrs),
+    advertise_addr     => $advertise_addr,
     client_addr        => $consul_client_addr,
     domain             => $consul_domain,
     encrypt            => $consul_encrypt,
