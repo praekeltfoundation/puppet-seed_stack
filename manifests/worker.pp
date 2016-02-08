@@ -2,12 +2,13 @@
 #
 # === Parameters
 #
-# [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster.
-#
-# [*address*]
+# [*advertise_addr*]
 #   The advertise IP address for the node. All services will be exposed on this
 #   address.
+#
+# [*controller_addrs*]
+#   A list of IP addresses for all controllers in the cluster (i.e. a list of
+#   each controller's advertise_addr).
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -61,8 +62,8 @@
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addresses,
-  $address,
+  $advertise_addr,
+  $controller_addrs,
   $hostname                 = $::fqdn,
   $controller_worker        = false,
 
@@ -92,8 +93,8 @@ class seed_stack::worker (
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
 ) inherits seed_stack::params {
-  validate_array($controller_addresses)
-  validate_ip_address($address)
+  validate_ip_address($advertise_addr)
+  validate_array($controller_addrs)
   validate_bool($controller_worker)
   validate_ip_address($mesos_listen_addr)
   validate_hash($mesos_resources)
@@ -101,7 +102,7 @@ class seed_stack::worker (
   validate_bool($consul_ui)
   validate_ip_address($nginx_router_listen_addr)
 
-  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
   $mesos_zk = "zk://${zk_base}/mesos"
   if ! $controller_worker {
     class { 'mesos':
@@ -124,7 +125,7 @@ class seed_stack::worker (
     resources => $mesos_resources,
     options   => {
       hostname                      => $hostname,
-      advertise_ip                  => $address,
+      advertise_ip                  => $advertise_addr,
       containerizers                => 'docker,mesos',
       executor_registration_timeout => '5mins',
     },
@@ -134,8 +135,8 @@ class seed_stack::worker (
     class { 'seed_stack::consul_dns':
       consul_version     => $consul_version,
       server             => false,
-      join               => $controller_addresses,
-      advertise_addr     => $address,
+      join               => $controller_addrs,
+      advertise_addr     => $advertise_addr,
       client_addr        => $consul_client_addr,
       domain             => $consul_domain,
       encrypt            => $consul_encrypt,
@@ -168,6 +169,6 @@ class seed_stack::worker (
   # Docker, using the host for DNS
   class { 'docker':
     ensure => $docker_ensure,
-    dns    => $address,
+    dns    => $advertise_addr,
   }
 }
