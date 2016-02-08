@@ -29,8 +29,8 @@ The `seed_stack::controller` class is responsible for configuring a Seed Stack c
 
 ```puppet
 class { 'seed_stack::controller':
-  address              => $ipaddress_eth0,
-  controller_addresses => [$ipaddress_eth0],
+  advertise_addr   => '192.168.0.2',
+  controller_addrs => ['192.168.0.2'],
 }
 ```
 
@@ -39,7 +39,8 @@ The `seed_stack::worker` class is responsible for configuring a Seed Stack worke
 
 ```puppet
 class { 'seed_stack::worker':
-  address => $ipaddress_eth0,
+  advertise_addr   => '192.168.0.3',
+  controller_addrs => ['192.168.0.2'],
 }
 ```
 
@@ -48,14 +49,14 @@ A node can be both a controller and a worker. This is useful for single-node set
 
 ```puppet
 class { 'seed_stack::controller':
-  address              => $ipaddress_eth0,
-  controller_addresses => [$ipaddress_eth0],
-  controller_worker    => true,
+  advertise_addr    => $ipaddress_eth0,
+  controller_addrs  => [$ipaddress_eth0],
+  controller_worker => true,
 }
 class { 'seed_stack::worker':
-  address              => $ipaddress_eth0,
-  controller_addresses => [$ipaddress_eth0],
-  controller_worker    => true,
+  advertise_addr    => $ipaddress_eth0,
+  controller_addrs  => [$ipaddress_eth0],
+  controller_worker => true,
 }
 ```
 **NOTE:** For combination controller/workers it is necessary to set `controller_worker => true` for both the `seed_stack::controller` class and the `seed_stack::worker` class so that the two classes do not conflict.
