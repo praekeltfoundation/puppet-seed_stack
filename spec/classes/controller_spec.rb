@@ -7,6 +7,13 @@ describe 'seed_stack::controller' do
         facts
       end
 
+      let(:params) do
+        {
+          :controller_addresses => ['192.168.0.2'],
+          :address => '192.168.0.2',
+        }
+      end
+
       it { should compile }
     end
   end

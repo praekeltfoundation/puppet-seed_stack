@@ -7,6 +7,13 @@ describe 'seed_stack::worker' do
         facts.merge({:concat_basedir => '/tmp/puppetconcat'})
       end
 
+      let(:params) do
+        {
+          :controller_addresses => ['192.168.0.2'],
+          :address => '192.168.0.3',
+        }
+      end
+
       it { should compile }
     end
   end

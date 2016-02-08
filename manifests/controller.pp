@@ -7,7 +7,8 @@
 #   must be identical (same elements, same order) for ALL controller nodes.
 #
 # [*address*]
-#   The IP address for the node. All services will be exposed on this address.
+#   The advertise IP address for the node. All services will be exposed on this
+#   address.
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -67,8 +68,8 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addresses   = [$::ipaddress_lo],
-  $address                = $::ipaddress_lo,
+  $controller_addresses,
+  $address,
   $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
