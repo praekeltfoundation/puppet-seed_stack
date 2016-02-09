@@ -167,6 +167,7 @@ class seed_stack::controller (
     repo_manage    => false,
     zookeeper      => $marathon_zk,
     master         => $mesos_zk,
+    syslog         => false,
     options        => {
       hostname         => $hostname,
       event_subscriber => 'http_callback',
