@@ -7,7 +7,7 @@
 * Marathon 0.15.1 (#51)
 * Marathon syslog output is now suppressed (#54)
 * README improvements (#48)
-* Setting up a cluster now requires that only the controllers are able to resolve the hostnames of the workers (no other lookups are required) (#35)
+* Setting up a cluster now only requires the controllers being able to resolve the hostnames of workers (no other lookups are required) (#35)
 
 ### Changes
 * `controller_addresses` -> `controller_addrs`, `address` -> `advertise_addr` (#50)
