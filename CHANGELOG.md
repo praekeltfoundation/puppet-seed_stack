@@ -1,4 +1,4 @@
-## 0.4.0 - UNRELEASED
+## 0.4.0 - 2016/02/09
 ### Features
 * Dnsmasq host alias (`servicehost`) on all workers and controllers (#25, #46)
 * Nginx service router address, port and domain now configurable (#44)
