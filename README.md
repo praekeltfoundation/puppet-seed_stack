@@ -29,8 +29,8 @@ The `seed_stack::controller` class is responsible for configuring a Seed Stack c
 
 ```puppet
 class { 'seed_stack::controller':
-  address              => $ipaddress_eth0,
-  controller_addresses => [$ipaddress_eth0],
+  advertise_addr   => '192.168.0.2',
+  controller_addrs => ['192.168.0.2'],
 }
 ```
 
@@ -39,7 +39,8 @@ The `seed_stack::worker` class is responsible for configuring a Seed Stack worke
 
 ```puppet
 class { 'seed_stack::worker':
-  address    => $ipaddress_eth0,
+  advertise_addr   => '192.168.0.3',
+  controller_addrs => ['192.168.0.2'],
 }
 ```
 
@@ -48,47 +49,53 @@ A node can be both a controller and a worker. This is useful for single-node set
 
 ```puppet
 class { 'seed_stack::controller':
-  address              => $ipaddress_eth0,
-  controller_addresses => [$ipaddress_eth0],
-  controller_worker    => true,
+  advertise_addr    => $ipaddress_eth0,
+  controller_addrs  => [$ipaddress_eth0],
+  controller_worker => true,
 }
 class { 'seed_stack::worker':
-  address           => $ipaddress_eth0,
+  advertise_addr    => $ipaddress_eth0,
+  controller_addrs  => [$ipaddress_eth0],
   controller_worker => true,
 }
 ```
 **NOTE:** For combination controller/workers it is necessary to set `controller_worker => true` for both the `seed_stack::controller` class and the `seed_stack::worker` class so that the two classes do not conflict.
 
-#### Load balancers
-If you need to expose apps running on Seed Stack to the outside world, Nginx can be used to load-balance between app instances and expose the apps from an accessible endpoint. To set up Nginx to be dynamically configured to do this, use the `seed_stack::load_balancer` class.
+#### External load balancers and routers
+We use Nginx to load balance and route between containers. Sometimes it is useful to do this outside of the Mesos cluster itself. For instance, an external host could be the load balancer for a web service or some service running on the host could need to be routed to containers directly.
 
+Nginx is dynamically configured using Consul Template in these cases. First, set that up:
+```puppet
+class { 'seed_stack::template_nginx':
+  consul_address => '192.168.0.5', # Consul address for Consul Template to connect to
+}
+```
+Then you can set up either set up a load balancer or a router (or both):
 ```puppet
 include seed_stack::load_balancer
+include seed_stack::router
 ```
-Different parts of the class can be disabled if the node it is being included on already has Nginx or Consul Template installed. See the [manifest source](manifests/load_balancer.pp) for more information.
 
 #### Consul DNS
 It's often useful to use Consul's DNS for service discovery on nodes that aren't controllers or workers. For example, a database node could advertise it's service to other nodes using Consul. To do this, use the `seed_stack::consul_dns` class. The class needs a few parameters so that it knows how to join the Consul cluster:
 ```puppet
 class { 'seed_stack::consul_dns':
   advertise_addr => $ipaddress_eth0, # Address to advertise for services on this node
-  join => ['10.215.32.11', '10.215.32.12'], # List of any Consul nodes already in the cluster
+  join           => ['10.215.32.11', '10.215.32.12'], # List of any Consul nodes already in the cluster
 }
 
 consul::service { 'postgresql':
-  port => 5432,
-  checks => [
-    {
-      script => '/usr/bin/pg_isready',
-      interval => '30s',
-    }
-  ]
+  port   => 5432,
+  checks => [{
+    script   => '/usr/bin/pg_isready',
+    interval => '30s',
+  }],
 }
 ```
 After the above example is applied, the address `postgresql.service.consul` is available in the Consul cluster and will point to the node's advertise address. For full documentation on all the configuration parameters available for Consul, see the [manifest source](manifests/consul_dns.pp).
 
 ## Upstream modules
-We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [Puppetfile](Puppetfile) for a complete listing with version information.
+We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [metadata file](metadata.json) for a complete listing with version information.
 
 Firstly, we wrote some modules ourselves:
 * [praekeltfoundation/consular](https://forge.puppetlabs.com/praekeltfoundation/consular)
@@ -112,10 +119,10 @@ The package versions can be seen in the [params class source](manifests/params.p
 
 | Package         | Version |
 |-----------------|---------|
-| Mesos           | 0.26.0  |
-| Marathon        | 0.14.0  |
+| Mesos           | 0.27.0  |
+| Marathon        | 0.15.1  |
 | Zookeeper       | System  |
-| Docker          | 1.9.1   |
+| Docker          | 1.10.0  |
 | Consul          | 0.6.3   |
 | Consular        | 1.2.0   |
 | Consul Template | 0.12.2  |

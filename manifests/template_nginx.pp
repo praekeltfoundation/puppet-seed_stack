@@ -20,9 +20,9 @@
 # [*consul_address*]
 #   The address for the Consul agent for Consul Template to connect to.
 class seed_stack::template_nginx (
-  $nginx_package        = 'nginx-light',
-  $nginx_package_ensure = 'installed',
-  $nginx_service_ensure = 'running',
+  $nginx_package           = 'nginx-light',
+  $nginx_package_ensure    = $seed_stack::params::nginx_ensure,
+  $nginx_service_ensure    = 'running',
 
   $consul_template_version = $seed_stack::params::consul_template_version,
   $consul_address          = $seed_stack::params::consul_client_addr,

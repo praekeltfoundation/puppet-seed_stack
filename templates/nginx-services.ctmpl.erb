@@ -8,12 +8,13 @@
 #       list of services in the Nginx config.
 
 server {
-    listen 80;
+    listen <%= @listen_addr %>:<%= @listen_port %>;
+    server_name <%= @domain %>;
     {{range services}}{{$labels := ls (print "consular/" .Name) | explode}}{{if $labels.location}}
     location {{$labels.location | parseJSON}} {
         proxy_pass http://{{.Name}};
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $http_host;{{if $labels.internal}}{{if $labels.internal | parseJSON}}
+        proxy_set_header Host $http_host;{{if $labels.internal}}{{if $labels.internal | parseJSON | parseBool}}
         internal;{{end}}{{end}}
     }
     {{else}}

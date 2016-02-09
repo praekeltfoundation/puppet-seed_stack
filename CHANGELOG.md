@@ -1,3 +1,26 @@
+## 0.4.0 - 2016/02/09
+### Features
+* Dnsmasq host alias (`servicehost`) on all workers and controllers (#25, #46)
+* Nginx service router address, port and domain now configurable (#44)
+* Docker 1.10.0 (#47)
+* Mesos 0.27.0 (#35)
+* Marathon 0.15.1 (#51)
+* Marathon syslog output is now suppressed (#54)
+* README improvements (#48)
+* Setting up a cluster now only requires the controllers being able to resolve the hostnames of workers (no other lookups are required) (#35)
+
+### Changes
+* `controller_addresses` -> `controller_addrs`, `address` -> `advertise_addr` (#50)
+* `controller_addrs` and `advertise_addr` are now required parameters for controllers and workers (#49)
+* Host `advertise_addr` used as Docker DNS address which means things should provision in a single Puppet run (#43)
+* `deric/mesos` Puppet module updated to `0.6.5` (#40)
+* `praekeltfoundation/marathon` Puppet module updated to `0.4.0` (#54)
+
+### Fixes
+* Nginx service router template properly parses `internal` boolean value (#44)
+* Worker hostname defaults to `$::fqdn` like controllers (#35)
+* Nginx service router actually works now (#25, #35, #44, #45)
+
 ## 0.3.0 - 2016/01/20
 ### Features
 * `seed_stack::consul_dns` class makes it easy to set up Consul with DNS on a node outside the Mesos cluster (#32)

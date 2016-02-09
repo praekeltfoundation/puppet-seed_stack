@@ -2,12 +2,14 @@
 #
 # === Parameters
 #
-# [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster. NOTE: This list
-#   must be identical (same elements, same order) for ALL controller nodes.
+# [*advertise_addr*]
+#   The advertise IP address for the node. All services will be exposed on this
+#   address.
 #
-# [*address*]
-#   The IP address for the node. All services will be exposed on this address.
+# [*controller_addrs*]
+#   A list of IP addresses for all controllers in the cluster (i.e. a list of
+#   each controller's advertise_addr). NOTE: This list must be identical (same
+#   elements, same order) for ALL controller nodes.
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -54,6 +56,12 @@
 #   Whether or not to enable the Consul web UI. FIXME: Setting this false
 #   doesn't seem to disable the UI. Consul 0.6.1 bug? See #7.
 #
+# [*dnsmasq_ensure*]
+#   The ensure value for the Dnsmasq package.
+#
+# [*dnsmasq_host_alias*]
+#   An alias for the host (advertise) address that Dnsmasq will serve.
+#
 # [*consular_ensure*]
 #   The package ensure value for Consular.
 #
@@ -61,8 +69,8 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $controller_addresses   = [$::ipaddress_lo],
-  $address                = $::ipaddress_lo,
+  $advertise_addr,
+  $controller_addrs,
   $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
@@ -86,22 +94,26 @@ class seed_stack::controller (
   $consul_encrypt         = undef,
   $consul_ui              = true,
 
+  # Dnsmasq
+  $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias     = $seed_stack::params::dnsmasq_host_alias,
+
   # Consular
   $consular_ensure        = $seed_stack::params::consular_ensure,
   $consular_sync_interval = $seed_stack::params::consular_sync_interval,
 ) inherits seed_stack::params {
-
-  # Basic parameter validation
-  validate_ip_address($address)
+  validate_ip_address($advertise_addr)
+  validate_array($controller_addrs)
   validate_bool($controller_worker)
   validate_bool($install_java)
+  validate_ip_address($zookeeper_client_addr)
   validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
   validate_integer($consular_sync_interval)
-  if ! member($controller_addresses, $address) {
-    fail("The address for this node (${address}) must be one of the controller
-      addresses (${controller_addresses}).")
+  if ! member($controller_addrs, $advertise_addr) {
+    fail("The address for this node (${advertise_addr}) must be one of the
+      controller addresses (${controller_addrs}).")
   }
 
   if $install_java {
@@ -113,16 +125,16 @@ class seed_stack::controller (
   }
 
   # There is no `find_index` equivalent in Puppet stdlib
-  # $zk_id = hash(zip($controller_addresses, range(1, size($controller_addresses))))[$address] # :trollface:
-  $zk_id = inline_template('<%= (@controller_addresses.find_index(@address) || 0) + 1 %>')
+  # $zk_id = hash(zip($controller_addrs, range(1, size($controller_addrs))))[$advertise_addr] # :trollface:
+  $zk_id = inline_template('<%= (@controller_addrs.find_index(@advertise_addr) || 0) + 1 %>')
   class { 'zookeeper':
     ensure    => $zookeeper_ensure,
     id        => $zk_id,
-    servers   => $controller_addresses,
+    servers   => $controller_addrs,
     client_ip => $zookeeper_client_addr,
   }
 
-  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
   $mesos_zk = "zk://${zk_base}/mesos"
   class { 'mesos':
     ensure         => $mesos_ensure,
@@ -135,8 +147,8 @@ class seed_stack::controller (
     cluster => $mesos_cluster,
     options => {
       hostname     => $hostname,
-      advertise_ip => $address,
-      quorum       => size($controller_addresses) / 2 + 1 # Note: integer division
+      advertise_ip => $advertise_addr,
+      quorum       => size($controller_addrs) / 2 + 1 # Note: integer division
     },
   }
 
@@ -155,24 +167,27 @@ class seed_stack::controller (
     repo_manage    => false,
     zookeeper      => $marathon_zk,
     master         => $mesos_zk,
+    syslog         => false,
     options        => {
       hostname         => $hostname,
       event_subscriber => 'http_callback',
     },
   }
   # Ensure Mesos repo is added before installing Marathon
-  Apt::Source['mesosphere'] -> Package['marathon']
+  Class['mesos::repo'] -> Package['marathon']
 
   class { 'seed_stack::consul_dns':
-    consul_version   => $consul_version,
-    server           => true,
-    join             => delete($controller_addresses, $address),
-    bootstrap_expect => size($controller_addresses),
-    advertise_addr   => $address,
-    client_addr      => $consul_client_addr,
-    domain           => $consul_domain,
-    encrypt          => $consul_encrypt,
-    ui               => $consul_ui,
+    consul_version     => $consul_version,
+    server             => true,
+    join               => delete($controller_addrs, $advertise_addr),
+    bootstrap_expect   => size($controller_addrs),
+    advertise_addr     => $advertise_addr,
+    client_addr        => $consul_client_addr,
+    domain             => $consul_domain,
+    encrypt            => $consul_encrypt,
+    ui                 => $consul_ui,
+    dnsmasq_ensure     => $dnsmasq_ensure,
+    dnsmasq_host_alias => $dnsmasq_host_alias,
   }
 
   consul::service {

@@ -2,11 +2,13 @@
 #
 # === Parameters
 #
-# [*controller_addresses*]
-#   A list of IP addresses for all controllers in the cluster.
+# [*advertise_addr*]
+#   The advertise IP address for the node. All services will be exposed on this
+#   address.
 #
-# [*address*]
-#   The IP address for the node. All services will be exposed on this address.
+# [*controller_addrs*]
+#   A list of IP addresses for all controllers in the cluster (i.e. a list of
+#   each controller's advertise_addr).
 #
 # [*hostname*]
 #   The hostname for the node.
@@ -40,46 +42,67 @@
 #   Whether or not to enable the Consul web UI. FIXME: Setting this false
 #   doesn't seem to disable the UI. Consul 0.6.1 bug? See #7.
 #
+# [*dnsmasq_ensure*]
+#   The ensure value for the Dnsmasq package.
+#
+# [*dnsmasq_host_alias*]
+#   An alias for the host (advertise) address that Dnsmasq will serve. This
+#   will also be used for the Nginx service router's domain.
+#
 # [*consul_template_version*]
 #   The version of Consul Template to install.
+#
+# [*nginx_ensure*]
+#   The ensure value for the Nginx package.
+#
+# [*nginx_router_listen_addr*]
+#   The address that Nginx should listen on when serving routing requests.
 #
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 class seed_stack::worker (
   # Common
-  $controller_addresses    = [$::ipaddress_lo],
-  $address                 = $::ipaddress_lo,
-  $hostname                = $::hostname,
-  $controller_worker       = false,
+  $advertise_addr,
+  $controller_addrs,
+  $hostname                 = $::fqdn,
+  $controller_worker        = false,
 
   # Mesos
-  $mesos_ensure            = $seed_stack::params::mesos_ensure,
-  $mesos_listen_addr       = $seed_stack::params::mesos_listen_addr,
-  $mesos_resources         = $seed_stack::params::mesos_resources,
+  $mesos_ensure             = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr        = $seed_stack::params::mesos_listen_addr,
+  $mesos_resources          = $seed_stack::params::mesos_resources,
 
   # Consul
-  $consul_version          = $seed_stack::params::consul_version,
-  $consul_client_addr      = $seed_stack::params::consul_client_addr,
-  $consul_domain           = $seed_stack::params::consul_domain,
-  $consul_encrypt          = undef,
-  $consul_ui               = false,
+  $consul_version           = $seed_stack::params::consul_version,
+  $consul_client_addr       = $seed_stack::params::consul_client_addr,
+  $consul_domain            = $seed_stack::params::consul_domain,
+  $consul_encrypt           = undef,
+  $consul_ui                = false,
+
+  # Dnsmasq
+  $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias     = $seed_stack::params::dnsmasq_host_alias,
 
   # Consul Template
-  $consul_template_version = $seed_stack::params::consul_template_version,
+  $consul_template_version  = $seed_stack::params::consul_template_version,
+
+  # Nginx
+  $nginx_ensure             = $seed_stack::params::nginx_ensure,
+  $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
 
   # Docker
-  $docker_ensure           = $seed_stack::params::docker_ensure,
+  $docker_ensure            = $seed_stack::params::docker_ensure,
 ) inherits seed_stack::params {
-
-  # Basic parameter validation
-  validate_ip_address($address)
+  validate_ip_address($advertise_addr)
+  validate_array($controller_addrs)
   validate_bool($controller_worker)
   validate_ip_address($mesos_listen_addr)
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
+  validate_ip_address($nginx_router_listen_addr)
 
-  $zk_base = join(suffix($controller_addresses, ':2181'), ',')
+  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
   $mesos_zk = "zk://${zk_base}/mesos"
   if ! $controller_worker {
     class { 'mesos':
@@ -88,10 +111,6 @@ class seed_stack::worker (
       listen_address => $mesos_listen_addr,
       zookeeper      => $mesos_zk,
     }
-
-    # We need this because mesos::install doesn't wait for apt::update before
-    # trying to install the package.
-    Class['apt::update'] -> Package['mesos']
 
     # Make Puppet stop the mesos-master service
     service { 'mesos-master':
@@ -106,10 +125,7 @@ class seed_stack::worker (
     resources => $mesos_resources,
     options   => {
       hostname                      => $hostname,
-      # FIXME: --advertise_ip for slaves was supposed to be added in Mesos 0.26
-      # but never actually made it in. Enable this if/when we get to 0.27.
-      # https://issues.apache.org/jira/browse/MESOS-3809
-      #advertise_ip                  => $address,
+      advertise_ip                  => $advertise_addr,
       containerizers                => 'docker,mesos',
       executor_registration_timeout => '5mins',
     },
@@ -117,14 +133,16 @@ class seed_stack::worker (
 
   if ! $controller_worker {
     class { 'seed_stack::consul_dns':
-      consul_version => $consul_version,
-      server         => false,
-      join           => $controller_addresses,
-      advertise_addr => $address,
-      client_addr    => $consul_client_addr,
-      domain         => $consul_domain,
-      encrypt        => $consul_encrypt,
-      ui             => $consul_ui,
+      consul_version     => $consul_version,
+      server             => false,
+      join               => $controller_addrs,
+      advertise_addr     => $advertise_addr,
+      client_addr        => $consul_client_addr,
+      domain             => $consul_domain,
+      encrypt            => $consul_encrypt,
+      ui                 => $consul_ui,
+      dnsmasq_ensure     => $dnsmasq_ensure,
+      dnsmasq_host_alias => $dnsmasq_host_alias,
     }
   }
   consul::service { 'mesos-slave':
@@ -139,14 +157,18 @@ class seed_stack::worker (
   }
 
   class { 'seed_stack::template_nginx':
+    nginx_package_ensure    => $nginx_ensure,
     consul_template_version => $consul_template_version,
     consul_address          => $consul_client_addr,
   }
-  include seed_stack::router
+  class { 'seed_stack::router':
+    listen_addr => $nginx_router_listen_addr,
+    domain      => $dnsmasq_host_alias,
+  }
 
   # Docker, using the host for DNS
   class { 'docker':
     ensure => $docker_ensure,
-    dns    => $::ipaddress_docker0,
+    dns    => $advertise_addr,
   }
 }
