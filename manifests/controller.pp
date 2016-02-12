@@ -119,9 +119,9 @@ class seed_stack::controller (
   if $install_java {
     include webupd8_oracle_java
     # Ensure Java is installed before any of the things that depend on it
-    Package['oracle-java8-installer'] -> Package['zookeeper']
-    Package['oracle-java8-installer'] -> Package['mesos']
-    Package['oracle-java8-installer'] -> Package['marathon']
+    Class['webupd8_oracle_java'] -> Package['zookeeper']
+    Class['webupd8_oracle_java'] -> Package['mesos']
+    Class['webupd8_oracle_java'] -> Package['marathon']
   }
 
   # There is no `find_index` equivalent in Puppet stdlib
