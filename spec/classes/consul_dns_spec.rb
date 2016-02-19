@@ -15,7 +15,7 @@ describe 'seed_stack::consul_dns' do
             .with_version(/\d\.\d\.\d/)
             .with_config_hash(
               'server' => false,
-              'data_dir' => '/var/consul',
+              'data_dir' => '/var/lib/consul',
               'log_level' => 'INFO',
               'advertise_addr' => '127.0.0.1',
               'client_addr' => '0.0.0.0',
@@ -56,7 +56,7 @@ describe 'seed_stack::consul_dns' do
             is_expected.to contain_class('consul')
               .with_config_hash(
                 'server' => true,
-                'data_dir' => '/var/consul',
+                'data_dir' => '/var/lib/consul',
                 'log_level' => 'INFO',
                 'advertise_addr' => '127.0.0.1',
                 'client_addr' => '0.0.0.0',
@@ -81,7 +81,7 @@ describe 'seed_stack::consul_dns' do
             is_expected.to contain_class('consul')
               .with_config_hash(
                 'server' => true,
-                'data_dir' => '/var/consul',
+                'data_dir' => '/var/lib/consul',
                 'log_level' => 'INFO',
                 'advertise_addr' => '127.0.0.1',
                 'client_addr' => '0.0.0.0',
@@ -128,7 +128,7 @@ describe 'seed_stack::consul_dns' do
           is_expected.to contain_class('consul')
             .with_config_hash(
               'server' => false,
-              'data_dir' => '/var/consul',
+              'data_dir' => '/var/lib/consul',
               'log_level' => 'INFO',
               'advertise_addr' => '127.0.0.1',
               'client_addr' => '0.0.0.0',
@@ -150,7 +150,7 @@ describe 'seed_stack::consul_dns' do
           is_expected.to contain_class('consul')
             .with_config_hash(
               'server' => false,
-              'data_dir' => '/var/consul',
+              'data_dir' => '/var/lib/consul',
               'log_level' => 'INFO',
               'advertise_addr' => '127.0.0.1',
               'client_addr' => '192.168.0.2',
@@ -180,7 +180,7 @@ describe 'seed_stack::consul_dns' do
           is_expected.to contain_class('consul')
             .with_config_hash(
               'server' => false,
-              'data_dir' => '/var/consul',
+              'data_dir' => '/var/lib/consul',
               'log_level' => 'INFO',
               'advertise_addr' => '192.168.0.2',
               'client_addr' => '0.0.0.0',
