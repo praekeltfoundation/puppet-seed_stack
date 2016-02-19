@@ -12,7 +12,7 @@ class seed_stack::params {
   $mesos_cluster            = 'seed-stack'
   $mesos_resources          = {}
 
-  $marathon_ensure          = '0.15.1*'
+  $marathon_ensure          = '0.15.2*'
   $marathon_default_options = { # TODO
     'event_subscriber' => 'http_callback' # HTTP callbacks for Consular
   }
@@ -24,7 +24,7 @@ class seed_stack::params {
   $consular_ensure          = '1.2.0*'
   $consular_sync_interval   = '300'
 
-  $consul_template_version  = '0.12.2'
+  $consul_template_version  = '0.13.0'
 
   $nginx_ensure             = 'installed'
   $nginx_router_listen_addr = '0.0.0.0'
