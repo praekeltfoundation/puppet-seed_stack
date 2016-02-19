@@ -13,6 +13,14 @@
       "version_requirement": ">=0.2.0"
     },
     {
+      "name": "praekeltfoundation/gluster",
+      "version_requirement": ">=0.2.1 <0.3.0"
+    },
+    {
+      "name": "praekeltfoundation/xylem",
+      "version_requirement": ">=0.1.0 <0.2.0"
+    },
+    {
       "name": "praekeltfoundation/marathon",
       "version_requirement": ">=0.4.0 <0.5.0"
     },
