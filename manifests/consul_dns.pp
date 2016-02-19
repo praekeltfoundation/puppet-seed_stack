@@ -86,7 +86,7 @@ class seed_stack::consul_dns (
 
   $base_config_hash = {
     'server'         => $server,
-    'data_dir'       => '/var/consul',
+    'data_dir'       => '/var/lib/consul',
     'log_level'      => 'INFO',
     'advertise_addr' => $advertise_addr,
     'client_addr'    => $client_addr,
