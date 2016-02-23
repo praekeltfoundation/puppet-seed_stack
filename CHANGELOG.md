@@ -1,3 +1,18 @@
+## 0.5.0 - 2016/02/23
+### Features
+* Initial xylem support (#65)
+* Docker 1.10.2 (#66)
+* Mesos 0.27.1 (#66)
+* Marathon 0.15.3 (badf8e9)
+* Consul Template 0.13.0 (#63)
+
+### Changes
+* Consul working directory is now `/var/lib/consul` (#58)
+* `deric/zookeeper` Puppet module updated to `0.5.1` (#64)
+
+### Fixes
+* Some basic tests (#57, #3, #65)
+
 ## 0.4.0 - 2016/02/09
 ### Features
 * Dnsmasq host alias (`servicehost`) on all workers and controllers (#25, #46)
