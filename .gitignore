@@ -16,3 +16,5 @@ Puppetfile.lock
 
 # Puppet
 /pkg/
+
+.ruby-version

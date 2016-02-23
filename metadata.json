@@ -1,6 +1,6 @@
 {
   "name": "praekeltfoundation-seed_stack",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
   "license": "BSD-3-Clause",
@@ -11,6 +11,14 @@
     {
       "name": "praekeltfoundation/consular",
       "version_requirement": ">=0.2.0"
+    },
+    {
+      "name": "praekeltfoundation/gluster",
+      "version_requirement": ">=0.2.1 <0.3.0"
+    },
+    {
+      "name": "praekeltfoundation/xylem",
+      "version_requirement": ">=0.1.0 <0.2.0"
     },
     {
       "name": "praekeltfoundation/marathon",
@@ -26,7 +34,7 @@
     },
     {
       "name": "deric/zookeeper",
-      "version_requirement": ">=0.4.2"
+      "version_requirement": ">=0.5.1 <0.6.0"
     },
     {
       "name": "garethr/docker",
