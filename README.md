@@ -122,7 +122,7 @@ The package versions can be seen in the [params class source](manifests/params.p
 | Mesos           | 0.27.1  |
 | Marathon        | 0.15.2  |
 | Zookeeper       | System  |
-| Docker          | 1.10.1  |
+| Docker          | 1.10.2  |
 | Consul          | 0.6.3   |
 | Consular        | 1.2.0   |
 | Consul Template | 0.13.0  |
