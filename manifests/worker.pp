@@ -60,6 +60,11 @@
 #
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
+#
+# [*xylem_backend*]
+#   Backend host for Xylem Docker plugin. If given, the Xylem Docker volume
+#   plugin will be installed and managed.
+#
 class seed_stack::worker (
   # Common
   $advertise_addr,
@@ -80,8 +85,8 @@ class seed_stack::worker (
   $consul_ui                = false,
 
   # Dnsmasq
-  $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
-  $dnsmasq_host_alias     = $seed_stack::params::dnsmasq_host_alias,
+  $dnsmasq_ensure           = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias       = $seed_stack::params::dnsmasq_host_alias,
 
   # Consul Template
   $consul_template_version  = $seed_stack::params::consul_template_version,
@@ -92,6 +97,9 @@ class seed_stack::worker (
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
+
+  # Xylem
+  $xylem_backend            = undef,
 ) inherits seed_stack::params {
   validate_ip_address($advertise_addr)
   validate_array($controller_addrs)
@@ -170,5 +178,13 @@ class seed_stack::worker (
   class { 'docker':
     ensure => $docker_ensure,
     dns    => $advertise_addr,
+  }
+
+  if $xylem_backend {
+    class { 'xylem::docker':
+      backend     => $xylem_backend,
+      repo_manage => !defined(Class['xylem::repo']),
+      require     => Class['docker'],
+    }
   }
 }
