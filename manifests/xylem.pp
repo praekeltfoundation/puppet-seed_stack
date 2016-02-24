@@ -7,7 +7,7 @@ class seed_stack::xylem (
   $gluster_mounts,
   $gluster_replica = undef,
   $gluster_stripe  = undef,
-  $redis_host      = '127.0.0.1',
+  $redis_host      = undef,
 ) inherits seed_stack::params {
 
   include gluster
