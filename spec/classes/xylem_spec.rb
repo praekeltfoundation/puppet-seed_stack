@@ -21,6 +21,7 @@ describe 'seed_stack::xylem' do
 
         it do
           is_expected.to contain_class('xylem::node')
+            .with_redis_host('127.0.0.1')
             .with_gluster(true)
             .with_gluster_mounts(['/data/b1', '/data/b2'])
             .with_gluster_nodes(['gfs1.local', 'gfs2.local'])
@@ -48,6 +49,7 @@ describe 'seed_stack::xylem' do
 
         it do
           is_expected.to contain_class('xylem::node')
+            .with_redis_host('127.0.0.1')
             .with_gluster(true)
             .with_gluster_mounts(['/data/b1', '/data/b2'])
             .with_gluster_nodes(['gfs1.local', 'gfs2.local'])
