@@ -22,7 +22,8 @@ describe 'seed_stack::consul_dns' do
               'domain' => 'consul.',
               'encrypt' => :undef,
               'ui' => true,
-              'retry_join' => ['127.0.0.1']
+              'retry_join' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1'],
             ).that_requires('Package[unzip]')
         end
 
@@ -34,7 +35,7 @@ describe 'seed_stack::consul_dns' do
         it do
           is_expected.to contain_file('/etc/dnsmasq.d/consul')
             .with_content(/^cache-size=0$/)
-            .with_content(/^server=\/consul\.\/0\.0\.0\.0#8600$/)
+            .with_content(/^server=\/consul\.\/127\.0\.0\.1#8600$/)
             .with_content(/^address=\/servicehost\/127\.0\.0\.1$/)
             .that_requires('Package[dnsmasq]')
         end
@@ -64,6 +65,7 @@ describe 'seed_stack::consul_dns' do
                 'encrypt' => :undef,
                 'ui' => true,
                 'retry_join' => ['127.0.0.1'],
+                'recursors' => ['127.0.0.1'],
                 # This is ok - the resulting JSON doesn't contain this key
                 'bootstrap_expect' => :undef
               )
@@ -89,6 +91,7 @@ describe 'seed_stack::consul_dns' do
                 'encrypt' => :undef,
                 'ui' => true,
                 'retry_join' => ['127.0.0.1'],
+                'recursors' => ['127.0.0.1'],
                 'bootstrap_expect' => 1
               )
           end
@@ -135,12 +138,13 @@ describe 'seed_stack::consul_dns' do
               'domain' => 'seed-stack.',
               'encrypt' => :undef,
               'ui' => true,
-              'retry_join' => ['127.0.0.1']
+              'retry_join' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1'],
             )
         end
         it do
           is_expected.to contain_file('/etc/dnsmasq.d/consul')
-            .with_content(/^server=\/seed-stack\.\/0\.0\.0\.0#8600$/)
+            .with_content(/^server=\/seed-stack\.\/127\.0\.0\.1#8600$/)
         end
       end
 
@@ -157,7 +161,8 @@ describe 'seed_stack::consul_dns' do
               'domain' => 'consul.',
               'encrypt' => :undef,
               'ui' => true,
-              'retry_join' => ['127.0.0.1']
+              'retry_join' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1'],
             )
         end
         it do
@@ -187,7 +192,8 @@ describe 'seed_stack::consul_dns' do
               'domain' => 'consul.',
               'encrypt' => :undef,
               'ui' => true,
-              'retry_join' => ['127.0.0.1']
+              'retry_join' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1'],
             )
         end
         it do
