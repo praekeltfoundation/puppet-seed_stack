@@ -123,11 +123,16 @@ class seed_stack::consul_dns (
     }
   }
 
+  $dnsmasq_client_addr = $client_addr ? {
+    '0.0.0.0' => $::ipaddress_lo,
+    default   => $client_addr,
+  }
+
   # Dnsmasq
   # -------
   $dnsmasq_base_opts = {
     'cache-size' => '0',
-    'server'     => "/${domain}/${::ipaddress_lo}#8600",
+    'server'     => "/${domain}/${dnsmasq_client_addr}#8600",
     'address'    => "/${dnsmasq_host_alias}/${advertise_addr}",
   }
   $dnsmasq_final_opts = merge($dnsmasq_base_opts, $dnsmasq_opts)
