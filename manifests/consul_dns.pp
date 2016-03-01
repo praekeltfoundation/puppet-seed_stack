@@ -127,7 +127,7 @@ class seed_stack::consul_dns (
   # -------
   $dnsmasq_base_opts = {
     'cache-size' => '0',
-    'server'     => "/${domain}/${client_addr}#8600",
+    'server'     => "/${domain}/${::ipaddress_lo}#8600",
     'address'    => "/${dnsmasq_host_alias}/${advertise_addr}",
   }
   $dnsmasq_final_opts = merge($dnsmasq_base_opts, $dnsmasq_opts)
