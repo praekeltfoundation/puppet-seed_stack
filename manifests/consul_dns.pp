@@ -61,6 +61,7 @@ class seed_stack::consul_dns (
   $encrypt            = undef,
   $bootstrap_expect   = undef,
   $ui                 = true,
+  $recursors          = [$::ipaddress_lo],
 
   $dnsmasq_ensure     = 'installed',
   $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
@@ -71,6 +72,7 @@ class seed_stack::consul_dns (
   validate_ip_address($advertise_addr)
   validate_ip_address($client_addr)
   validate_bool($ui)
+  validate_array($recursors)
   validate_hash($dnsmasq_opts)
 
   if $bootstrap_expect != undef {
@@ -93,6 +95,7 @@ class seed_stack::consul_dns (
     'domain'         => $domain,
     'encrypt'        => $encrypt,
     'ui'             => $ui,
+    'recursors'      => $recursors,
   }
 
   if $server {
