@@ -23,7 +23,7 @@ describe 'seed_stack::consul_dns' do
               'encrypt' => :undef,
               'ui' => true,
               'retry_join' => ['127.0.0.1'],
-              'recursors' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1']
             ).that_requires('Package[unzip]')
         end
 
@@ -139,7 +139,7 @@ describe 'seed_stack::consul_dns' do
               'encrypt' => :undef,
               'ui' => true,
               'retry_join' => ['127.0.0.1'],
-              'recursors' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1']
             )
         end
         it do
@@ -162,12 +162,50 @@ describe 'seed_stack::consul_dns' do
               'encrypt' => :undef,
               'ui' => true,
               'retry_join' => ['127.0.0.1'],
-              'recursors' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1']
             )
         end
         it do
           is_expected.to contain_file('/etc/dnsmasq.d/consul')
             .with_content(/^server=\/consul\.\/192\.168\.0\.2#8600$/)
+        end
+      end
+
+      describe 'when recursors is set to []' do
+        let(:params) { {:recursors => []} }
+        it do
+          is_expected.to contain_class('consul')
+            .with_config_hash(
+              'server' => false,
+              'data_dir' => '/var/lib/consul',
+              'log_level' => 'INFO',
+              'advertise_addr' => '127.0.0.1',
+              'client_addr' => '0.0.0.0',
+              'domain' => 'consul.',
+              'encrypt' => :undef,
+              'ui' => true,
+              'retry_join' => ['127.0.0.1'],
+              'recursors' => []
+            )
+        end
+      end
+
+      describe 'when recursors is set to ["foo", "bar"]' do
+        let(:params) { {:recursors => ['foo', 'bar']} }
+        it do
+          is_expected.to contain_class('consul')
+            .with_config_hash(
+              'server' => false,
+              'data_dir' => '/var/lib/consul',
+              'log_level' => 'INFO',
+              'advertise_addr' => '127.0.0.1',
+              'client_addr' => '0.0.0.0',
+              'domain' => 'consul.',
+              'encrypt' => :undef,
+              'ui' => true,
+              'retry_join' => ['127.0.0.1'],
+              'recursors' => ['foo', 'bar']
+            )
         end
       end
 
@@ -193,7 +231,7 @@ describe 'seed_stack::consul_dns' do
               'encrypt' => :undef,
               'ui' => true,
               'retry_join' => ['127.0.0.1'],
-              'recursors' => ['127.0.0.1'],
+              'recursors' => ['127.0.0.1']
             )
         end
         it do
