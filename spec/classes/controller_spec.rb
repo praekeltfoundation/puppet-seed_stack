@@ -27,7 +27,7 @@ describe 'seed_stack::controller' do
       describe 'when advertise_addr is not passed' do
         let(:params) { {:controller_addrs => ['192.168.0.2']} }
         it do
-          is_expected.to compile.and_raise_error(/Must pass advertise_addr/)
+          is_expected.to compile.and_raise_error(/Must pasfass advertise_addr/)
         end
       end
 

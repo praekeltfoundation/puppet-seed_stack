@@ -14,10 +14,10 @@
 # [*domain*]
 #   The domain that Nginx should serve for routing.
 class seed_stack::router (
-  $listen_addr = $seed_stack::params::nginx_router_listen_addr,
-  $listen_port = $seed_stack::params::nginx_router_listen_port,
-  $domain      = $seed_stack::params::nginx_router_domain,
-) inherits seed_stack::params {
+  $listen_addr = $seed_stack::cluster_params::nginx_router_listen_addr,
+  $listen_port = $seed_stack::cluster_params::nginx_router_listen_port,
+  $domain      = $seed_stack::cluster_params::nginx_router_domain,
+) inherits seed_stack::cluster_params {
   validate_ip_address($listen_addr)
   validate_integer($listen_port, 65535, 1)
 

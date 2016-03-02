@@ -21,12 +21,12 @@
 #   The address for the Consul agent for Consul Template to connect to.
 class seed_stack::template_nginx (
   $nginx_package           = 'nginx-light',
-  $nginx_package_ensure    = $seed_stack::params::nginx_ensure,
+  $nginx_package_ensure    = $seed_stack::cluster_params::nginx_ensure,
   $nginx_service_ensure    = 'running',
 
-  $consul_template_version = $seed_stack::params::consul_template_version,
-  $consul_address          = $seed_stack::params::consul_client_addr,
-) inherits seed_stack::params {
+  $consul_template_version = $seed_stack::cluster_params::consul_template_version,
+  $consul_address          = $seed_stack::cluster_params::consul_client_addr,
+) {
   package { $nginx_package:
     ensure => $nginx_package_ensure,
   }->
