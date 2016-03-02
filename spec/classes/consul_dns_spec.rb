@@ -13,7 +13,7 @@ describe 'seed_stack::consul_dns' do
         }
       end
 
-      describe 'when advertise_addr and join is set' do
+      describe 'when advertise_addr and join are set' do
         let(:params) do
           advertise_addr_and_join
         end
