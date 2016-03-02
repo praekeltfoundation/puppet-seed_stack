@@ -1,4 +1,7 @@
 ## 0.6.2 - UNRELEASED
+### Fixes
+* Changed Dnsmasq `servicehost` entry from `address` to `host-record` (#73)
+
 
 ## 0.6.1 - 2016/03/02
 ### Fixes
