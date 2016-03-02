@@ -1,4 +1,4 @@
-## 0.6.1 - UNRELEASED
+## 0.6.1 - 2016/03/02
 ### Fixes
 * Fix Consul DNS lookup via Dnsmasq in certain cases (#72)
 
