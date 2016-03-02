@@ -36,7 +36,7 @@ describe 'seed_stack::consul_dns' do
           is_expected.to contain_file('/etc/dnsmasq.d/consul')
             .with_content(/^cache-size=0$/)
             .with_content(/^server=\/consul\.\/127\.0\.0\.1#8600$/)
-            .with_content(/^address=\/servicehost\/127\.0\.0\.1$/)
+            .with_content(/^host-record=servicehost,127\.0\.0\.1$/)
             .that_requires('Package[dnsmasq]')
         end
         it do
@@ -213,7 +213,7 @@ describe 'seed_stack::consul_dns' do
         let(:params) { {:dnsmasq_host_alias => 'dockerhost'} }
         it do
           is_expected.to contain_file('/etc/dnsmasq.d/consul')
-            .with_content(/^address=\/dockerhost\/127\.0\.0\.1$/)
+            .with_content(/^host-record=dockerhost,127\.0\.0\.1$/)
         end
       end
 
@@ -236,7 +236,7 @@ describe 'seed_stack::consul_dns' do
         end
         it do
           is_expected.to contain_file('/etc/dnsmasq.d/consul')
-            .with_content(/^address=\/servicehost\/192\.168\.0\.2$/)
+            .with_content(/^host-record=servicehost,192\.168\.0\.2$/)
         end
       end
 

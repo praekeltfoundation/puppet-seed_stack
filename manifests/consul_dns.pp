@@ -138,9 +138,9 @@ class seed_stack::consul_dns (
   # Dnsmasq
   # -------
   $dnsmasq_base_opts = {
-    'cache-size' => '0',
-    'server'     => "/${domain}/${dnsmasq_client_addr}#8600",
-    'address'    => "/${dnsmasq_host_alias}/${advertise_addr}",
+    'cache-size'  => '0',
+    'server'      => "/${domain}/${dnsmasq_client_addr}#8600",
+    'host-record' => "${dnsmasq_host_alias},${advertise_addr}",
   }
   $dnsmasq_final_opts = merge($dnsmasq_base_opts, $dnsmasq_opts)
   $dnsmasq_config = join(join_keys_to_values($dnsmasq_final_opts, '='), "\n")
