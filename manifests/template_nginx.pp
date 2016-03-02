@@ -26,7 +26,9 @@ class seed_stack::template_nginx (
 
   $consul_template_version = $seed_stack::cluster_params::consul_template_version,
   $consul_address          = $seed_stack::cluster_params::consul_client_addr,
-) {
+) inherits seed_stack::cluster_params {
+  validate_ip_address($consul_address)
+
   package { $nginx_package:
     ensure => $nginx_package_ensure,
   }->
