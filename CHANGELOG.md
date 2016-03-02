@@ -1,3 +1,13 @@
+## 0.6.2 - UNRELEASED
+
+## 0.6.1 - 2016/03/02
+### Fixes
+* Fix Consul DNS lookup via Dnsmasq in certain cases (#72)
+
+## 0.6.0 - 2016/02/24
+### Features
+* Add `redis_host` option for Xylem (#68)
+
 ## 0.5.0 - 2016/02/23
 ### Features
 * Initial xylem support (#65)
