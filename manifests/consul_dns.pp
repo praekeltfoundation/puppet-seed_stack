@@ -41,6 +41,13 @@
 #   Whether or not to enable the Consul web UI. FIXME: Setting this false
 #   doesn't seem to disable the UI. Consul 0.6.1 bug? See #7.
 #
+# [*recursors*]
+#   List of upstream DNS servers to ask about names that Consul isn't
+#   authoritative for. By default, this only contains localhost so Consul can
+#   resolve the targets of CNAME records and include them in its answer.
+#   (Without this, the client would have to make extra queries, and way too
+#   many clients give up instead.)
+#
 # [*dnsmasq_ensure*]
 #   The ensure value for the Dnsmasq package.
 #
@@ -61,6 +68,7 @@ class seed_stack::consul_dns (
   $encrypt            = undef,
   $bootstrap_expect   = undef,
   $ui                 = true,
+  $recursors          = [$::ipaddress_lo],
 
   $dnsmasq_ensure     = 'installed',
   $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
@@ -71,6 +79,7 @@ class seed_stack::consul_dns (
   validate_ip_address($advertise_addr)
   validate_ip_address($client_addr)
   validate_bool($ui)
+  validate_array($recursors)
   validate_hash($dnsmasq_opts)
 
   if $bootstrap_expect != undef {
@@ -93,6 +102,7 @@ class seed_stack::consul_dns (
     'domain'         => $domain,
     'encrypt'        => $encrypt,
     'ui'             => $ui,
+    'recursors'      => $recursors,
   }
 
   if $server {
@@ -120,11 +130,16 @@ class seed_stack::consul_dns (
     }
   }
 
+  $dnsmasq_client_addr = $client_addr ? {
+    '0.0.0.0' => $::ipaddress_lo,
+    default   => $client_addr,
+  }
+
   # Dnsmasq
   # -------
   $dnsmasq_base_opts = {
     'cache-size' => '0',
-    'server'     => "/${domain}/${client_addr}#8600",
+    'server'     => "/${domain}/${dnsmasq_client_addr}#8600",
     'address'    => "/${dnsmasq_host_alias}/${advertise_addr}",
   }
   $dnsmasq_final_opts = merge($dnsmasq_base_opts, $dnsmasq_opts)

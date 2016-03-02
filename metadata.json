@@ -1,6 +1,6 @@
 {
   "name": "praekeltfoundation-seed_stack",
-  "version": "0.5.0",
+  "version": "0.6.1",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
   "license": "BSD-3-Clause",
@@ -9,43 +9,43 @@
   "issues_url": "https://github.com/praekeltfoundation/puppet-seed_stack/issues",
   "dependencies": [
     {
-      "name": "praekeltfoundation/consular",
+      "name": "praekeltfoundation-consular",
       "version_requirement": ">=0.2.0"
     },
     {
-      "name": "praekeltfoundation/gluster",
+      "name": "praekeltfoundation-gluster",
       "version_requirement": ">=0.2.1 <0.3.0"
     },
     {
-      "name": "praekeltfoundation/xylem",
-      "version_requirement": ">=0.1.0 <0.2.0"
+      "name": "praekeltfoundation-xylem",
+      "version_requirement": ">=0.1.2 <0.2.0"
     },
     {
-      "name": "praekeltfoundation/marathon",
+      "name": "praekeltfoundation-marathon",
       "version_requirement": ">=0.4.0 <0.5.0"
     },
     {
-      "name": "praekeltfoundation/webupd8_oracle_java",
+      "name": "praekeltfoundation-webupd8_oracle_java",
       "version_requirement": ">=0.1.2"
     },
     {
-      "name": "deric/mesos",
+      "name": "deric-mesos",
       "version_requirement": ">=0.6.5"
     },
     {
-      "name": "deric/zookeeper",
+      "name": "deric-zookeeper",
       "version_requirement": ">=0.5.1 <0.6.0"
     },
     {
-      "name": "garethr/docker",
+      "name": "garethr-docker",
       "version_requirement": ">=4.1.0"
     },
     {
-      "name": "gdhbashton/consul_template",
+      "name": "gdhbashton-consul_template",
       "version_requirement": ">=0.2.4"
     },
     {
-      "name": "KyleAnderson/consul",
+      "name": "KyleAnderson-consul",
       "version_requirement": ">=1.0.4"
     }
   ],
