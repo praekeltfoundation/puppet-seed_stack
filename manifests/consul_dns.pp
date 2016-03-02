@@ -41,6 +41,13 @@
 #   Whether or not to enable the Consul web UI. FIXME: Setting this false
 #   doesn't seem to disable the UI. Consul 0.6.1 bug? See #7.
 #
+# [*recursors*]
+#   List of upstream DNS servers to ask about names that consul isn't
+#   authoritative for. By default, this only contains localhost so consul can
+#   resolve the targets of CNAME records and include them in its answer.
+#   (Without this, the client would have to make extra queries, and way too
+#   many clients give up instead.)
+#
 # [*dnsmasq_ensure*]
 #   The ensure value for the Dnsmasq package.
 #
