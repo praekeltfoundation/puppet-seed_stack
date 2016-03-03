@@ -1,3 +1,5 @@
+## 0.6.3 - UNRELEASED
+
 ## 0.6.2 - 2016/03/03
 ### Changes
 * Package versions now pinned to full version strings - NOTE: versions now platform specific (#78)
