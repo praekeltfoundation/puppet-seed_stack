@@ -59,7 +59,7 @@ describe 'seed_stack::controller' do
         end
         it do
           is_expected.to contain_class('mesos')
-            .with_ensure(/\d+\.\d+\.\d+\*/)
+            .with_ensure(/\d+\.\d+\.\d+.+$/)
             .with_repo('mesosphere')
             .with_listen_address('0.0.0.0')
             .with_zookeeper('zk://192.168.0.2:2181/mesos')
