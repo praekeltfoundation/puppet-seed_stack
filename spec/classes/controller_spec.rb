@@ -59,7 +59,7 @@ describe 'seed_stack::controller' do
         end
         it do
           is_expected.to contain_class('mesos')
-            .with_ensure(/\d+\.\d+\.\d+.+$/)
+            .with_ensure(/^\d+\.\d+\.\d+.+$/)
             .with_repo('mesosphere')
             .with_listen_address('0.0.0.0')
             .with_zookeeper('zk://192.168.0.2:2181/mesos')
@@ -81,7 +81,7 @@ describe 'seed_stack::controller' do
         end
         it do
           is_expected.to contain_class('marathon')
-            .with_package_ensure(/\d+\.\d+\.\d+.+$/)
+            .with_package_ensure(/^\d+\.\d+\.\d+.+$/)
             .with_repo_manage(false)
             .with_zookeeper('zk://192.168.0.2:2181/marathon')
             .with_master('zk://192.168.0.2:2181/mesos')
@@ -145,7 +145,7 @@ describe 'seed_stack::controller' do
         end
         it do
           is_expected.to contain_class('consular')
-            .with_package_ensure(/\d+\.\d+\.\d+.+$/)
+            .with_package_ensure(/^\d+\.\d+\.\d+.+$/)
             .with_consul('http://0.0.0.0:8500')
             .with_sync_interval(300)
             .with_purge(true)
