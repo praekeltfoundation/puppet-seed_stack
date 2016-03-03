@@ -120,6 +120,21 @@ class seed_stack::worker (
       zookeeper      => $mesos_zk,
     }
 
+    if versioncmp($::puppetversion, '3.6.0') >= 0 {
+      Package <| title == 'mesos' |> {
+        # Skip installing the recommended Mesos packages as they are just
+        # Zookeeper packages that we don't need.
+        install_options => ['--no-install-recommends'],
+      }
+    } else {
+      # We can't *not* install Zookeeper but we can stop it from running.
+      service { 'zookeeper':
+        ensure  => stopped,
+        enable  => false,
+        require => Package['mesos'],
+      }
+    }
+
     # Make Puppet stop the mesos-master service
     service { 'mesos-master':
       ensure  => stopped,
