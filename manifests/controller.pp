@@ -149,6 +149,13 @@ class seed_stack::controller (
     listen_address => $mesos_listen_addr,
     zookeeper      => $mesos_zk,
   }
+  if versioncmp($::puppetversion, '3.6.0') >= 0 {
+    Package <| title == 'mesos' |> {
+      # Skip installing the recommended Mesos packages as they are just
+      # Zookeeper packages that are installed by the Zookeeper class anyway.
+      install_options => ['--no-install-recommends'],
+    }
+  }
 
   class { 'mesos::master':
     cluster => $mesos_cluster,

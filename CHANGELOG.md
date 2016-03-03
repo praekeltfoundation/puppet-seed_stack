@@ -1,3 +1,23 @@
+## 0.6.3 - UNRELEASED
+### Fixes
+* Install Mesos package with the `--no-install-recommends` flag when using versions of Puppet >= 3.6.0. This should ensure that Zookeeper is not installed unnecessarily. With older versions of Puppet, stop Zookeeper from running on workers. (#76)
+
+## 0.6.2 - 2016/03/03
+### Changes
+* Package versions now pinned to full version strings - NOTE: versions now platform specific (#78)
+
+### Fixes
+* Changed Dnsmasq `servicehost` entry from `address` to `host-record` (#73)
+* Pin package versions to complete version strings to prevent service restarts (#77)
+
+## 0.6.1 - 2016/03/02
+### Fixes
+* Fix Consul DNS lookup via Dnsmasq in certain cases (#72)
+
+## 0.6.0 - 2016/02/24
+### Features
+* Add `redis_host` option for Xylem (#68)
+
 ## 0.5.0 - 2016/02/23
 ### Features
 * Initial xylem support (#65)

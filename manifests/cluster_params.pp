@@ -74,16 +74,16 @@ class seed_stack::cluster_params(
   $advertise_addr           = undef,
   $controller_addrs         = undef,
 
-  $docker_ensure            = '1.10.2*',
+  $docker_ensure            = '1.10.2-0~trusty',
 
   $zookeeper_ensure         = 'installed',
   $zookeeper_client_addr    = '0.0.0.0',
 
-  $mesos_ensure             = '0.27.1*',
+  $mesos_ensure             = '0.27.1-2.0.226.ubuntu1404',
   $mesos_listen_addr        = '0.0.0.0',
   $mesos_cluster            = 'seed-stack',
 
-  $marathon_ensure          = '0.15.3*',
+  $marathon_ensure          = '0.15.3-1.0.463.ubuntu1404',
 
   $consul_version           = '0.6.3',
   $consul_client_addr       = '0.0.0.0',
