@@ -1,3 +1,11 @@
+## 0.6.2 - 2016/03/03
+### Changes
+* Package versions now pinned to full version strings - NOTE: versions now platform specific (#78)
+
+### Fixes
+* Changed Dnsmasq `servicehost` entry from `address` to `host-record` (#73)
+* Pin package versions to complete version strings to prevent service restarts (#77)
+
 ## 0.6.1 - 2016/03/02
 ### Fixes
 * Fix Consul DNS lookup via Dnsmasq in certain cases (#72)
