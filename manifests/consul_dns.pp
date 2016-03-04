@@ -59,21 +59,28 @@
 #   A hash of extra options to configure Dnsmasq with. e.g.
 #   { 'listen-address' => $::ipaddress_lo, }.
 class seed_stack::consul_dns (
-  $consul_version     = $seed_stack::params::consul_version,
+  $advertise_addr     = $seed_stack::cluster_params::advertise_addr,
+  $join               = $seed_stack::cluster_params::controller_addrs,
+  $consul_version     = $seed_stack::cluster_params::consul_version,
   $server             = false,
-  $join               = [$::ipaddress_lo],
-  $advertise_addr     = $::ipaddress_lo,
-  $client_addr        = $seed_stack::params::consul_client_addr,
-  $domain             = $seed_stack::params::consul_domain,
-  $encrypt            = undef,
+  $client_addr        = $seed_stack::cluster_params::consul_client_addr,
+  $domain             = $seed_stack::cluster_params::consul_domain,
+  $encrypt            = $seed_stack::cluster_params::consul_encrypt,
   $bootstrap_expect   = undef,
   $ui                 = true,
   $recursors          = [$::ipaddress_lo],
 
   $dnsmasq_ensure     = 'installed',
-  $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
+  $dnsmasq_host_alias = $seed_stack::cluster_params::nginx_router_domain,
   $dnsmasq_opts       = {},
-) inherits seed_stack::params {
+) inherits seed_stack::cluster_params {
+  if $advertise_addr == undef {
+    fail("Must pass advertise_addr to Class[${title}]")
+  }
+  if $join == undef {
+    fail("Must pass join to Class[${title}]")
+  }
+
   validate_bool($server)
   validate_array($join)
   validate_ip_address($advertise_addr)
@@ -99,6 +106,7 @@ class seed_stack::consul_dns (
     'log_level'      => 'INFO',
     'advertise_addr' => $advertise_addr,
     'client_addr'    => $client_addr,
+    'retry_join'     => $join,
     'domain'         => $domain,
     'encrypt'        => $encrypt,
     'ui'             => $ui,
@@ -106,14 +114,9 @@ class seed_stack::consul_dns (
   }
 
   if $server {
-    $extra_config_hash = {
-      'bootstrap_expect' => $bootstrap_expect,
-      'retry_join'       => $join,
-    }
+    $extra_config_hash = { 'bootstrap_expect' => $bootstrap_expect }
   } else {
-    $extra_config_hash = {
-      'retry_join' => $join,
-    }
+    $extra_config_hash = {}
   }
 
   $config_hash = merge($base_config_hash, $extra_config_hash)

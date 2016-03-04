@@ -24,23 +24,43 @@ This module is still a **work in progress**. We are waiting on new releases of a
 ## Usage
 A Seed Stack node can either be a controller (i.e. a Mesos master), a worker (a Mesos slave), or a combination of the two.
 
+The first step is to set up the cluster-wide parameters. A good way to do this is to define a class that all the nodes in the cluster can include. For example:
+```puppet
+class my_cluster_params {
+  class { 'seed_stack::cluster_params':
+    advertise_addr   => $::ipaddress_eth1,
+    controller_addrs => ['10.0.0.11', '10.0.0.12', '10.0.0.13'],
+    consul_encrypt   => 'Oj4lWHxyQNGLkqH1L+7e4A==',
+  }
+}
+
+node 'mynode.example.com' {
+  include my_cluster_params
+  ...
+}
+```
+
+Setting up these cluster-wide parameters is optional but makes life easier. Every parameter can be set or overridden in the classes that use the parameters. At a minimum, most classes will require two parameters:
+* `advertise_addr`: The address that other nodes in the cluster should use to access the node.
+* `controller_addrs`: The list of advertise addresses for the controller nodes.
+
 #### Controller
-The `seed_stack::controller` class is responsible for configuring a Seed Stack controller. For a full list of available parameters, see the [class source](manifests/controller.pp).
+The `seed_stack::controller` class is responsible for configuring a Seed Stack controller. For a full list of available parameters, see the [class source](manifests/controller.pp). If you've set up the cluster-wide parameters, this is simple.
 
 ```puppet
-class { 'seed_stack::controller':
-  advertise_addr   => '192.168.0.2',
-  controller_addrs => ['192.168.0.2'],
+node 'controller01.example.com', 'controller02.example.com', 'controller03.example.com' {
+  include my_cluster_params
+  include seed_stack::controller
 }
 ```
 
 #### Worker
-The `seed_stack::worker` class is responsible for configuring a Seed Stack worker. For a full list of available parameters, see the [class source](manifests/worker.pp).
+The `seed_stack::worker` class is responsible for configuring a Seed Stack worker. For a full list of available parameters, see the [class source](manifests/worker.pp). Again, after setting up the parameters you can do something like:
 
 ```puppet
-class { 'seed_stack::worker':
-  advertise_addr   => '192.168.0.3',
-  controller_addrs => ['192.168.0.2'],
+node /^worker\d{2}\.example\.com$/ {
+  include my_cluster_params
+  include seed_stack::worker
 }
 ```
 
@@ -48,15 +68,17 @@ class { 'seed_stack::worker':
 A node can be both a controller and a worker. This is useful for single-node setups.
 
 ```puppet
-class { 'seed_stack::controller':
-  advertise_addr    => $ipaddress_eth0,
-  controller_addrs  => [$ipaddress_eth0],
-  controller_worker => true,
-}
-class { 'seed_stack::worker':
-  advertise_addr    => $ipaddress_eth0,
-  controller_addrs  => [$ipaddress_eth0],
-  controller_worker => true,
+node 'standalone.example.com' {
+  class { 'seed_stack::cluster_params':
+    advertise_addr    => $ipaddress_eth0,
+    controller_addrs  => [$ipaddress_eth0],
+  }
+  class { 'seed_stack::controller':
+    controller_worker => true,
+  }
+  class { 'seed_stack::worker':
+    controller_worker => true,
+  }
 }
 ```
 **NOTE:** For combination controller/workers it is necessary to set `controller_worker => true` for both the `seed_stack::controller` class and the `seed_stack::worker` class so that the two classes do not conflict.

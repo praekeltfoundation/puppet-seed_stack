@@ -8,7 +8,7 @@ class seed_stack::xylem (
   $gluster_replica = undef,
   $gluster_stripe  = undef,
   $redis_host      = undef,
-) inherits seed_stack::params {
+) {
 
   include gluster
 
