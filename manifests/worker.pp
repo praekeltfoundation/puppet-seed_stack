@@ -67,40 +67,47 @@
 #
 class seed_stack::worker (
   # Common
-  $advertise_addr,
-  $controller_addrs,
+  $advertise_addr           = $seed_stack::cluster_params::advertise_addr,
+  $controller_addrs         = $seed_stack::cluster_params::controller_addrs,
   $hostname                 = $::fqdn,
   $controller_worker        = false,
 
   # Mesos
-  $mesos_ensure             = $seed_stack::params::mesos_ensure,
-  $mesos_listen_addr        = $seed_stack::params::mesos_listen_addr,
-  $mesos_resources          = $seed_stack::params::mesos_resources,
+  $mesos_ensure             = $seed_stack::cluster_params::mesos_ensure,
+  $mesos_listen_addr        = $seed_stack::cluster_params::mesos_listen_addr,
+  $mesos_resources          = {},
 
   # Consul
-  $consul_version           = $seed_stack::params::consul_version,
-  $consul_client_addr       = $seed_stack::params::consul_client_addr,
-  $consul_domain            = $seed_stack::params::consul_domain,
+  $consul_version           = $seed_stack::cluster_params::consul_version,
+  $consul_client_addr       = $seed_stack::cluster_params::consul_client_addr,
+  $consul_domain            = $seed_stack::cluster_params::consul_domain,
   $consul_encrypt           = undef,
   $consul_ui                = false,
 
   # Dnsmasq
-  $dnsmasq_ensure           = $seed_stack::params::dnsmasq_ensure,
-  $dnsmasq_host_alias       = $seed_stack::params::dnsmasq_host_alias,
+  $dnsmasq_ensure           = $seed_stack::cluster_params::dnsmasq_ensure,
+  $dnsmasq_host_alias       = $seed_stack::cluster_params::dnsmasq_host_alias,
 
   # Consul Template
-  $consul_template_version  = $seed_stack::params::consul_template_version,
+  $consul_template_version  = $seed_stack::cluster_params::consul_template_version,
 
   # Nginx
-  $nginx_ensure             = $seed_stack::params::nginx_ensure,
-  $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
+  $nginx_ensure             = $seed_stack::cluster_params::nginx_ensure,
+  $nginx_router_listen_addr = $seed_stack::cluster_params::nginx_router_listen_addr,
 
   # Docker
-  $docker_ensure            = $seed_stack::params::docker_ensure,
+  $docker_ensure            = $seed_stack::cluster_params::docker_ensure,
 
   # Xylem
   $xylem_backend            = undef,
-) inherits seed_stack::params {
+) inherits seed_stack::cluster_params {
+  if $advertise_addr == undef {
+    fail("Must pass advertise_addr to Class[${title}]")
+  }
+  if $controller_addrs == undef {
+    fail("Must pass controller_addrs to Class[${title}]")
+  }
+
   validate_ip_address($advertise_addr)
   validate_array($controller_addrs)
   validate_bool($controller_worker)
@@ -118,6 +125,21 @@ class seed_stack::worker (
       repo           => 'mesosphere',
       listen_address => $mesos_listen_addr,
       zookeeper      => $mesos_zk,
+    }
+
+    if versioncmp($::puppetversion, '3.6.0') >= 0 {
+      Package <| title == 'mesos' |> {
+        # Skip installing the recommended Mesos packages as they are just
+        # Zookeeper packages that we don't need.
+        install_options => ['--no-install-recommends'],
+      }
+    } else {
+      # We can't *not* install Zookeeper but we can stop it from running.
+      service { 'zookeeper':
+        ensure  => stopped,
+        enable  => false,
+        require => Package['mesos'],
+      }
     }
 
     # Make Puppet stop the mesos-master service

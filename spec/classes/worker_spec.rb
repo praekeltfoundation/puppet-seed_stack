@@ -110,6 +110,34 @@ describe 'seed_stack::worker' do
           is_expected.to compile.and_raise_error(mustpass('advertise_addr'))
         end
       end
+
+      context 'Mesos package --no-install-recommends' do
+        let(:params) do
+          {
+            :controller_addrs => ['192.168.0.2'],
+            :advertise_addr => '192.168.0.2',
+          }
+        end
+        if Gem::Version.new(Puppet.version) >= Gem::Version.new('3.6.0')
+          it do
+            is_expected.to contain_package('mesos')
+              .with_install_options('--no-install-recommends')
+          end
+
+          it do
+            is_expected.not_to contain_service('zookeeper')
+          end
+        else
+          it { is_expected.to contain_package('mesos').without_install_options }
+
+          it do
+            is_expected.to contain_service('zookeeper')
+              .with_ensure('stopped')
+              .with_enable(false)
+              .that_requires('Package[mesos]')
+          end
+        end
+      end
     end
   end
 end

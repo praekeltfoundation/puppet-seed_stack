@@ -69,39 +69,46 @@
 #   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
-  $advertise_addr,
-  $controller_addrs,
+  $advertise_addr         = $seed_stack::cluster_params::advertise_addr,
+  $controller_addrs       = $seed_stack::cluster_params::controller_addrs,
   $hostname               = $::fqdn,
   $controller_worker      = false,
   $install_java           = true,
 
   # Zookeeper
-  $zookeeper_ensure       = $seed_stack::params::zookeeper_ensure,
-  $zookeeper_client_addr  = $seed_stack::params::zookeeper_client_addr,
+  $zookeeper_ensure       = $seed_stack::cluster_params::zookeeper_ensure,
+  $zookeeper_client_addr  = $seed_stack::cluster_params::zookeeper_client_addr,
 
   # Mesos
-  $mesos_ensure           = $seed_stack::params::mesos_ensure,
-  $mesos_listen_addr      = $seed_stack::params::mesos_listen_addr,
-  $mesos_cluster          = $seed_stack::params::mesos_cluster,
+  $mesos_ensure           = $seed_stack::cluster_params::mesos_ensure,
+  $mesos_listen_addr      = $seed_stack::cluster_params::mesos_listen_addr,
+  $mesos_cluster          = $seed_stack::cluster_params::mesos_cluster,
 
   # Marathon
-  $marathon_ensure        = $seed_stack::params::marathon_ensure,
+  $marathon_ensure        = $seed_stack::cluster_params::marathon_ensure,
 
   # Consul
-  $consul_version         = $seed_stack::params::consul_version,
-  $consul_client_addr     = $seed_stack::params::consul_client_addr,
-  $consul_domain          = $seed_stack::params::consul_domain,
-  $consul_encrypt         = undef,
+  $consul_version         = $seed_stack::cluster_params::consul_version,
+  $consul_client_addr     = $seed_stack::cluster_params::consul_client_addr,
+  $consul_domain          = $seed_stack::cluster_params::consul_domain,
+  $consul_encrypt         = $seed_stack::cluster_params::consul_encrypt,
   $consul_ui              = true,
 
   # Dnsmasq
-  $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
-  $dnsmasq_host_alias     = $seed_stack::params::dnsmasq_host_alias,
+  $dnsmasq_ensure         = $seed_stack::cluster_params::dnsmasq_ensure,
+  $dnsmasq_host_alias     = $seed_stack::cluster_params::dnsmasq_host_alias,
 
   # Consular
-  $consular_ensure        = $seed_stack::params::consular_ensure,
-  $consular_sync_interval = $seed_stack::params::consular_sync_interval,
-) inherits seed_stack::params {
+  $consular_ensure        = $seed_stack::cluster_params::consular_ensure,
+  $consular_sync_interval = $seed_stack::cluster_params::consular_sync_interval,
+) inherits seed_stack::cluster_params {
+  if $advertise_addr == undef {
+    fail("Must pass advertise_addr to Class[${title}]")
+  }
+  if $controller_addrs == undef {
+    fail("Must pass controller_addrs to Class[${title}]")
+  }
+
   validate_ip_address($advertise_addr)
   validate_array($controller_addrs)
   validate_bool($controller_worker)
@@ -141,6 +148,13 @@ class seed_stack::controller (
     repo           => 'mesosphere',
     listen_address => $mesos_listen_addr,
     zookeeper      => $mesos_zk,
+  }
+  if versioncmp($::puppetversion, '3.6.0') >= 0 {
+    Package <| title == 'mesos' |> {
+      # Skip installing the recommended Mesos packages as they are just
+      # Zookeeper packages that are installed by the Zookeeper class anyway.
+      install_options => ['--no-install-recommends'],
+    }
   }
 
   class { 'mesos::master':
