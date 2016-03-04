@@ -43,6 +43,10 @@ describe 'seed_stack::worker' do
         it { is_expected.to contain_class('docker') }
 
         it { is_expected.not_to contain_class('xylem::docker') }
+
+        it { is_expected.not_to contain_class('gluster') }
+
+        it { is_expected.not_to contain_class('gluster::client') }
       end
 
       describe 'when xylem_backend is passed' do
@@ -87,6 +91,10 @@ describe 'seed_stack::worker' do
             .with_repo_manage(true)
             .that_requires('Class[docker]')
         end
+
+        it { is_expected.not_to contain_class('gluster') }
+
+        it { is_expected.to contain_class('gluster::client') }
       end
 
       describe 'when controller_addrs is not passed' do

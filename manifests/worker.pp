@@ -181,6 +181,8 @@ class seed_stack::worker (
   }
 
   if $xylem_backend {
+    include gluster::client
+
     class { 'xylem::docker':
       backend     => $xylem_backend,
       repo_manage => !defined(Class['xylem::repo']),
