@@ -64,14 +64,14 @@ describe 'seed_stack::xylem' do
       describe 'when gluster_hosts is not passed' do
         let(:params) { {:gluster_mounts => ['/data/b1', '/data/b2']} }
         it do
-          is_expected.to compile.and_raise_error(must_pass 'gluster_hosts')
+          is_expected.to compile.and_raise_error(mustpass('gluster_hosts'))
         end
       end
 
       describe 'when gluster_mounts is not passed' do
         let(:params) { {:gluster_hosts => ['gfs1.local', 'gfs2.local']} }
         it do
-          is_expected.to compile.and_raise_error(must_pass 'gluster_mounts')
+          is_expected.to compile.and_raise_error(mustpass('gluster_mounts'))
         end
       end
     end
