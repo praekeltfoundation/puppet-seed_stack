@@ -92,14 +92,14 @@ describe 'seed_stack::worker' do
       describe 'when controller_addrs is not passed' do
         let(:params) { {:advertise_addr => '192.168.0.2'} }
         it do
-          is_expected.to compile.and_raise_error(/Must pass controller_addrs/)
+          is_expected.to compile.and_raise_error(must_pass 'controller_addrs')
         end
       end
 
       describe 'when advertise_addr is not passed' do
         let(:params) { {:controller_addrs => ['192.168.0.2']} }
         it do
-          is_expected.to compile.and_raise_error(/Must pass advertise_addr/)
+          is_expected.to compile.and_raise_error(must_pass 'advertise_addr')
         end
       end
     end
