@@ -1,4 +1,10 @@
-## 0.6.3 - UNRELEASED
+## 0.7.0 - UNRELEASED
+### Features
+* New `seed_stack::cluster_params` class makes it easier to set cluster-wide configuration parameters (#74)
+
+### Changes
+* `advertise_addr` and `join` are now required parameters of `seed_stack::consul_dns` (#74)
+
 ### Fixes
 * Install Mesos package with the `--no-install-recommends` flag when using versions of Puppet >= 3.6.0. This should ensure that Zookeeper is not installed unnecessarily. With older versions of Puppet, stop Zookeeper from running on workers. (#76)
 * Include `gluster::client` on worker hosts by default. (#79)
