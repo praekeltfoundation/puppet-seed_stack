@@ -1,4 +1,4 @@
-## 0.7.0 - UNRELEASED
+## 0.7.0 - 2016/03/07
 ### Features
 * New `seed_stack::cluster_params` class makes it easier to set cluster-wide configuration parameters (#74)
 
