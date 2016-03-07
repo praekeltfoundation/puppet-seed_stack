@@ -97,6 +97,55 @@ describe 'seed_stack::worker' do
         it { is_expected.to contain_class('gluster::client') }
       end
 
+      describe 'when gluster_client_manage is false' do
+        let(:params) do
+          {
+            :controller_addrs => ['192.168.0.2'],
+            :advertise_addr => '192.168.0.2',
+            :xylem_backend => 'gfs1.local',
+            :gluster_client_manage => false,
+          }
+        end
+
+        it { is_expected.to compile }
+
+        it { is_expected.to contain_class('seed_stack::worker') }
+
+        it { is_expected.to contain_class('mesos') }
+
+        it do
+          is_expected.to contain_service('mesos-master')
+            .with_ensure('stopped')
+        end
+
+        it { is_expected.to contain_class('mesos::slave') }
+
+        it do
+          is_expected.to contain_class('seed_stack::consul_dns')
+            .with_join('192.168.0.2')
+            .with_advertise_addr('192.168.0.2')
+        end
+
+        it { is_expected.to contain_consul__service('mesos-slave') }
+
+        it { is_expected.to contain_class('seed_stack::template_nginx') }
+
+        it { is_expected.to contain_class('seed_stack::router') }
+
+        it { is_expected.to contain_class('docker') }
+
+        it do
+          is_expected.to contain_class('xylem::docker')
+            .with_backend('gfs1.local')
+            .with_repo_manage(true)
+            .that_requires('Class[docker]')
+        end
+
+        it { is_expected.not_to contain_class('gluster') }
+
+        it { is_expected.not_to contain_class('gluster::client') }
+      end
+
       describe 'when controller_addrs is not passed' do
         let(:params) { {:advertise_addr => '192.168.0.2'} }
         it do
