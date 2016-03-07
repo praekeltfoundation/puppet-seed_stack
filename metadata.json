@@ -14,7 +14,7 @@
     },
     {
       "name": "praekeltfoundation-gluster",
-      "version_requirement": ">=0.2.1 <0.3.0"
+      "version_requirement": ">=0.2.2 <0.3.0"
     },
     {
       "name": "praekeltfoundation-xylem",

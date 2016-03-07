@@ -65,6 +65,11 @@
 #   Backend host for Xylem Docker plugin. If given, the Xylem Docker volume
 #   plugin will be installed and managed.
 #
+# [*gluster_client_manage*]
+#   Set to false to avoid installing the Glusterfs client when xylem_backend is
+#   set. (Do this when seed_stack::xylem is included in the same node to avoid
+#   repo management conflicts.)
+#
 class seed_stack::worker (
   # Common
   $advertise_addr           = $seed_stack::cluster_params::advertise_addr,
@@ -100,6 +105,7 @@ class seed_stack::worker (
 
   # Xylem
   $xylem_backend            = undef,
+  $gluster_client_manage    = true,
 ) inherits seed_stack::cluster_params {
   if $advertise_addr == undef {
     fail("Must pass advertise_addr to Class[${title}]")
@@ -116,6 +122,7 @@ class seed_stack::worker (
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
   validate_ip_address($nginx_router_listen_addr)
+  validate_bool($gluster_client_manage)
 
   $zk_base = join(suffix($controller_addrs, ':2181'), ',')
   $mesos_zk = "zk://${zk_base}/mesos"
@@ -203,6 +210,10 @@ class seed_stack::worker (
   }
 
   if $xylem_backend {
+    if $gluster_client_manage {
+      include gluster::client
+    }
+
     class { 'xylem::docker':
       backend     => $xylem_backend,
       repo_manage => !defined(Class['xylem::repo']),
