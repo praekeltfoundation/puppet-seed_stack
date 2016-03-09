@@ -93,7 +93,7 @@ class seed_stack::cluster_params(
   $consular_ensure          = '1.2.0*',
   $consular_sync_interval   = '300',
 
-  $consul_template_version  = '0.13.0',
+  $consul_template_version  = '0.14.0',
 
   $nginx_ensure             = 'installed',
   $nginx_router_listen_addr = '0.0.0.0',
