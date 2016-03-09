@@ -72,41 +72,41 @@
 #
 class seed_stack::worker (
   # Common
-  $advertise_addr           = $seed_stack::cluster_params::advertise_addr,
-  $controller_addrs         = $seed_stack::cluster_params::controller_addrs,
+  $advertise_addr           = $seed_stack::params::advertise_addr,
+  $controller_addrs         = $seed_stack::params::controller_addrs,
   $hostname                 = $::fqdn,
   $controller_worker        = false,
 
   # Mesos
-  $mesos_ensure             = $seed_stack::cluster_params::mesos_ensure,
-  $mesos_listen_addr        = $seed_stack::cluster_params::mesos_listen_addr,
+  $mesos_ensure             = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr        = $seed_stack::params::mesos_listen_addr,
   $mesos_resources          = {},
 
   # Consul
-  $consul_version           = $seed_stack::cluster_params::consul_version,
-  $consul_client_addr       = $seed_stack::cluster_params::consul_client_addr,
-  $consul_domain            = $seed_stack::cluster_params::consul_domain,
+  $consul_version           = $seed_stack::params::consul_version,
+  $consul_client_addr       = $seed_stack::params::consul_client_addr,
+  $consul_domain            = $seed_stack::params::consul_domain,
   $consul_encrypt           = undef,
   $consul_ui                = false,
 
   # Dnsmasq
-  $dnsmasq_ensure           = $seed_stack::cluster_params::dnsmasq_ensure,
-  $dnsmasq_host_alias       = $seed_stack::cluster_params::dnsmasq_host_alias,
+  $dnsmasq_ensure           = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias       = $seed_stack::params::dnsmasq_host_alias,
 
   # Consul Template
-  $consul_template_version  = $seed_stack::cluster_params::consul_template_version,
+  $consul_template_version  = $seed_stack::params::consul_template_version,
 
   # Nginx
-  $nginx_ensure             = $seed_stack::cluster_params::nginx_ensure,
-  $nginx_router_listen_addr = $seed_stack::cluster_params::nginx_router_listen_addr,
+  $nginx_ensure             = $seed_stack::params::nginx_ensure,
+  $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
 
   # Docker
-  $docker_ensure            = $seed_stack::cluster_params::docker_ensure,
+  $docker_ensure            = $seed_stack::params::docker_ensure,
 
   # Xylem
   $xylem_backend            = undef,
   $gluster_client_manage    = true,
-) inherits seed_stack::cluster_params {
+) inherits seed_stack::params {
   if $advertise_addr == undef {
     fail("Must pass advertise_addr to Class[${title}]")
   }

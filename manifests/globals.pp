@@ -1,4 +1,4 @@
-# == Class: seed_stack
+# == Class: seed_stack::globals
 #
 # Cluster-wide parameters for configuring seed_stack nodes. This class doesn't
 # *do* anything- it just holds parameters. This is not an exhaustive list of
@@ -70,7 +70,7 @@
 #
 # [*nginx_router_domain*]
 #   The domain that Nginx should serve for routing.
-class seed_stack::cluster_params(
+class seed_stack::globals(
   $advertise_addr           = undef,
   $controller_addrs         = undef,
 

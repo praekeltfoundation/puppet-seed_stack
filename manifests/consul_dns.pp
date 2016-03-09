@@ -59,21 +59,21 @@
 #   A hash of extra options to configure Dnsmasq with. e.g.
 #   { 'listen-address' => $::ipaddress_lo, }.
 class seed_stack::consul_dns (
-  $advertise_addr     = $seed_stack::cluster_params::advertise_addr,
-  $join               = $seed_stack::cluster_params::controller_addrs,
-  $consul_version     = $seed_stack::cluster_params::consul_version,
+  $advertise_addr     = $seed_stack::params::advertise_addr,
+  $join               = $seed_stack::params::controller_addrs,
+  $consul_version     = $seed_stack::params::consul_version,
   $server             = false,
-  $client_addr        = $seed_stack::cluster_params::consul_client_addr,
-  $domain             = $seed_stack::cluster_params::consul_domain,
-  $encrypt            = $seed_stack::cluster_params::consul_encrypt,
+  $client_addr        = $seed_stack::params::consul_client_addr,
+  $domain             = $seed_stack::params::consul_domain,
+  $encrypt            = $seed_stack::params::consul_encrypt,
   $bootstrap_expect   = undef,
   $ui                 = true,
   $recursors          = [$::ipaddress_lo],
 
   $dnsmasq_ensure     = 'installed',
-  $dnsmasq_host_alias = $seed_stack::cluster_params::nginx_router_domain,
+  $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
   $dnsmasq_opts       = {},
-) inherits seed_stack::cluster_params {
+) inherits seed_stack::params {
   if $advertise_addr == undef {
     fail("Must pass advertise_addr to Class[${title}]")
   }
