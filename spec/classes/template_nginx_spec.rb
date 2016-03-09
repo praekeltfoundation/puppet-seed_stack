@@ -8,7 +8,7 @@ describe 'seed_stack::template_nginx' do
       end
 
       describe 'nginx is not managed here' do
-        let (:params) do
+        let(:params) do
           {
             :nginx_manage => false
           }
@@ -18,7 +18,7 @@ describe 'seed_stack::template_nginx' do
       end
 
       describe 'nginx is managed here' do
-        let (:params) do
+        let(:params) do
           {
             :nginx_manage => true
           }
