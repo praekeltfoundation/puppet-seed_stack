@@ -32,6 +32,5 @@ class seed_stack::router (
     source      => '/etc/consul-template/nginx-services.ctmpl',
     destination => '/etc/nginx/sites-enabled/seed-services.conf',
     command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
   }
 }
