@@ -20,6 +20,7 @@
 # [*consul_address*]
 #   The address for the Consul agent for Consul Template to connect to.
 class seed_stack::template_nginx (
+  $nginx_manage            = true,
   $nginx_package           = 'nginx-light',
   $nginx_package_ensure    = $seed_stack::cluster_params::nginx_ensure,
   $nginx_service_ensure    = 'running',
@@ -29,11 +30,13 @@ class seed_stack::template_nginx (
 ) inherits seed_stack::cluster_params {
   validate_ip_address($consul_address)
 
-  package { $nginx_package:
-    ensure => $nginx_package_ensure,
-  }->
-  service { 'nginx':
-    ensure => $nginx_service_ensure,
+  if $nginx_manage {
+    package { $nginx_package:
+      ensure => $nginx_package_ensure,
+    }->
+    service { 'nginx':
+      ensure => $nginx_service_ensure,
+    }
   }
 
   if ! defined (Package['unzip']) {
@@ -66,6 +69,5 @@ class seed_stack::template_nginx (
     source      => '/etc/consul-template/nginx-upstreams.ctmpl',
     destination => '/etc/nginx/sites-enabled/seed-upstreams.conf',
     command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
   }
 }
