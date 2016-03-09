@@ -26,7 +26,7 @@ describe 'seed_stack::template_nginx' do
         it { is_expected.to compile }
         it { is_expected.to contain_service('nginx') }
       end
-       
+
       describe 'no options' do
         it { is_expected.to compile }
       end
