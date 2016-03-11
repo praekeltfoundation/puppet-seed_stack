@@ -79,7 +79,7 @@ class seed_stack::cluster_params(
   $zookeeper_ensure         = 'installed',
   $zookeeper_client_addr    = '0.0.0.0',
 
-  $mesos_ensure             = '0.27.1-2.0.226.ubuntu1404',
+  $mesos_ensure             = '0.27.2-2.0.15.ubuntu1404',
   $mesos_listen_addr        = '0.0.0.0',
   $mesos_cluster            = 'seed-stack',
 
