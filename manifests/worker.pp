@@ -110,7 +110,6 @@ class seed_stack::worker (
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
-  validate_ip_address($router_listen_addr)
   validate_bool($gluster_client_manage)
 
   $zk_base = join(suffix($controller_addrs, ':2181'), ',')
