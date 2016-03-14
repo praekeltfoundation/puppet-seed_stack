@@ -49,13 +49,13 @@
 # [*nginx_ensure*]
 #   The package ensure value for Nginx.
 #
-# [*nginx_router_listen_addr*]
+# [*router_listen_addr*]
 #   The address that Nginx should listen on when serving routing requests.
 #
-# [*nginx_router_listen_port*]
+# [*router_listen_port*]
 #   The port that Nginx should listen on when serving routing requests.
 #
-# [*nginx_router_domain*]
+# [*router_domain*]
 #   The domain that Nginx should serve for routing.
 class seed_stack::params {
   $docker_ensure            = '1.10.3-0~trusty'
@@ -79,7 +79,7 @@ class seed_stack::params {
   $consul_template_version  = '0.14.0'
 
   $nginx_ensure             = 'installed'
-  $nginx_router_listen_addr = '0.0.0.0'
-  $nginx_router_listen_port = 80
-  $nginx_router_domain      = 'servicehost'
+  $router_listen_addr       = $::ipaddress_lo
+  $router_listen_port       = 80
+  $router_domain            = 'servicehost'
 }
