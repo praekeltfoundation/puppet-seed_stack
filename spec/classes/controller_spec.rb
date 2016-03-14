@@ -116,32 +116,38 @@ describe 'seed_stack::controller' do
           is_expected.to contain_consul__service('marathon')
             .with_port(8080)
             .with_checks(
-              [
-                ['http', 'http://127.0.0.1:8080/ping'],
-                ['interval', '10s'],
-                ['timeout', '1s'],
-              ]
+              puppet3_hashlist_to_a(
+                [{
+                  'http' => 'http://127.0.0.1:8080/ping',
+                  'interval' => '10s',
+                  'timeout' => '1s'
+                }]
+              )
             )
         end
         it do
           is_expected.to contain_consul__service('mesos-master')
             .with_port(5050)
             .with_checks(
-              [
-                ['http', 'http://0.0.0.0:5050/master/health'],
-                ['interval', '10s'],
-                ['timeout', '1s'],
-              ]
+              puppet3_hashlist_to_a(
+                [{
+                  'http' => 'http://0.0.0.0:5050/master/health',
+                  'interval' => '10s',
+                  'timeout' => '1s'
+                }]
+              )
             )
         end
         it do
           is_expected.to contain_consul__service('zookeeper')
             .with_port(2181)
             .with_checks(
-              [
-                ['script', 'echo "srvr" | nc 0.0.0.0 2181'],
-                ['interval', '30s']
-              ]
+              puppet3_hashlist_to_a(
+                [{
+                  'script' => 'echo "srvr" | nc 0.0.0.0 2181',
+                  'interval' => '30s'
+                }]
+              )
             )
         end
         it do
@@ -163,7 +169,7 @@ describe 'seed_stack::controller' do
         if Gem::Version.new(Puppet.version) >= Gem::Version.new('3.6.0')
           it do
             is_expected.to contain_package('mesos')
-              .with_install_options('--no-install-recommends')
+              .with_install_options(['--no-install-recommends'])
           end
         else
           it { is_expected.to contain_package('mesos').without_install_options }
