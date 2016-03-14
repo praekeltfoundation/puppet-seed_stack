@@ -79,7 +79,7 @@ class seed_stack::params {
   $consul_template_version  = '0.14.0'
 
   $nginx_ensure             = 'installed'
-  $router_listen_addr       = '0.0.0.0'
+  $router_listen_addr       = $::ipaddress_lo
   $router_listen_port       = 80
   $router_domain            = 'servicehost'
 }

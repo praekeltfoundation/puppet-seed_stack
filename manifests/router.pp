@@ -6,7 +6,9 @@
 # === Parameters
 #
 # [*listen_addr*]
-#   The address that Nginx should listen on when serving requests.
+#   The address that Nginx should listen on when serving requests. NOTE: If you
+#   are using an address and port that are available from the outside internet,
+#   your services will be exposed via the router.
 #
 # [*listen_port*]
 #   The port that Nginx should listen on when serving requests.
