@@ -74,7 +74,7 @@ class seed_stack::cluster_params(
   $advertise_addr           = undef,
   $controller_addrs         = undef,
 
-  $docker_ensure            = '1.10.2-0~trusty',
+  $docker_ensure            = '1.10.3-0~trusty',
 
   $zookeeper_ensure         = 'installed',
   $zookeeper_client_addr    = '0.0.0.0',
