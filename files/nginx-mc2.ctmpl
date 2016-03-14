@@ -10,7 +10,7 @@
 {{range services}}{{if eq .Name "seed-infra-mc2-mc2"}}
 server {
   listen 7001;
-  server_name{{range service .Name}} {{.Address}}{{end};
+  server_name{{range service .Name}} {{.Address}}{{end}};
 
   location / {
     proxy_pass http://{{.Name}};
