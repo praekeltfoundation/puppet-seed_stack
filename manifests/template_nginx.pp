@@ -22,12 +22,12 @@
 class seed_stack::template_nginx (
   $nginx_manage            = true,
   $nginx_package           = 'nginx-light',
-  $nginx_package_ensure    = $seed_stack::cluster_params::nginx_ensure,
+  $nginx_package_ensure    = $seed_stack::params::nginx_ensure,
   $nginx_service_ensure    = 'running',
 
-  $consul_template_version = $seed_stack::cluster_params::consul_template_version,
-  $consul_address          = $seed_stack::cluster_params::consul_client_addr,
-) inherits seed_stack::cluster_params {
+  $consul_template_version = $seed_stack::params::consul_template_version,
+  $consul_address          = $seed_stack::params::consul_client_addr,
+) inherits seed_stack::params {
   validate_ip_address($consul_address)
 
   if $nginx_manage {
