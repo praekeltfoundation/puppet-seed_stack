@@ -56,14 +56,14 @@ describe 'seed_stack::consul_dns' do
       describe 'when advertise_addr is not set' do
         let(:params) { {:join => ['192.168.0.2']} }
         it do
-          is_expected.to compile.and_raise_error(/Must pass advertise_addr/)
+          is_expected.to compile.and_raise_error(mustpass('advertise_addr'))
         end
       end
 
       describe 'when join is not set' do
         let(:params) { {:advertise_addr => '192.168.0.1'} }
         it do
-          is_expected.to compile.and_raise_error(/Must pass join/)
+          is_expected.to compile.and_raise_error(mustpass('join'))
         end
       end
 
