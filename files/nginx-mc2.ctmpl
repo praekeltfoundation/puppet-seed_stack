@@ -7,10 +7,10 @@
 #       Nginx. If the key does not exist the service isn't added to the
 #       list of services in the Nginx config.
 
-{{range services}}{{$labels := ls (print "consular/" .Name) | explode }}{{if eq .Name "seed-infra-mc2-mc2"}}
+{{range services}}{{if eq .Name "seed-infra-mc2-mc2"}}
 server {
   listen 7001;
-  server_name {{.Address}};
+  server_name{{range service .Name}} {{.Address}}{{end};
 
   location / {
     proxy_pass http://{{.Name}};
