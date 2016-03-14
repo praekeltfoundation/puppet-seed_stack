@@ -30,7 +30,7 @@
     },
     {
       "name": "deric-mesos",
-      "version_requirement": ">=0.6.5"
+      "version_requirement": ">=0.7.1 <0.8.0"
     },
     {
       "name": "deric-zookeeper",

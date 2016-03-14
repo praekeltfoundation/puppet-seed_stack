@@ -151,9 +151,10 @@ class seed_stack::worker (
   }
 
   class { 'mesos::slave':
-    master    => $mesos_zk,
-    resources => $mesos_resources,
-    options   => {
+    master        => $mesos_zk,
+    resources     => $mesos_resources,
+    syslog_logger => false,
+    options       => {
       hostname                      => $hostname,
       advertise_ip                  => $advertise_addr,
       containerizers                => 'docker,mesos',
