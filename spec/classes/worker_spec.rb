@@ -41,7 +41,7 @@ describe 'seed_stack::worker' do
 
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
-            .with_join('192.168.0.2')
+            .with_join(['192.168.0.2'])
             .with_advertise_addr('192.168.0.3')
         end
 
@@ -84,7 +84,7 @@ describe 'seed_stack::worker' do
 
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
-            .with_join('192.168.0.2')
+            .with_join(['192.168.0.2'])
             .with_advertise_addr('192.168.0.2')
         end
 
@@ -133,7 +133,7 @@ describe 'seed_stack::worker' do
 
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
-            .with_join('192.168.0.2')
+            .with_join(['192.168.0.2'])
             .with_advertise_addr('192.168.0.2')
         end
 
@@ -181,7 +181,7 @@ describe 'seed_stack::worker' do
         if Gem::Version.new(Puppet.version) >= Gem::Version.new('3.6.0')
           it do
             is_expected.to contain_package('mesos')
-              .with_install_options('--no-install-recommends')
+              .with_install_options(['--no-install-recommends'])
           end
 
           it do

@@ -163,7 +163,7 @@ describe 'seed_stack::controller' do
         if Gem::Version.new(Puppet.version) >= Gem::Version.new('3.6.0')
           it do
             is_expected.to contain_package('mesos')
-              .with_install_options('--no-install-recommends')
+              .with_install_options(['--no-install-recommends'])
           end
         else
           it { is_expected.to contain_package('mesos').without_install_options }
