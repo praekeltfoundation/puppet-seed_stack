@@ -265,6 +265,108 @@ describe 'seed_stack::consul_dns' do
             .with_content(/^max-ttl=10$/)
         end
       end
+
+      context 'Consul resources' do
+        describe 'when service resources are set' do
+          let(:params) do
+            {
+              :resources => {
+                'services' => {
+                  'test_service' => {'port' => '8080'}
+                }
+              }
+            }.merge(advertise_addr_and_join)
+          end
+
+          it do
+            is_expected.to contain_class('consul')
+              .with_services('test_service' => {'port' => '8080'})
+          end
+        end
+
+        describe 'when watch resources are set' do
+          let(:params) do
+            {
+              :resources => {
+                'watches' => {
+                  'test_watch' => {
+                    'type' => 'key',
+                    'key' => 'foo/bar/baz',
+                    'handler' => '/usr/bin/my-key-handler.sh'
+                  }
+                }
+              }
+            }.merge(advertise_addr_and_join)
+          end
+
+          it do
+            is_expected.to contain_class('consul')
+              .with_watches(
+                'test_watch' => {
+                  'type' => 'key',
+                  'key' => 'foo/bar/baz',
+                  'handler' => '/usr/bin/my-key-handler.sh'
+                }
+              )
+          end
+        end
+
+        describe 'when check resources are set' do
+          let(:params) do
+            {
+              :resources => {
+                'checks' => {
+                  'test_check' => {
+                    'id' => 'api',
+                    'name' => 'HTTP API on port 5000',
+                    'http' => 'http://localhost:5000/health',
+                    'interval' => '10s',
+                    'timeout' => '1s'
+                  }
+                }
+              }
+            }.merge(advertise_addr_and_join)
+          end
+
+          it do
+            is_expected.to contain_class('consul')
+              .with_checks(
+                'test_check' => {
+                  'id' => 'api',
+                  'name' => 'HTTP API on port 5000',
+                  'http' => 'http://localhost:5000/health',
+                  'interval' => '10s',
+                  'timeout' => '1s'
+                }
+              )
+          end
+        end
+
+        describe 'when ACL resources are set' do
+          let(:params) do
+            {
+              :resources => {
+                'acls' => {
+                  'test_acl' => {
+                    'rules' => {'key' => {'test' => {'policy' => 'read'}}},
+                    'type' => 'client'
+                  }
+                }
+              }
+            }.merge(advertise_addr_and_join)
+          end
+
+          it do
+            is_expected.to contain_class('consul')
+              .with_acls(
+                'test_acl' => {
+                  'rules' => {'key' => {'test' => {'policy' => 'read'}}},
+                  'type' => 'client',
+                }
+              )
+          end
+        end
+      end
     end
   end
 end
