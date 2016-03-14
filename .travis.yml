@@ -8,7 +8,8 @@ matrix:
     - rvm: "2.1.8"
       env: PUPPET_VERSION="~> 4.3.0" # Puppetlabs PC1 (latest 4.x version)
 env:
-  - LIBRARIAN_PUPPET_TMP="$HOME/librarian-puppet"
+  global:
+    - LIBRARIAN_PUPPET_TMP="$HOME/librarian-puppet"
 cache:
   - bundler
   - directories:
