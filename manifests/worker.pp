@@ -55,9 +55,6 @@
 # [*nginx_ensure*]
 #   The ensure value for the Nginx package.
 #
-# [*nginx_router_listen_addr*]
-#   The address that Nginx should listen on when serving routing requests.
-#
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 #
@@ -98,7 +95,6 @@ class seed_stack::worker (
 
   # Nginx
   $nginx_ensure             = $seed_stack::params::nginx_ensure,
-  $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
@@ -114,7 +110,6 @@ class seed_stack::worker (
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
-  validate_ip_address($nginx_router_listen_addr)
   validate_bool($gluster_client_manage)
 
   $zk_base = join(suffix($controller_addrs, ':2181'), ',')
@@ -193,7 +188,7 @@ class seed_stack::worker (
     consul_address          => $consul_client_addr,
   }
   class { 'seed_stack::router':
-    listen_addr => $nginx_router_listen_addr,
+    listen_addr => $advertise_addr,
     domain      => $dnsmasq_host_alias,
   }
 

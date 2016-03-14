@@ -49,7 +49,11 @@ describe 'seed_stack::worker' do
 
         it { is_expected.to contain_class('seed_stack::template_nginx') }
 
-        it { is_expected.to contain_class('seed_stack::router') }
+        it do
+          is_expected.to contain_class('seed_stack::router')
+            .with_listen_addr('192.168.0.3')
+            .with_domain('servicehost')
+        end
 
         it { is_expected.to contain_class('docker') }
 

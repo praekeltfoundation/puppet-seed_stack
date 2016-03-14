@@ -71,7 +71,7 @@ class seed_stack::consul_dns (
   $recursors          = [$::ipaddress_lo],
 
   $dnsmasq_ensure     = 'installed',
-  $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
+  $dnsmasq_host_alias = $seed_stack::params::router_domain,
   $dnsmasq_opts       = {},
 ) inherits seed_stack::params {
   validate_bool($server)
