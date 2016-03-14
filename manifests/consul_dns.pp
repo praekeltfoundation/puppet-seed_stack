@@ -48,6 +48,12 @@
 #   (Without this, the client would have to make extra queries, and way too
 #   many clients give up instead.)
 #
+# [*resources*]
+#   A hash of hashes that define Consul resources that can be configured
+#   statically. Valid keys are 'services', 'watches', 'checks', and 'acls'.
+#   These will be created as consul::service, consul::watch, consul::check, and
+#   consul_acl resources, respectively.
+#
 # [*dnsmasq_ensure*]
 #   The ensure value for the Dnsmasq package.
 #
@@ -69,6 +75,7 @@ class seed_stack::consul_dns (
   $bootstrap_expect   = undef,
   $ui                 = true,
   $recursors          = [$::ipaddress_lo],
+  $resources          = {},
 
   $dnsmasq_ensure     = 'installed',
   $dnsmasq_host_alias = $seed_stack::params::router_domain,
@@ -80,6 +87,7 @@ class seed_stack::consul_dns (
   validate_ip_address($client_addr)
   validate_bool($ui)
   validate_array($recursors)
+  validate_hash($resources)
   validate_hash($dnsmasq_opts)
 
   if $bootstrap_expect != undef {
@@ -117,6 +125,10 @@ class seed_stack::consul_dns (
   class { 'consul':
     version     => $consul_version,
     config_hash => $config_hash,
+    services    => $resources['services'],
+    watches     => $resources['watches'],
+    checks      => $resources['checks'],
+    acls        => $resources['acls'],
     require     => Package['unzip'],
   }
 
