@@ -67,6 +67,7 @@ describe 'seed_stack::controller' do
         it do
           is_expected.to contain_class('mesos::master')
             .with_cluster('seed-stack')
+            .with_syslog_logger(false)
             .with_options(
               'hostname' => 'foo.example.com',
               'advertise_ip' => '192.168.0.2',

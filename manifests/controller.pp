@@ -151,8 +151,9 @@ class seed_stack::controller (
   }
 
   class { 'mesos::master':
-    cluster => $mesos_cluster,
-    options => {
+    cluster       => $mesos_cluster,
+    syslog_logger => false,
+    options       => {
       hostname     => $hostname,
       advertise_ip => $advertise_addr,
       quorum       => size($controller_addrs) / 2 + 1 # Note: integer division
