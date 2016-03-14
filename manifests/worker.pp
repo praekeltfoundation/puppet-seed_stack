@@ -55,9 +55,6 @@
 # [*nginx_ensure*]
 #   The ensure value for the Nginx package.
 #
-# [*router_listen_addr*]
-#   The address that Nginx should listen on when serving routing requests.
-#
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 #
@@ -98,7 +95,6 @@ class seed_stack::worker (
 
   # Nginx
   $nginx_ensure             = $seed_stack::params::nginx_ensure,
-  $router_listen_addr       = $seed_stack::params::router_listen_addr,
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
@@ -193,7 +189,7 @@ class seed_stack::worker (
     consul_address          => $consul_client_addr,
   }
   class { 'seed_stack::router':
-    listen_addr => $router_listen_addr,
+    listen_addr => $advertise_addr,
     domain      => $dnsmasq_host_alias,
   }
 
