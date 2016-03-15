@@ -1,3 +1,5 @@
+## 0.8.1 - UNRELEASED
+
 ## 0.8.0 - 2016/03/15
 ### Features
 * "Official" Puppet 4 support (#56)

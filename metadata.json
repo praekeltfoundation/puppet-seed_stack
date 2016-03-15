@@ -1,6 +1,6 @@
 {
   "name": "praekeltfoundation-seed_stack",
-  "version": "0.8.0",
+  "version": "0.8.1-dev",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
   "license": "BSD-3-Clause",
