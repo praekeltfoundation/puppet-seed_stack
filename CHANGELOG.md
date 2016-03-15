@@ -1,3 +1,20 @@
+## 0.8.0 - UNRELEASED
+### Features
+* "Official" Puppet 4 support (#56)
+* Docker 1.10.3, Mesos 0.27.2, Consul Template 0.14.0 (#83)
+* Consul resources such as services and checks are easier to create when using Hiera (#86)
+* Management of Nginx package/service can now be disabled (#82)
+
+### Changes
+* Routers now listen on either the loopback or `advertise_addr` interface instead of all interfaces to reduce exposure (#69, #90)
+* Router parameters lose their `nginx_` prefix (#69)
+* Mesos syslog logger is disabled. Logs should now be collected by upstart (#84)
+* `deric/mesos` module version 0.8.0 (#87)
+
+### Fixes
+* Removal of `seed_stack::cluster_params` — it just wasn't working (#80)
+* Mostly complete test coverage 🎉(#88, #89)
+
 ## 0.7.0 - 2016/03/07
 ### Features
 * New `seed_stack::cluster_params` class makes it easier to set cluster-wide configuration parameters (#74)
