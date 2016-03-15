@@ -8,30 +8,6 @@ describe 'seed_stack::controller' do
       end
 
       describe 'when controller_addrs and advertise_addr are passed' do
-        let(:params) do
-          {
-            :controller_addrs => ['192.168.0.2'],
-            :advertise_addr => '192.168.0.2',
-          }
-        end
-        it { is_expected.to compile }
-      end
-
-      describe 'when controller_addrs is not passed' do
-        let(:params) { {:advertise_addr => '192.168.0.2'} }
-        it do
-          is_expected.to compile.and_raise_error(mustpass('controller_addrs'))
-        end
-      end
-
-      describe 'when advertise_addr is not passed' do
-        let(:params) { {:controller_addrs => ['192.168.0.2']} }
-        it do
-          is_expected.to compile.and_raise_error(mustpass('advertise_addr'))
-        end
-      end
-
-      describe 'with basic parameters' do
         let(:advertise_addr) { '192.168.0.2' }
         let(:controller_addrs) { ['192.168.0.2'] }
         let(:params) do
@@ -40,6 +16,9 @@ describe 'seed_stack::controller' do
             :advertise_addr => advertise_addr,
           }
         end
+
+        it { is_expected.to compile }
+
         it do
           is_expected.to contain_class('webupd8_oracle_java')
             .that_comes_before(
@@ -50,6 +29,7 @@ describe 'seed_stack::controller' do
               ]
             )
         end
+
         it do
           is_expected.to contain_class('zookeeper')
             .with_ensure('installed')
@@ -57,6 +37,7 @@ describe 'seed_stack::controller' do
             .with_servers(['192.168.0.2'])
             .with_client_ip('0.0.0.0')
         end
+
         it do
           is_expected.to contain_class('mesos')
             .with_ensure(/^\d+\.\d+\.\d+.+$/)
@@ -64,6 +45,7 @@ describe 'seed_stack::controller' do
             .with_listen_address('0.0.0.0')
             .with_zookeeper('zk://192.168.0.2:2181/mesos')
         end
+
         it do
           is_expected.to contain_class('mesos::master')
             .with_cluster('seed-stack')
@@ -74,12 +56,14 @@ describe 'seed_stack::controller' do
               'quorum' => 1
             )
         end
+
         it do
           is_expected.to contain_service('mesos-slave')
             .with_ensure('stopped')
             .with_enable(false)
             .that_requires('Package[mesos]')
         end
+
         it do
           is_expected.to contain_class('marathon')
             .with_package_ensure(/^\d+\.\d+\.\d+.+$/)
@@ -92,10 +76,12 @@ describe 'seed_stack::controller' do
               'event_subscriber' => 'http_callback'
             )
         end
+
         it do
           is_expected.to contain_class('mesos::repo')
             .that_comes_before('Package[marathon]')
         end
+
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
             .with_consul_version(/\d+\.\d+\.\d+/)
@@ -112,6 +98,7 @@ describe 'seed_stack::controller' do
               'dnsmasq_host_alias' => 'servicehost'
             )
         end
+
         it do
           is_expected.to contain_consul__service('marathon')
             .with_port(8080)
@@ -125,6 +112,7 @@ describe 'seed_stack::controller' do
               )
             )
         end
+
         it do
           is_expected.to contain_consul__service('mesos-master')
             .with_port(5050)
@@ -138,6 +126,7 @@ describe 'seed_stack::controller' do
               )
             )
         end
+
         it do
           is_expected.to contain_consul__service('zookeeper')
             .with_port(2181)
@@ -150,6 +139,7 @@ describe 'seed_stack::controller' do
               )
             )
         end
+
         it do
           is_expected.to contain_class('consular')
             .with_package_ensure(/^\d+\.\d+\.\d+.+$/)
@@ -157,6 +147,31 @@ describe 'seed_stack::controller' do
             .with_sync_interval(300)
             .with_purge(true)
         end
+      end
+
+      describe 'when controller_addrs is not passed' do
+        let(:params) { {:advertise_addr => '192.168.0.2'} }
+        it do
+          is_expected.to compile.and_raise_error(mustpass('controller_addrs'))
+        end
+      end
+
+      describe 'when advertise_addr is not passed' do
+        let(:params) { {:controller_addrs => ['192.168.0.2']} }
+        it do
+          is_expected.to compile.and_raise_error(mustpass('advertise_addr'))
+        end
+      end
+
+      describe 'when controller_worker is true' do
+        let(:params) do
+          {
+            :controller_addrs => ['192.168.0.2'],
+            :advertise_addr => '192.168.0.2',
+            :controller_worker => true,
+          }
+        end
+        it { is_expected.not_to contain_service('mesos-slave') }
       end
 
       context 'Mesos package --no-install-recommends' do
