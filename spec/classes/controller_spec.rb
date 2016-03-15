@@ -46,6 +46,14 @@ describe 'seed_stack::controller' do
             .with_zookeeper('zk://192.168.0.2:2181/mesos')
         end
 
+        # Verify behaviour of zookeeper parameter in deric/mesos - a bunch of
+        # changes around this in version 0.8.0 of the module
+        it do
+          is_expected.to contain_file('/etc/mesos/zk')
+            .with_ensure('present')
+            .with_content('zk://192.168.0.2:2181/mesos')
+        end
+
         it do
           is_expected.to contain_class('mesos::master')
             .with_cluster('seed-stack')

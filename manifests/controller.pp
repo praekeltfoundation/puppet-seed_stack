@@ -134,8 +134,7 @@ class seed_stack::controller (
     client_ip => $zookeeper_client_addr,
   }
 
-  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
-  $mesos_zk = "zk://${zk_base}/mesos"
+  $mesos_zk = zookeeper_servers_url($controller_addrs)
   class { 'mesos':
     ensure         => $mesos_ensure,
     repo           => 'mesosphere',
@@ -161,7 +160,7 @@ class seed_stack::controller (
     },
   }
 
-  $marathon_zk = "zk://${zk_base}/marathon"
+  $marathon_zk = zookeeper_servers_url($controller_addrs, 'marathon')
   class { 'marathon':
     package_ensure => $marathon_ensure,
     repo_manage    => false,

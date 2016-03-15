@@ -112,8 +112,7 @@ class seed_stack::worker (
   validate_bool($consul_ui)
   validate_bool($gluster_client_manage)
 
-  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
-  $mesos_zk = "zk://${zk_base}/mesos"
+  $mesos_zk = zookeeper_servers_url($controller_addrs)
   if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
