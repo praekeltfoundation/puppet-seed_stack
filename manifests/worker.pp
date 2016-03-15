@@ -55,9 +55,6 @@
 # [*nginx_ensure*]
 #   The ensure value for the Nginx package.
 #
-# [*nginx_router_listen_addr*]
-#   The address that Nginx should listen on when serving routing requests.
-#
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 #
@@ -72,48 +69,40 @@
 #
 class seed_stack::worker (
   # Common
-  $advertise_addr           = $seed_stack::cluster_params::advertise_addr,
-  $controller_addrs         = $seed_stack::cluster_params::controller_addrs,
+  $advertise_addr,
+  $controller_addrs,
   $hostname                 = $::fqdn,
   $controller_worker        = false,
 
   # Mesos
-  $mesos_ensure             = $seed_stack::cluster_params::mesos_ensure,
-  $mesos_listen_addr        = $seed_stack::cluster_params::mesos_listen_addr,
+  $mesos_ensure             = $seed_stack::params::mesos_ensure,
+  $mesos_listen_addr        = $seed_stack::params::mesos_listen_addr,
   $mesos_resources          = {},
 
   # Consul
-  $consul_version           = $seed_stack::cluster_params::consul_version,
-  $consul_client_addr       = $seed_stack::cluster_params::consul_client_addr,
-  $consul_domain            = $seed_stack::cluster_params::consul_domain,
+  $consul_version           = $seed_stack::params::consul_version,
+  $consul_client_addr       = $seed_stack::params::consul_client_addr,
+  $consul_domain            = $seed_stack::params::consul_domain,
   $consul_encrypt           = undef,
   $consul_ui                = false,
 
   # Dnsmasq
-  $dnsmasq_ensure           = $seed_stack::cluster_params::dnsmasq_ensure,
-  $dnsmasq_host_alias       = $seed_stack::cluster_params::dnsmasq_host_alias,
+  $dnsmasq_ensure           = $seed_stack::params::dnsmasq_ensure,
+  $dnsmasq_host_alias       = $seed_stack::params::dnsmasq_host_alias,
 
   # Consul Template
-  $consul_template_version  = $seed_stack::cluster_params::consul_template_version,
+  $consul_template_version  = $seed_stack::params::consul_template_version,
 
   # Nginx
-  $nginx_ensure             = $seed_stack::cluster_params::nginx_ensure,
-  $nginx_router_listen_addr = $seed_stack::cluster_params::nginx_router_listen_addr,
+  $nginx_ensure             = $seed_stack::params::nginx_ensure,
 
   # Docker
-  $docker_ensure            = $seed_stack::cluster_params::docker_ensure,
+  $docker_ensure            = $seed_stack::params::docker_ensure,
 
   # Xylem
   $xylem_backend            = undef,
   $gluster_client_manage    = true,
-) inherits seed_stack::cluster_params {
-  if $advertise_addr == undef {
-    fail("Must pass advertise_addr to Class[${title}]")
-  }
-  if $controller_addrs == undef {
-    fail("Must pass controller_addrs to Class[${title}]")
-  }
-
+) inherits seed_stack::params {
   validate_ip_address($advertise_addr)
   validate_array($controller_addrs)
   validate_bool($controller_worker)
@@ -121,7 +110,6 @@ class seed_stack::worker (
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
-  validate_ip_address($nginx_router_listen_addr)
   validate_bool($gluster_client_manage)
 
   $zk_base = join(suffix($controller_addrs, ':2181'), ',')
@@ -158,9 +146,10 @@ class seed_stack::worker (
   }
 
   class { 'mesos::slave':
-    master    => $mesos_zk,
-    resources => $mesos_resources,
-    options   => {
+    master        => $mesos_zk,
+    resources     => $mesos_resources,
+    syslog_logger => false,
+    options       => {
       hostname                      => $hostname,
       advertise_ip                  => $advertise_addr,
       containerizers                => 'docker,mesos',
@@ -199,7 +188,7 @@ class seed_stack::worker (
     consul_address          => $consul_client_addr,
   }
   class { 'seed_stack::router':
-    listen_addr => $nginx_router_listen_addr,
+    listen_addr => $advertise_addr,
     domain      => $dnsmasq_host_alias,
   }
 

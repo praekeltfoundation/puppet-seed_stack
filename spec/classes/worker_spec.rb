@@ -11,7 +11,7 @@ describe 'seed_stack::worker' do
         let(:params) do
           {
             :controller_addrs => ['192.168.0.2'],
-            :advertise_addr => '192.168.0.2',
+            :advertise_addr => '192.168.0.3',
           }
         end
 
@@ -26,19 +26,34 @@ describe 'seed_stack::worker' do
             .with_ensure('stopped')
         end
 
-        it { is_expected.to contain_class('mesos::slave') }
+        it do
+          is_expected.to contain_class('mesos::slave')
+            .with_master('zk://192.168.0.2:2181/mesos')
+            .with_resources({})
+            .with_syslog_logger(false)
+            .with_options(
+              'hostname' => 'foo.example.com',
+              'advertise_ip' => '192.168.0.3',
+              'containerizers' => 'docker,mesos',
+              'executor_registration_timeout' => '5mins'
+            )
+        end
 
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
-            .with_join('192.168.0.2')
-            .with_advertise_addr('192.168.0.2')
+            .with_join(['192.168.0.2'])
+            .with_advertise_addr('192.168.0.3')
         end
 
         it { is_expected.to contain_consul__service('mesos-slave') }
 
         it { is_expected.to contain_class('seed_stack::template_nginx') }
 
-        it { is_expected.to contain_class('seed_stack::router') }
+        it do
+          is_expected.to contain_class('seed_stack::router')
+            .with_listen_addr('192.168.0.3')
+            .with_domain('servicehost')
+        end
 
         it { is_expected.to contain_class('docker') }
 
@@ -73,7 +88,7 @@ describe 'seed_stack::worker' do
 
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
-            .with_join('192.168.0.2')
+            .with_join(['192.168.0.2'])
             .with_advertise_addr('192.168.0.2')
         end
 
@@ -122,7 +137,7 @@ describe 'seed_stack::worker' do
 
         it do
           is_expected.to contain_class('seed_stack::consul_dns')
-            .with_join('192.168.0.2')
+            .with_join(['192.168.0.2'])
             .with_advertise_addr('192.168.0.2')
         end
 
@@ -170,7 +185,7 @@ describe 'seed_stack::worker' do
         if Gem::Version.new(Puppet.version) >= Gem::Version.new('3.6.0')
           it do
             is_expected.to contain_package('mesos')
-              .with_install_options('--no-install-recommends')
+              .with_install_options(['--no-install-recommends'])
           end
 
           it do

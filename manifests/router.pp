@@ -6,7 +6,9 @@
 # === Parameters
 #
 # [*listen_addr*]
-#   The address that Nginx should listen on when serving requests.
+#   The address that Nginx should listen on when serving requests. NOTE: If you
+#   are using an address and port that are available from the outside internet,
+#   your services will be exposed via the router.
 #
 # [*listen_port*]
 #   The port that Nginx should listen on when serving requests.
@@ -14,10 +16,10 @@
 # [*domain*]
 #   The domain that Nginx should serve for routing.
 class seed_stack::router (
-  $listen_addr = $seed_stack::cluster_params::nginx_router_listen_addr,
-  $listen_port = $seed_stack::cluster_params::nginx_router_listen_port,
-  $domain      = $seed_stack::cluster_params::nginx_router_domain,
-) inherits seed_stack::cluster_params {
+  $listen_addr = $seed_stack::params::router_listen_addr,
+  $listen_port = $seed_stack::params::router_listen_port,
+  $domain      = $seed_stack::params::router_domain,
+) inherits seed_stack::params {
   validate_ip_address($listen_addr)
   validate_integer($listen_port, 65535, 1)
 
@@ -32,6 +34,5 @@ class seed_stack::router (
     source      => '/etc/consul-template/nginx-services.ctmpl',
     destination => '/etc/nginx/sites-enabled/seed-services.conf',
     command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
   }
 }

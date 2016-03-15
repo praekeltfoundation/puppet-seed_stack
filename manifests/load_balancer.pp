@@ -13,6 +13,5 @@ class seed_stack::load_balancer {
     source      => '/etc/consul-template/nginx-websites.ctmpl',
     destination => '/etc/nginx/sites-enabled/seed-websites.conf',
     command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
   }
 }

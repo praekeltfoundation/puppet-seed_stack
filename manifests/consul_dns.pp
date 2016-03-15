@@ -48,6 +48,12 @@
 #   (Without this, the client would have to make extra queries, and way too
 #   many clients give up instead.)
 #
+# [*resources*]
+#   A hash of hashes that define Consul resources that can be configured
+#   statically. Valid keys are 'services', 'watches', 'checks', and 'acls'.
+#   These will be created as consul::service, consul::watch, consul::check, and
+#   consul_acl resources, respectively.
+#
 # [*dnsmasq_ensure*]
 #   The ensure value for the Dnsmasq package.
 #
@@ -59,34 +65,29 @@
 #   A hash of extra options to configure Dnsmasq with. e.g.
 #   { 'listen-address' => $::ipaddress_lo, }.
 class seed_stack::consul_dns (
-  $advertise_addr     = $seed_stack::cluster_params::advertise_addr,
-  $join               = $seed_stack::cluster_params::controller_addrs,
-  $consul_version     = $seed_stack::cluster_params::consul_version,
+  $advertise_addr,
+  $join,
+  $consul_version     = $seed_stack::params::consul_version,
   $server             = false,
-  $client_addr        = $seed_stack::cluster_params::consul_client_addr,
-  $domain             = $seed_stack::cluster_params::consul_domain,
-  $encrypt            = $seed_stack::cluster_params::consul_encrypt,
+  $client_addr        = $seed_stack::params::consul_client_addr,
+  $domain             = $seed_stack::params::consul_domain,
+  $encrypt            = undef,
   $bootstrap_expect   = undef,
   $ui                 = true,
   $recursors          = [$::ipaddress_lo],
+  $resources          = {},
 
   $dnsmasq_ensure     = 'installed',
-  $dnsmasq_host_alias = $seed_stack::cluster_params::nginx_router_domain,
+  $dnsmasq_host_alias = $seed_stack::params::router_domain,
   $dnsmasq_opts       = {},
-) inherits seed_stack::cluster_params {
-  if $advertise_addr == undef {
-    fail("Must pass advertise_addr to Class[${title}]")
-  }
-  if $join == undef {
-    fail("Must pass join to Class[${title}]")
-  }
-
+) inherits seed_stack::params {
   validate_bool($server)
   validate_array($join)
   validate_ip_address($advertise_addr)
   validate_ip_address($client_addr)
   validate_bool($ui)
   validate_array($recursors)
+  validate_hash($resources)
   validate_hash($dnsmasq_opts)
 
   if $bootstrap_expect != undef {
@@ -124,6 +125,10 @@ class seed_stack::consul_dns (
   class { 'consul':
     version     => $consul_version,
     config_hash => $config_hash,
+    services    => $resources['services'],
+    watches     => $resources['watches'],
+    checks      => $resources['checks'],
+    acls        => $resources['acls'],
     require     => Package['unzip'],
   }
 
