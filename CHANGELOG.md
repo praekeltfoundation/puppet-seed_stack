@@ -6,7 +6,7 @@
 * Management of Nginx package/service can now be disabled (#82)
 
 ### Changes
-* Routers now listen on either the loopback or `advertise_addr` interface instead of all interfaces to reduce exposure (#69)
+* Routers now listen on either the loopback or `advertise_addr` interface instead of all interfaces to reduce exposure (#69, #90)
 * Router parameters lose their `nginx_` prefix (#69)
 * Mesos syslog logger is disabled. Logs should now be collected by upstart (#84)
 * `deric/mesos` module version 0.8.0 (#87)
