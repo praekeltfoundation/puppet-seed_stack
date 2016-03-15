@@ -46,10 +46,19 @@ describe 'seed_stack::controller' do
             .with_zookeeper('zk://192.168.0.2:2181/mesos')
         end
 
+        # Verify behaviour of zookeeper parameter in deric/mesos - a bunch of
+        # changes around this in version 0.8.0 of the module
+        it do
+          is_expected.to contain_file('/etc/mesos/zk')
+            .with_ensure('present')
+            .with_content('zk://192.168.0.2:2181/mesos')
+        end
+
         it do
           is_expected.to contain_class('mesos::master')
             .with_cluster('seed-stack')
             .with_syslog_logger(false)
+            .with_single_role(true)
             .with_options(
               'hostname' => 'foo.example.com',
               'advertise_ip' => '192.168.0.2',
@@ -61,7 +70,7 @@ describe 'seed_stack::controller' do
           is_expected.to contain_service('mesos-slave')
             .with_ensure('stopped')
             .with_enable(false)
-            .that_requires('Package[mesos]')
+            .that_subscribes_to('Package[mesos]')
         end
 
         it do
@@ -170,6 +179,10 @@ describe 'seed_stack::controller' do
             :advertise_addr => '192.168.0.2',
             :controller_worker => true,
           }
+        end
+        it do
+          is_expected.to contain_class('mesos::master')
+            .with_single_role(false)
         end
         it { is_expected.not_to contain_service('mesos-slave') }
       end

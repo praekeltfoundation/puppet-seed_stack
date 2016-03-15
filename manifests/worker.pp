@@ -112,8 +112,7 @@ class seed_stack::worker (
   validate_bool($consul_ui)
   validate_bool($gluster_client_manage)
 
-  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
-  $mesos_zk = "zk://${zk_base}/mesos"
+  $mesos_zk = zookeeper_servers_url($controller_addrs)
   if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
@@ -136,19 +135,13 @@ class seed_stack::worker (
         require => Package['mesos'],
       }
     }
-
-    # Make Puppet stop the mesos-master service
-    service { 'mesos-master':
-      ensure  => stopped,
-      enable  => false,
-      require => Package['mesos'],
-    }
   }
 
   class { 'mesos::slave':
     master        => $mesos_zk,
     resources     => $mesos_resources,
     syslog_logger => false,
+    single_role   => !$controller_worker,
     options       => {
       hostname                      => $hostname,
       advertise_ip                  => $advertise_addr,
