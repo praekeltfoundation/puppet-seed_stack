@@ -7,28 +7,60 @@ describe 'seed_stack::template_nginx' do
         facts.merge(:concat_basedir => '/tmp/puppetconcat')
       end
 
-      describe 'nginx is not managed here' do
-        let(:params) do
-          {
-            :nginx_manage => false
-          }
-        end
+      describe 'with default parameters' do
         it { is_expected.to compile }
+        it do
+          is_expected.to contain_package('nginx-light')
+            .with_ensure('installed')
+        end
+        it do
+          is_expected.to contain_service('nginx')
+            .with_ensure('running')
+            .that_requires('Package[nginx-light]')
+        end
+
+        it do
+          is_expected.to contain_package('unzip')
+            .with_ensure('installed')
+        end
+        it do
+          is_expected.to contain_class('consul_template')
+            .with_version(/\d+\.\d+\.\d+/)
+            .with(
+              'config_dir' => '/etc/consul-template',
+              'user' => 'root',
+              'group' => 'root',
+              'consul_host' => '0.0.0.0',
+              'consul_port' => 8500,
+              'consul_retry' => '10s',
+              'log_level' => 'warn'
+            )
+        end
+        it do
+          is_expected.to contain_class('consul_template::install')
+            .that_requires('Package[unzip]')
+        end
+
+        it do
+          is_expected.to(
+            contain_file('/etc/consul-template/nginx-upstreams.ctmpl')
+          )
+        end
+        it do
+          is_expected.to contain_consul_template__watch('nginx-upstreams')
+            .with(
+              'source' => '/etc/consul-template/nginx-upstreams.ctmpl',
+              'destination' => '/etc/nginx/sites-enabled/seed-upstreams.conf',
+              'command' => '/etc/init.d/nginx reload'
+            ).that_subscribes_to(
+              'File[/etc/consul-template/nginx-upstreams.ctmpl]')
+        end
+      end
+
+      describe 'when nginx_manage is false' do
+        let(:params) { {:nginx_manage => false} }
+        it { is_expected.not_to contain_package('nginx-light') }
         it { is_expected.not_to contain_service('nginx') }
-      end
-
-      describe 'nginx is managed here' do
-        let(:params) do
-          {
-            :nginx_manage => true
-          }
-        end
-        it { is_expected.to compile }
-        it { is_expected.to contain_service('nginx') }
-      end
-
-      describe 'no options' do
-        it { is_expected.to compile }
       end
     end
   end
