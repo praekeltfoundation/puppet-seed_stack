@@ -2,7 +2,7 @@
 #
 # Runs a Mission Control container in Marathon.
 #
-class seed_stack::mc2 {
+class seed_stack::mc2($infr_domain, $hub_domain) {
 
   unless defined(Package['curl']) {
     package { 'curl': ensure => 'installed' }
@@ -17,7 +17,7 @@ class seed_stack::mc2 {
   file { '/etc/marathon-apps': ensure => 'directory' }
   ->
   file { '/etc/marathon-apps/mc2.marathon.json':
-    source => 'puppet:///modules/seed_stack/mc2.marathon.json',
+    content => template('seed_stack/mc2.marathon.json.erb'),
   }
 
   $mc2_marathon_cmd = join([
