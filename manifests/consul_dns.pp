@@ -48,6 +48,12 @@
 #   (Without this, the client would have to make extra queries, and way too
 #   many clients give up instead.)
 #
+# [*resources*]
+#   A hash of hashes that define Consul resources that can be configured
+#   statically. Valid keys are 'services', 'watches', 'checks', and 'acls'.
+#   These will be created as consul::service, consul::watch, consul::check, and
+#   consul_acl resources, respectively.
+#
 # [*dnsmasq_ensure*]
 #   The ensure value for the Dnsmasq package.
 #
@@ -59,19 +65,20 @@
 #   A hash of extra options to configure Dnsmasq with. e.g.
 #   { 'listen-address' => $::ipaddress_lo, }.
 class seed_stack::consul_dns (
+  $advertise_addr,
+  $join,
   $consul_version     = $seed_stack::params::consul_version,
   $server             = false,
-  $join               = [$::ipaddress_lo],
-  $advertise_addr     = $::ipaddress_lo,
   $client_addr        = $seed_stack::params::consul_client_addr,
   $domain             = $seed_stack::params::consul_domain,
   $encrypt            = undef,
   $bootstrap_expect   = undef,
   $ui                 = true,
   $recursors          = [$::ipaddress_lo],
+  $resources          = {},
 
   $dnsmasq_ensure     = 'installed',
-  $dnsmasq_host_alias = $seed_stack::params::nginx_router_domain,
+  $dnsmasq_host_alias = $seed_stack::params::router_domain,
   $dnsmasq_opts       = {},
 ) inherits seed_stack::params {
   validate_bool($server)
@@ -80,6 +87,7 @@ class seed_stack::consul_dns (
   validate_ip_address($client_addr)
   validate_bool($ui)
   validate_array($recursors)
+  validate_hash($resources)
   validate_hash($dnsmasq_opts)
 
   if $bootstrap_expect != undef {
@@ -99,6 +107,7 @@ class seed_stack::consul_dns (
     'log_level'      => 'INFO',
     'advertise_addr' => $advertise_addr,
     'client_addr'    => $client_addr,
+    'retry_join'     => $join,
     'domain'         => $domain,
     'encrypt'        => $encrypt,
     'ui'             => $ui,
@@ -106,14 +115,9 @@ class seed_stack::consul_dns (
   }
 
   if $server {
-    $extra_config_hash = {
-      'bootstrap_expect' => $bootstrap_expect,
-      'retry_join'       => $join,
-    }
+    $extra_config_hash = { 'bootstrap_expect' => $bootstrap_expect }
   } else {
-    $extra_config_hash = {
-      'retry_join' => $join,
-    }
+    $extra_config_hash = {}
   }
 
   $config_hash = merge($base_config_hash, $extra_config_hash)
@@ -121,6 +125,10 @@ class seed_stack::consul_dns (
   class { 'consul':
     version     => $consul_version,
     config_hash => $config_hash,
+    services    => $resources['services'],
+    watches     => $resources['watches'],
+    checks      => $resources['checks'],
+    acls        => $resources['acls'],
     require     => Package['unzip'],
   }
 

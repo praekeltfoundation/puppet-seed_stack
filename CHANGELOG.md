@@ -1,3 +1,31 @@
+## 0.8.0 - 2016/03/15
+### Features
+* "Official" Puppet 4 support (#56)
+* Docker 1.10.3, Mesos 0.27.2, Consul Template 0.14.0 (#83)
+* Consul resources such as services and checks are easier to create when using Hiera (#86)
+* Management of Nginx package/service can now be disabled (#82)
+
+### Changes
+* Routers now listen on either the loopback or `advertise_addr` interface instead of all interfaces to reduce exposure (#69, #90)
+* Router parameters lose their `nginx_` prefix (#69)
+* Mesos syslog logger is disabled. Logs should now be collected by upstart (#84)
+* `deric/mesos` module version 0.8.0 (#87)
+
+### Fixes
+* Removal of `seed_stack::cluster_params` — it just wasn't working (#80)
+* Mostly complete test coverage 🎉(#88, #89)
+
+## 0.7.0 - 2016/03/07
+### Features
+* New `seed_stack::cluster_params` class makes it easier to set cluster-wide configuration parameters (#74)
+
+### Changes
+* `advertise_addr` and `join` are now required parameters of `seed_stack::consul_dns` (#74)
+
+### Fixes
+* Install Mesos package with the `--no-install-recommends` flag when using versions of Puppet >= 3.6.0. This should ensure that Zookeeper is not installed unnecessarily. With older versions of Puppet, stop Zookeeper from running on workers. (#76)
+* Include `gluster::client` on worker hosts by default. (#79)
+
 ## 0.6.2 - 2016/03/03
 ### Changes
 * Package versions now pinned to full version strings - NOTE: versions now platform specific (#78)

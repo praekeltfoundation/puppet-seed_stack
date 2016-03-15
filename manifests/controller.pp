@@ -134,34 +134,33 @@ class seed_stack::controller (
     client_ip => $zookeeper_client_addr,
   }
 
-  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
-  $mesos_zk = "zk://${zk_base}/mesos"
+  $mesos_zk = zookeeper_servers_url($controller_addrs)
   class { 'mesos':
     ensure         => $mesos_ensure,
     repo           => 'mesosphere',
     listen_address => $mesos_listen_addr,
     zookeeper      => $mesos_zk,
   }
+  if versioncmp($::puppetversion, '3.6.0') >= 0 {
+    Package <| title == 'mesos' |> {
+      # Skip installing the recommended Mesos packages as they are just
+      # Zookeeper packages that are installed by the Zookeeper class anyway.
+      install_options => ['--no-install-recommends'],
+    }
+  }
 
   class { 'mesos::master':
-    cluster => $mesos_cluster,
-    options => {
+    cluster       => $mesos_cluster,
+    syslog_logger => false,
+    single_role   => !$controller_worker,
+    options       => {
       hostname     => $hostname,
       advertise_ip => $advertise_addr,
       quorum       => size($controller_addrs) / 2 + 1 # Note: integer division
     },
   }
 
-  if ! $controller_worker {
-    # Make Puppet stop the mesos-slave service
-    service { 'mesos-slave':
-      ensure  => stopped,
-      enable  => false,
-      require => Package['mesos'],
-    }
-  }
-
-  $marathon_zk = "zk://${zk_base}/marathon"
+  $marathon_zk = zookeeper_servers_url($controller_addrs, 'marathon')
   class { 'marathon':
     package_ensure => $marathon_ensure,
     repo_manage    => false,

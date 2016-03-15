@@ -55,15 +55,17 @@
 # [*nginx_ensure*]
 #   The ensure value for the Nginx package.
 #
-# [*nginx_router_listen_addr*]
-#   The address that Nginx should listen on when serving routing requests.
-#
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 #
 # [*xylem_backend*]
 #   Backend host for Xylem Docker plugin. If given, the Xylem Docker volume
 #   plugin will be installed and managed.
+#
+# [*gluster_client_manage*]
+#   Set to false to avoid installing the Glusterfs client when xylem_backend is
+#   set. (Do this when seed_stack::xylem is included in the same node to avoid
+#   repo management conflicts.)
 #
 class seed_stack::worker (
   # Common
@@ -75,7 +77,7 @@ class seed_stack::worker (
   # Mesos
   $mesos_ensure             = $seed_stack::params::mesos_ensure,
   $mesos_listen_addr        = $seed_stack::params::mesos_listen_addr,
-  $mesos_resources          = $seed_stack::params::mesos_resources,
+  $mesos_resources          = {},
 
   # Consul
   $consul_version           = $seed_stack::params::consul_version,
@@ -93,13 +95,13 @@ class seed_stack::worker (
 
   # Nginx
   $nginx_ensure             = $seed_stack::params::nginx_ensure,
-  $nginx_router_listen_addr = $seed_stack::params::nginx_router_listen_addr,
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
 
   # Xylem
   $xylem_backend            = undef,
+  $gluster_client_manage    = true,
 ) inherits seed_stack::params {
   validate_ip_address($advertise_addr)
   validate_array($controller_addrs)
@@ -108,10 +110,9 @@ class seed_stack::worker (
   validate_hash($mesos_resources)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
-  validate_ip_address($nginx_router_listen_addr)
+  validate_bool($gluster_client_manage)
 
-  $zk_base = join(suffix($controller_addrs, ':2181'), ',')
-  $mesos_zk = "zk://${zk_base}/mesos"
+  $mesos_zk = zookeeper_servers_url($controller_addrs)
   if ! $controller_worker {
     class { 'mesos':
       ensure         => $mesos_ensure,
@@ -120,18 +121,28 @@ class seed_stack::worker (
       zookeeper      => $mesos_zk,
     }
 
-    # Make Puppet stop the mesos-master service
-    service { 'mesos-master':
-      ensure  => stopped,
-      enable  => false,
-      require => Package['mesos'],
+    if versioncmp($::puppetversion, '3.6.0') >= 0 {
+      Package <| title == 'mesos' |> {
+        # Skip installing the recommended Mesos packages as they are just
+        # Zookeeper packages that we don't need.
+        install_options => ['--no-install-recommends'],
+      }
+    } else {
+      # We can't *not* install Zookeeper but we can stop it from running.
+      service { 'zookeeper':
+        ensure  => stopped,
+        enable  => false,
+        require => Package['mesos'],
+      }
     }
   }
 
   class { 'mesos::slave':
-    master    => $mesos_zk,
-    resources => $mesos_resources,
-    options   => {
+    master        => $mesos_zk,
+    resources     => $mesos_resources,
+    syslog_logger => false,
+    single_role   => !$controller_worker,
+    options       => {
       hostname                      => $hostname,
       advertise_ip                  => $advertise_addr,
       containerizers                => 'docker,mesos',
@@ -170,7 +181,7 @@ class seed_stack::worker (
     consul_address          => $consul_client_addr,
   }
   class { 'seed_stack::router':
-    listen_addr => $nginx_router_listen_addr,
+    listen_addr => $advertise_addr,
     domain      => $dnsmasq_host_alias,
   }
 
@@ -181,6 +192,10 @@ class seed_stack::worker (
   }
 
   if $xylem_backend {
+    if $gluster_client_manage {
+      include gluster::client
+    }
+
     class { 'xylem::docker':
       backend     => $xylem_backend,
       repo_manage => !defined(Class['xylem::repo']),

@@ -30,8 +30,8 @@ Rake::Task[:coverage].clear
 desc 'Run syntax, lint, metadata and spec tests.'
 task :test => [
   :syntax,
+  :spec,
   :lint,
   :metadata_lint,
   :rubocop,
-  :spec,
 ]

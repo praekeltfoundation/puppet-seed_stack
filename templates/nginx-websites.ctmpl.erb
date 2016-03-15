@@ -10,6 +10,7 @@
 {{range services}}{{$labels := ls (print "consular/" .Name) | explode }}{{if $labels.domain}}
 server {
   listen 80;
+  listen <%= @listen_addr %>:80; # Avoid being masked by listen directive in services config.
   server_name {{$labels.domain | parseJSON }};
 
   location / {

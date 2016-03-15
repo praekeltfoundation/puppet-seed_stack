@@ -1,6 +1,6 @@
 {
   "name": "praekeltfoundation-seed_stack",
-  "version": "0.6.2",
+  "version": "0.8.0",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
   "license": "BSD-3-Clause",
@@ -14,7 +14,7 @@
     },
     {
       "name": "praekeltfoundation-gluster",
-      "version_requirement": ">=0.2.1 <0.3.0"
+      "version_requirement": ">=0.2.2 <0.3.0"
     },
     {
       "name": "praekeltfoundation-xylem",
@@ -30,7 +30,7 @@
     },
     {
       "name": "deric-mesos",
-      "version_requirement": ">=0.6.5"
+      "version_requirement": ">=0.8.0 <0.9.0"
     },
     {
       "name": "deric-zookeeper",
@@ -52,7 +52,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">=3.4.0 < 4.0.0"
+      "version_requirement": ">=3.4.0"
     }
   ],
   "operatingsystem_support": [

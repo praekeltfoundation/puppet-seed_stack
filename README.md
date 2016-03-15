@@ -119,11 +119,11 @@ The package versions can be seen in the [params class source](manifests/params.p
 
 | Package         | Version |
 |-----------------|---------|
-| Mesos           | 0.27.1  |
+| Mesos           | 0.27.2  |
 | Marathon        | 0.15.3  |
 | Zookeeper       | System  |
-| Docker          | 1.10.2  |
+| Docker          | 1.10.3  |
 | Consul          | 0.6.3   |
 | Consular        | 1.2.0   |
-| Consul Template | 0.13.0  |
+| Consul Template | 0.14.0  |
 | Nginx           | System  |
