@@ -1,4 +1,4 @@
-## 0.8.0 - UNRELEASED
+## 0.8.0 - 2016/03/15
 ### Features
 * "Official" Puppet 4 support (#56)
 * Docker 1.10.3, Mesos 0.27.2, Consul Template 0.14.0 (#83)
