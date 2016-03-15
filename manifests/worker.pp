@@ -136,19 +136,13 @@ class seed_stack::worker (
         require => Package['mesos'],
       }
     }
-
-    # Make Puppet stop the mesos-master service
-    service { 'mesos-master':
-      ensure  => stopped,
-      enable  => false,
-      require => Package['mesos'],
-    }
   }
 
   class { 'mesos::slave':
     master        => $mesos_zk,
     resources     => $mesos_resources,
     syslog_logger => false,
+    single_role   => !$controller_worker,
     options       => {
       hostname                      => $hostname,
       advertise_ip                  => $advertise_addr,

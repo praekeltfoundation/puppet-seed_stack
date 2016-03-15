@@ -153,20 +153,12 @@ class seed_stack::controller (
   class { 'mesos::master':
     cluster       => $mesos_cluster,
     syslog_logger => false,
+    single_role   => !$controller_worker,
     options       => {
       hostname     => $hostname,
       advertise_ip => $advertise_addr,
       quorum       => size($controller_addrs) / 2 + 1 # Note: integer division
     },
-  }
-
-  if ! $controller_worker {
-    # Make Puppet stop the mesos-slave service
-    service { 'mesos-slave':
-      ensure  => stopped,
-      enable  => false,
-      require => Package['mesos'],
-    }
   }
 
   $marathon_zk = "zk://${zk_base}/marathon"
