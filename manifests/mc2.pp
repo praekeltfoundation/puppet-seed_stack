@@ -2,7 +2,11 @@
 #
 # Runs a Mission Control container in Marathon.
 #
-class seed_stack::mc2($infr_domain, $hub_domain) {
+class seed_stack::mc2(
+  $infr_domain,
+  $hub_domain,
+  $marathon_host = 'marathon.service.consul',
+) {
 
   unless defined(Package['curl']) {
     package { 'curl': ensure => 'installed' }
@@ -23,7 +27,7 @@ class seed_stack::mc2($infr_domain, $hub_domain) {
   $mc2_marathon_cmd = join([
     '/usr/local/bin/manage-marathon-group.sh',
     '/etc/marathon-apps/mc2.marathon.json',
-    'marathon.service.consul',
+    $marathon_host,
   ], ' ')
 
   # This is unconditional because Marathon does nothing when the group
