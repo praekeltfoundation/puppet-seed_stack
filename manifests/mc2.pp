@@ -39,17 +39,4 @@ class seed_stack::mc2(
       File['/etc/marathon-apps/mc2.marathon.json'],
     ],
   }
-
-  include seed_stack::template_nginx
-
-  file { '/etc/consul-template/nginx-mc2.ctmpl':
-    source => 'puppet:///modules/seed_stack/nginx-mc2.ctmpl',
-  }
-  ~>
-  consul_template::watch { 'nginx-mc2':
-    source      => '/etc/consul-template/nginx-mc2.ctmpl',
-    destination => '/etc/nginx/sites-enabled/seed-mc2.conf',
-    command     => '/etc/init.d/nginx reload',
-    require     => Service['nginx'],
-  }
 }
