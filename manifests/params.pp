@@ -69,7 +69,7 @@ class seed_stack::params {
 
   $marathon_ensure          = '0.15.3-1.0.463.ubuntu1404'
 
-  $consul_version           = '0.6.3'
+  $consul_version           = '0.6.4'
   $consul_client_addr       = '0.0.0.0'
   $consul_domain            = 'consul.'
 
