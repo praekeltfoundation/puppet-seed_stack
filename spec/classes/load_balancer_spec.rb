@@ -27,6 +27,13 @@ describe 'seed_stack::load_balancer' do
         end
       end
 
+      describe 'with nginx left alone' do
+        it { is_expected.to compile }
+        it { is_expected.to contain_class('seed_stack::template_nginx') }
+        it { is_expected.not_to contain_package('nginx-light') }
+        it { is_expected.not_to contain_service('nginx') }
+      end
+
       describe 'with custom parameters' do
         let(:params) { {:listen_addr => '192.168.0.1'} }
 
