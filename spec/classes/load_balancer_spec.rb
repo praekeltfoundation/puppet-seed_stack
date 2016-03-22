@@ -28,6 +28,7 @@ describe 'seed_stack::load_balancer' do
       end
 
       describe 'with nginx left alone' do
+        let(:params) { {:nginx_manage => false} }
         it { is_expected.to compile }
         it { is_expected.to contain_class('seed_stack::template_nginx') }
         it { is_expected.not_to contain_package('nginx-light') }
