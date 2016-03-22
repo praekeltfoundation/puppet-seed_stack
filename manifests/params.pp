@@ -49,6 +49,15 @@
 # [*nginx_ensure*]
 #   The package ensure value for Nginx.
 #
+# [*nginx_manage*]
+#   Whether or not to manage the nginx service and package at all
+#
+# [*nginx_package*]
+#   The name of the Nginx package to install.
+#
+# [*nginx_service_ensure*]
+#   The ensure value for the Nginx service.
+#
 # [*router_listen_addr*]
 #   The address that Nginx should listen on when serving routing requests.
 #
@@ -79,6 +88,10 @@ class seed_stack::params {
   $consul_template_version  = '0.14.0'
 
   $nginx_ensure             = 'installed'
+  $nginx_manage             = true
+  $nginx_package            = 'nginx-light'
+  $nginx_service_ensure     = 'running'
+
   $router_listen_addr       = $::ipaddress_lo
   $router_listen_port       = 80
   $router_domain            = 'servicehost'
