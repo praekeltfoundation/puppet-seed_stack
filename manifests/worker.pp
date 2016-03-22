@@ -85,6 +85,8 @@ class seed_stack::worker (
   $consul_domain            = $seed_stack::params::consul_domain,
   $consul_encrypt           = undef,
   $consul_ui                = false,
+  $consul_template_version = $seed_stack::params::consul_template_version,
+  $consul_address          = $seed_stack::params::consul_client_addr,
 
   # Dnsmasq
   $dnsmasq_ensure           = $seed_stack::params::dnsmasq_ensure,
@@ -94,7 +96,10 @@ class seed_stack::worker (
   $consul_template_version  = $seed_stack::params::consul_template_version,
 
   # Nginx
+  $nginx_manage            = $seed_stack::params::nginx_manage,
   $nginx_ensure             = $seed_stack::params::nginx_ensure,
+  $nginx_package           = $seed_stack::params::nginx_package,
+  $nginx_service_ensure    = $seed_stack::params::nginx_service_ensure,
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
@@ -176,11 +181,20 @@ class seed_stack::worker (
   }
 
   class { 'seed_stack::template_nginx':
+    nginx_manage            => $nginx_manage,
+    nginx_package           => $nginx_package,
+    nginx_service_ensure    => $nginx_service_ensure,
     nginx_package_ensure    => $nginx_ensure,
     consul_template_version => $consul_template_version,
     consul_address          => $consul_client_addr,
   }
   class { 'seed_stack::router':
+    nginx_manage            => $nginx_manage,
+    nginx_package           => $nginx_package,
+    nginx_service_ensure    => $nginx_service_ensure,
+    nginx_package_ensure    => $nginx_ensure,
+    consul_template_version => $consul_template_version,
+    consul_address          => $consul_client_addr,
     listen_addr => $advertise_addr,
     domain      => $dnsmasq_host_alias,
   }
