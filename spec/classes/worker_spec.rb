@@ -108,6 +108,23 @@ describe 'seed_stack::worker' do
         it { is_expected.not_to contain_class('gluster::client') }
       end
 
+      describe 'when docker_extra_parameters is passed' do
+        let(:params) do
+          {
+            :controller_addrs => ['192.168.0.2'],
+            :advertise_addr => '192.168.0.3',
+            :docker_extra_parameters => ['--mtu=1500'],
+          }
+        end
+
+        it do
+          is_expected.to contain_class('docker')
+            .with_ensure(/^\d+\.\d+\.\d+.+$/)
+            .with_dns('192.168.0.3')
+            .with_extra_parameters(['--mtu=1500'])
+        end
+      end
+
       describe 'when controller_addrs is not passed' do
         let(:params) { {:advertise_addr => '192.168.0.2'} }
         it do
