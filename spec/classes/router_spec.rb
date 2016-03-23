@@ -10,6 +10,17 @@ describe 'seed_stack::router' do
       describe 'with default parameters' do
         it { is_expected.to compile }
 
+        it do
+          is_expected.to contain_package('nginx-light')
+            .with_ensure('installed')
+        end
+
+        it do
+          is_expected.to contain_service('nginx')
+            .with_ensure('running')
+            .that_requires('Package[nginx-light]')
+        end
+
         it { is_expected.to contain_class('seed_stack::template_nginx') }
 
         it do
@@ -47,6 +58,12 @@ describe 'seed_stack::router' do
               .with_content(/^\s*server_name dockerhost;$/)
           )
         end
+      end
+
+      describe 'when nginx_manage is false' do
+        let(:params) { {:nginx_manage => false} }
+        it { is_expected.not_to contain_package('nginx-light') }
+        it { is_expected.not_to contain_service('nginx') }
       end
     end
   end

@@ -1,6 +1,9 @@
-## 0.8.1 - UNRELEASED
+## 0.9.0 - UNRELEASED
 ### Features
 * Consul 0.6.4 (#92)
+
+### Changes
+* `nginx` package and service management has moved from `seed_stack::template_nginx` to `seed_stack::router` and `seed_stack::load_balancer` to make it easier to override. (#94)
 
 ## 0.8.0 - 2016/03/15
 ### Features

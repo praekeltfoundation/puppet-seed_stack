@@ -52,8 +52,8 @@
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
-# [*nginx_ensure*]
-#   The ensure value for the Nginx package.
+# [*nginx_manage*]
+#   Set to false to avoid managing the nginx package.
 #
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
@@ -94,7 +94,7 @@ class seed_stack::worker (
   $consul_template_version  = $seed_stack::params::consul_template_version,
 
   # Nginx
-  $nginx_ensure             = $seed_stack::params::nginx_ensure,
+  $nginx_manage             = true,
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
@@ -176,13 +176,13 @@ class seed_stack::worker (
   }
 
   class { 'seed_stack::template_nginx':
-    nginx_package_ensure    => $nginx_ensure,
     consul_template_version => $consul_template_version,
     consul_address          => $consul_client_addr,
   }
   class { 'seed_stack::router':
-    listen_addr => $advertise_addr,
-    domain      => $dnsmasq_host_alias,
+    listen_addr  => $advertise_addr,
+    domain       => $dnsmasq_host_alias,
+    nginx_manage => $nginx_manage,
   }
 
   # Docker, using the host for DNS
