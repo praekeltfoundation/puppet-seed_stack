@@ -1,4 +1,4 @@
-## 0.9.0 - UNRELEASED
+## 0.9.0 - 2016/03/23
 ### Features
 * Consul 0.6.4 (#92)
 
