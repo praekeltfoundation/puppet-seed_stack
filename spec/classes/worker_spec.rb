@@ -86,7 +86,6 @@ describe 'seed_stack::worker' do
 
         it do
           is_expected.to contain_class('seed_stack::template_nginx')
-            .with_nginx_package_ensure('installed')
             .with_consul_template_version(/\d+\.\d+\.\d+/)
             .with_consul_address('0.0.0.0')
         end
@@ -95,6 +94,7 @@ describe 'seed_stack::worker' do
           is_expected.to contain_class('seed_stack::router')
             .with_listen_addr('192.168.0.3')
             .with_domain('servicehost')
+            .with_nginx_manage(true)
         end
 
         it do

@@ -69,7 +69,7 @@ class seed_stack::params {
 
   $marathon_ensure          = '0.15.3-1.0.463.ubuntu1404'
 
-  $consul_version           = '0.6.3'
+  $consul_version           = '0.6.4'
   $consul_client_addr       = '0.0.0.0'
   $consul_domain            = 'consul.'
 
@@ -79,6 +79,8 @@ class seed_stack::params {
   $consul_template_version  = '0.14.0'
 
   $nginx_ensure             = 'installed'
+  $nginx_package            = 'nginx-light'
+
   $router_listen_addr       = $::ipaddress_lo
   $router_listen_port       = 80
   $router_domain            = 'servicehost'
