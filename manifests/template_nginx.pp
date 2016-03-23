@@ -5,39 +5,16 @@
 #
 # === Parameters
 #
-# [*nginx_package*]
-#   The name of the Nginx package to install.
-#
-# [*nginx_package_ensure*]
-#   The ensure value for the Nginx package.
-#
-# [*nginx_service_ensure*]
-#   The ensure value for the Nginx service.
-#
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
 # [*consul_address*]
 #   The address for the Consul agent for Consul Template to connect to.
 class seed_stack::template_nginx (
-  $nginx_manage            = true,
-  $nginx_package           = 'nginx-light',
-  $nginx_package_ensure    = $seed_stack::params::nginx_ensure,
-  $nginx_service_ensure    = 'running',
-
   $consul_template_version = $seed_stack::params::consul_template_version,
   $consul_address          = $seed_stack::params::consul_client_addr,
 ) inherits seed_stack::params {
   validate_ip_address($consul_address)
-
-  if $nginx_manage {
-    package { $nginx_package:
-      ensure => $nginx_package_ensure,
-    }->
-    service { 'nginx':
-      ensure => $nginx_service_ensure,
-    }
-  }
 
   if ! defined (Package['unzip']) {
     package { 'unzip':

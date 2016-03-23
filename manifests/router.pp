@@ -15,13 +15,28 @@
 #
 # [*domain*]
 #   The domain that Nginx should serve for routing.
+#
+# [*nginx_manage*]
+#   Set to false to avoid managing the nginx package.
+#
 class seed_stack::router (
-  $listen_addr = $seed_stack::params::router_listen_addr,
-  $listen_port = $seed_stack::params::router_listen_port,
-  $domain      = $seed_stack::params::router_domain,
+  $listen_addr  = $seed_stack::params::router_listen_addr,
+  $listen_port  = $seed_stack::params::router_listen_port,
+  $domain       = $seed_stack::params::router_domain,
+  $nginx_manage = true,
 ) inherits seed_stack::params {
   validate_ip_address($listen_addr)
   validate_integer($listen_port, 65535, 1)
+  validate_bool($nginx_manage)
+
+  if $nginx_manage {
+    package { $seed_stack::params::nginx_package:
+      ensure => $seed_stack::params::nginx_ensure,
+    }->
+    service { 'nginx':
+      ensure => 'running',
+    }
+  }
 
   include seed_stack::template_nginx
 
