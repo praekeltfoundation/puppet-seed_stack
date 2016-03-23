@@ -19,7 +19,7 @@ class seed_stack::load_balancer (
   validate_ip_address($listen_addr)
   validate_bool($nginx_manage)
 
-  if $nginx_manage {
+  if $nginx_manage and !defined(Package[$seed_stack::params::nginx_package]) {
     package { $seed_stack::params::nginx_package:
       ensure => $seed_stack::params::nginx_ensure,
     }->

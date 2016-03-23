@@ -29,7 +29,7 @@ class seed_stack::router (
   validate_integer($listen_port, 65535, 1)
   validate_bool($nginx_manage)
 
-  if $nginx_manage {
+  if $nginx_manage and !defined(Package[$seed_stack::params::nginx_package]) {
     package { $seed_stack::params::nginx_package:
       ensure => $seed_stack::params::nginx_ensure,
     }->
