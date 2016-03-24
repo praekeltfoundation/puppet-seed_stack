@@ -58,6 +58,9 @@
 # [*docker_ensure*]
 #   The package ensure value for Docker Engine.
 #
+# [*docker_extra_parameters*]
+#   Extra parameters to pass to the docker daemon.
+#
 # [*xylem_backend*]
 #   Backend host for Xylem Docker plugin. If given, the Xylem Docker volume
 #   plugin will be installed and managed.
@@ -98,6 +101,7 @@ class seed_stack::worker (
 
   # Docker
   $docker_ensure            = $seed_stack::params::docker_ensure,
+  $docker_extra_parameters  = undef,
 
   # Xylem
   $xylem_backend            = undef,
@@ -187,8 +191,9 @@ class seed_stack::worker (
 
   # Docker, using the host for DNS
   class { 'docker':
-    ensure => $docker_ensure,
-    dns    => $advertise_addr,
+    ensure           => $docker_ensure,
+    dns              => $advertise_addr,
+    extra_parameters => $docker_extra_parameters,
   }
 
   if $xylem_backend {

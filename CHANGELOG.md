@@ -1,4 +1,8 @@
-## 0.9.1 - UNRELEASED
+## 0.9.2 - UNRELEASED
+
+## 0.9.1 - 2016/03/23
+### Features
+* `seed_stack::worker` now accepts `docker_extra_parameters` to pass extra parameters to the docker daemon. (#95)
 
 ## 0.9.0 - 2016/03/23
 ### Features
