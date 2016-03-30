@@ -77,7 +77,7 @@ class seed_stack::consul_dns (
   $recursors          = [$::ipaddress_lo],
   $resources          = {},
 
-  $dnsmasq_ensure     = 'installed',
+  $dnsmasq_ensure     = $seed_stack::params::dnsmasq_ensure,
   $dnsmasq_host_alias = $seed_stack::params::router_domain,
   $dnsmasq_opts       = {},
 ) inherits seed_stack::params {

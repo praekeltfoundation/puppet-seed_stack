@@ -57,6 +57,10 @@
 #
 # [*router_domain*]
 #   The domain that Nginx should serve for routing.
+#
+# [*dnsmasq_ensure*]
+#   The ensure value for the Dnsmasq package.
+#
 class seed_stack::params {
   $docker_ensure            = '1.10.3-0~trusty'
 
@@ -84,4 +88,6 @@ class seed_stack::params {
   $router_listen_addr       = $::ipaddress_lo
   $router_listen_port       = 80
   $router_domain            = 'servicehost'
+
+  $dnsmasq_ensure           = 'installed'
 }

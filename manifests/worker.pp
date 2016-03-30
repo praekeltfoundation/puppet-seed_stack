@@ -91,7 +91,7 @@ class seed_stack::worker (
 
   # Dnsmasq
   $dnsmasq_ensure           = $seed_stack::params::dnsmasq_ensure,
-  $dnsmasq_host_alias       = $seed_stack::params::dnsmasq_host_alias,
+  $dnsmasq_host_alias       = $seed_stack::params::router_domain,
 
   # Consul Template
   $consul_template_version  = $seed_stack::params::consul_template_version,
