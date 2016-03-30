@@ -18,7 +18,7 @@
     },
     {
       "name": "praekeltfoundation-xylem",
-      "version_requirement": ">=0.1.2 <0.2.0"
+      "version_requirement": "~>0.2.0"
     },
     {
       "name": "praekeltfoundation-marathon",
