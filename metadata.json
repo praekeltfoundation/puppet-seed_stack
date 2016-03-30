@@ -1,6 +1,6 @@
 {
   "name": "praekeltfoundation-seed_stack",
-  "version": "0.9.2-dev",
+  "version": "0.9.2",
   "author": "Jamie Hewland",
   "summary": "Meta-module for deploying the Seed Stack",
   "license": "BSD-3-Clause",
@@ -18,7 +18,7 @@
     },
     {
       "name": "praekeltfoundation-xylem",
-      "version_requirement": "~>0.2.0"
+      "version_requirement": ">=0.2.0 <0.3.0"
     },
     {
       "name": "praekeltfoundation-marathon",
