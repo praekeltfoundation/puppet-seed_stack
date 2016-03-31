@@ -1,4 +1,4 @@
-## 0.9.3 - UNRELEASED
+## 0.9.3 - 2016/03/31
 ### Fixes
 * Start `docker` before `mesos-slave` to avoid crashing on startup. (#97)
 
