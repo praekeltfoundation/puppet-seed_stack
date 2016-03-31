@@ -207,4 +207,8 @@ class seed_stack::worker (
       require     => Class['docker'],
     }
   }
+
+  # If mesos-slave starts too early, it crashes on startup fast enough that it
+  # hits upstart's respawn limit in two or three seconds.
+  Service['docker'] -> Service['mesos-slave']
 }
