@@ -1,5 +1,6 @@
 ## 0.9.4 - UNRELEASED
-
+### Features
+* Docker 1.11.0 (#98)
 
 ## 0.9.3 - 2016/03/31
 ### Fixes
