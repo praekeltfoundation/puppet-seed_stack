@@ -62,7 +62,7 @@
 #   The ensure value for the Dnsmasq package.
 #
 class seed_stack::params {
-  $docker_ensure            = '1.10.3-0~trusty'
+  $docker_ensure            = '1.11.0-0~trusty'
 
   $zookeeper_ensure         = 'installed'
   $zookeeper_client_addr    = '0.0.0.0'
