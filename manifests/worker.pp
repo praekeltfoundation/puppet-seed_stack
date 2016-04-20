@@ -142,16 +142,17 @@ class seed_stack::worker (
   }
 
   # Need to ensure port 4000 is available for marathon-consul
-  $requested_ports = has_key($mesos_resources, 'ports(*)') ? {
-    true  => $mesos_resources['ports(*)'],
-    false => '[31000-32000]', # Mesos default
+  $base_port_range = has_key($mesos_resources, 'ports(*)') ? {
+    true  => regsubst($mesos_resources['ports(*)'], '[\[\]]', '', 'G'),
+    false => '31000-32000', # Mesos default
   }
-  if empty($requested_ports) {
-    $real_ports = '4000'
-  } else {
-    $real_ports = "4000,${requested_ports}"
+  $real_port_range = empty($base_port_range) ? {
+    false => join([$base_port_range, '4000-4000'], ','),
+    true  => '4000-4000',
   }
-  $real_resources = merge($mesos_resources, {'ports(*)' => $real_ports})
+  $real_resources = merge($mesos_resources, {
+    'ports(*)' => "[${real_port_range}]"
+  })
   class { 'mesos::slave':
     master        => $mesos_zk,
     resources     => $real_resources,

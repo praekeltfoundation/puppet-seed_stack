@@ -44,7 +44,7 @@ describe 'seed_stack::worker' do
           is_expected.to contain_class('mesos::slave')
             .with_master('zk://192.168.0.2:2181/mesos')
             .with_resources(
-              'ports(*)' => '4000,[31000-32000]'
+              'ports(*)' => '[31000-32000,4000-4000]'
             )
             .with_syslog_logger(false)
             .with_single_role(true)
@@ -224,7 +224,7 @@ describe 'seed_stack::worker' do
           it do
             is_expected.to contain_class('mesos::slave')
               .with_resources(
-                'ports(*)' => '4000,[31000-32000]',
+                'ports(*)' => '[31000-32000,4000-4000]',
                 'mem(*)' => '14330'
               )
           end
@@ -241,7 +241,7 @@ describe 'seed_stack::worker' do
           it do
             is_expected.to contain_class('mesos::slave')
               .with_resources(
-                'ports(*)' => '4000,[10000-12000]'
+                'ports(*)' => '[10000-12000,4000-4000]'
               )
           end
         end
@@ -257,7 +257,7 @@ describe 'seed_stack::worker' do
           it do
             is_expected.to contain_class('mesos::slave')
               .with_resources(
-                'ports(*)' => '4000'
+                'ports(*)' => '[4000-4000]'
               )
           end
         end
