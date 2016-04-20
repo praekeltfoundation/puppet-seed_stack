@@ -42,7 +42,7 @@
     },
     {
       "name": "gdhbashton-consul_template",
-      "version_requirement": ">=0.2.4"
+      "version_requirement": ">=0.2.5 <0.3.0"
     },
     {
       "name": "KyleAnderson-consul",

@@ -28,9 +28,6 @@ describe 'seed_stack::template_nginx' do
               'consul_retry' => '10s',
               'log_level' => 'warn'
             )
-        end
-        it do
-          is_expected.to contain_class('consul_template::install')
             .that_requires('Package[unzip]')
         end
 
