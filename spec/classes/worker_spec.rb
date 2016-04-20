@@ -43,7 +43,9 @@ describe 'seed_stack::worker' do
         it do
           is_expected.to contain_class('mesos::slave')
             .with_master('zk://192.168.0.2:2181/mesos')
-            .with_resources({})
+            .with_resources(
+              'ports(*)' => '4000,[31000-32000]'
+            )
             .with_syslog_logger(false)
             .with_single_role(true)
             .with_options(
@@ -206,6 +208,57 @@ describe 'seed_stack::worker' do
               .with_ensure('stopped')
               .with_enable(false)
               .that_requires('Package[mesos]')
+          end
+        end
+      end
+
+      context 'marathon-consul port is available' do
+        describe 'with non-port resources set in $mesos_resources' do
+          let(:params) do
+            {
+              :controller_addrs => ['192.168.0.2'],
+              :advertise_addr => '192.168.0.2',
+              :mesos_resources => {'mem(*)' => '14330'}
+            }
+          end
+          it do
+            is_expected.to contain_class('mesos::slave')
+              .with_resources(
+                'ports(*)' => '4000,[31000-32000]',
+                'mem(*)' => '14330'
+              )
+          end
+        end
+
+        describe 'with some ports set in $mesos_resources' do
+          let(:params) do
+            {
+              :controller_addrs => ['192.168.0.2'],
+              :advertise_addr => '192.168.0.2',
+              :mesos_resources => {'ports(*)' => '[10000-12000]'}
+            }
+          end
+          it do
+            is_expected.to contain_class('mesos::slave')
+              .with_resources(
+                'ports(*)' => '4000,[10000-12000]'
+              )
+          end
+        end
+
+        describe 'with ports set to no ports in $mesos_resources' do
+          let(:params) do
+            {
+              :controller_addrs => ['192.168.0.2'],
+              :advertise_addr => '192.168.0.2',
+              :mesos_resources => {'ports(*)' => ''}
+            }
+          end
+          it do
+            is_expected.to contain_class('mesos::slave')
+              .with_resources(
+                'ports(*)' => '4000'
+              )
           end
         end
       end

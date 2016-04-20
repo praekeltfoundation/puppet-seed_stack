@@ -2,19 +2,19 @@
 #       consul-template, there's no point in making manual changes
 #       to this file.
 #
-#       This expects a key to exist under "consular/<app_id>/domain"
+#       This expects a key to exist under "consular/<app_id>"
 #       in Consul's KV store. This is used to map a domain to a service in
 #       Nginx. If the key does not exist the service isn't added to the
 #       list of services in the Nginx config.
 
-{{range services}}{{$labels := ls (print "consular/" .Name) | explode }}{{if $labels.domain}}
+{{range ls "marathon"}}{{$app := .Value | parseJSON }}{{if $app.labels.domain}}
 server {
   listen 80;
   listen <%= @listen_addr %>:80; # Avoid being masked by listen directive in services config.
-  server_name {{$labels.domain | parseJSON }};
+  server_name {{$app.labels.domain}};
 
   location / {
-    proxy_pass http://{{.Name}};
+    proxy_pass http://{{.Key}};
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto http;
     proxy_set_header Host $http_host;
@@ -22,5 +22,5 @@ server {
   }
 }
 {{else}}
-# Skipped service {{.Name}} as it does not have a KV domain entry.
+# Skipped service {{.Key}} as it does not have a KV domain entry.
 {{end}}{{end}}

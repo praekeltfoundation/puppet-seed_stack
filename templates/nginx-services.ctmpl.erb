@@ -2,7 +2,7 @@
 #       consul-template, there's no point in making manual changes
 #       to this file.
 #
-#       This expects a key to exist under "consular/<app_id>/location"
+#       This expects a key to exist under "marathon/<app_id>"
 #       in Consul's KV store. This is used to map a path to a service in
 #       Nginx. If the key does not exist the service isn't added to the
 #       list of services in the Nginx config.
@@ -10,14 +10,14 @@
 server {
     listen <%= @listen_addr %>:<%= @listen_port %>;
     server_name <%= @domain %>;
-    {{range services}}{{$labels := ls (print "consular/" .Name) | explode}}{{if $labels.location}}
-    location {{$labels.location | parseJSON}} {
-        proxy_pass http://{{.Name}};
+    {{range ls "marathon"}}{{$app := .Value | parseJSON}}{{if $app.labels.location}}
+    location {{$app.labels.location}} {
+        proxy_pass http://{{.Key}};
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $http_host;{{if $labels.internal}}{{if $labels.internal | parseJSON | parseBool}}
+        proxy_set_header Host $http_host;{{if $app.labels.internal}}{{if $app.labels.internal | parseJSON | parseBool}}
         internal;{{end}}{{end}}
     }
     {{else}}
-    # Skipped service {{.Name}} as it does not have a KV location entry.
+    # Skipped service {{.Key}} as it does not have a KV location entry.
     {{end}}{{end}}
 }
