@@ -37,12 +37,6 @@
 # [*consul_domain*]
 #   The domain to be served by Consul DNS.
 #
-# [*consular_ensure*]
-#   The package ensure value for Consular.
-#
-# [*consular_sync_interval*]
-#   The interval in seconds between Consular syncs.
-#
 # [*consul_template_version*]
 #   The version of Consul Template to install.
 #
@@ -76,9 +70,6 @@ class seed_stack::params {
   $consul_version           = '0.6.4'
   $consul_client_addr       = '0.0.0.0'
   $consul_domain            = 'consul.'
-
-  $consular_ensure          = '1.2.0*'
-  $consular_sync_interval   = '300'
 
   $consul_template_version  = '0.14.0'
 

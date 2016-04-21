@@ -7,5 +7,5 @@ upstream {{.Key}} { {{range ls (print "marathon/" .Key "/tasks")}}{{$task := .Va
     server {{$task.host}}:{{index $task.ports 0}};{{end}}
 }
 {{else}}
-# Skipped service {{.Key}} as it does not have a KV domain or location entry.
+# Skipped Marathon app {{.Key}} as it does not have a "domain" or "location" label.
 {{end}}{{end}}
