@@ -42,6 +42,35 @@
           "maxConsecutiveFailures": 3
         }
       ]
+    },
+    {
+      "id": "/seed-infra-mc2/marathon-consul",
+      "args": [
+        "--registry=http://consul.service.consul:8500",
+        "--marathon-location=marathon.service.consul:8080"
+      ],
+      "container": {
+        "type": "DOCKER",
+        "docker": {
+          "image": "ciscocloud/marathon-consul:0.2",
+          "network": "BRIDGE",
+          "portMappings": [
+            {
+              "containerPort": 4000,
+              "hostPort": 4000
+            }
+          ]
+        }
+      },
+      "ports": [4000],
+      "healthChecks": [{
+        "protocol": "HTTP",
+        "path": "/health",
+        "portIndex": 0
+      }],
+      "instances": 1,
+      "cpus": 0.1,
+      "mem": 128
     }
   ]
 }

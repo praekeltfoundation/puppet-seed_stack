@@ -148,14 +148,6 @@ describe 'seed_stack::controller' do
               )
             )
         end
-
-        it do
-          is_expected.to contain_class('consular')
-            .with_package_ensure(/^\d+\.\d+\.\d+.+$/)
-            .with_consul('http://0.0.0.0:8500')
-            .with_sync_interval(300)
-            .with_purge(true)
-        end
       end
 
       describe 'when controller_addrs is not passed' do

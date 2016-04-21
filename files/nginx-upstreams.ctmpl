@@ -2,10 +2,10 @@
 #       consul-template, there's no point in making manual changes
 #       to this file.
 
-{{range services}}{{$labels := ls (print "consular/" .Name) | explode}}{{if or $labels.domain $labels.location}}
-upstream {{.Name}} { {{range service .Name}}
-    server {{.NodeAddress}}:{{.Port}}; # {{.Address}}{{end}}
+{{range ls "marathon"}}{{$app := .Value | parseJSON}}{{if or $app.labels.domain $app.labels.location}}
+upstream {{.Key}} { {{range ls (print "marathon/" .Key "/tasks")}}{{$task := .Value | parseJSON}}
+    server {{$task.host}}:{{index $task.ports 0}};{{end}}
 }
 {{else}}
-# Skipped service {{.Name}} as it does not have a KV domain or location entry.
+# Skipped Marathon app {{.Key}} as it does not have a "domain" or "location" label.
 {{end}}{{end}}

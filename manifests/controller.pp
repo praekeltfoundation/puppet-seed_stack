@@ -61,12 +61,6 @@
 #
 # [*dnsmasq_host_alias*]
 #   An alias for the host (advertise) address that Dnsmasq will serve.
-#
-# [*consular_ensure*]
-#   The package ensure value for Consular.
-#
-# [*consular_sync_interval*]
-#   The interval in seconds between Consular syncs.
 class seed_stack::controller (
   # Common
   $advertise_addr,
@@ -97,10 +91,6 @@ class seed_stack::controller (
   # Dnsmasq
   $dnsmasq_ensure         = $seed_stack::params::dnsmasq_ensure,
   $dnsmasq_host_alias     = $seed_stack::params::router_domain,
-
-  # Consular
-  $consular_ensure        = $seed_stack::params::consular_ensure,
-  $consular_sync_interval = $seed_stack::params::consular_sync_interval,
 ) inherits seed_stack::params {
   validate_ip_address($advertise_addr)
   validate_array($controller_addrs)
@@ -110,7 +100,6 @@ class seed_stack::controller (
   validate_ip_address($mesos_listen_addr)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
-  validate_integer($consular_sync_interval)
   if ! member($controller_addrs, $advertise_addr) {
     fail("The address for this node (${advertise_addr}) must be one of the
       controller addresses (${controller_addrs}).")
@@ -219,12 +208,5 @@ class seed_stack::controller (
           interval => '30s',
         },
       ];
-  }
-
-  class { 'consular':
-    package_ensure => $consular_ensure,
-    consul         => "http://${consul_client_addr}:8500",
-    sync_interval  => $consular_sync_interval,
-    purge          => true,
   }
 }

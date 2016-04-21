@@ -7,7 +7,6 @@ The module installs and configures:
 * [Zookeeper](https://zookeeper.apache.org/)
 * [Docker](https://www.docker.com)
 * [Consul](http://consul.io)
-* [Consular](http://consular.rtfd.org)
 * [Consul Template](https://github.com/hashicorp/consul-template)
 * [Nginx](http://www.nginx.org)
 * ...and a few miscellaneous things like Dnsmasq to tie them together
@@ -98,7 +97,6 @@ After the above example is applied, the address `postgresql.service.consul` is a
 We make use of quite a few Puppet modules to manage all the various pieces of software that make up Seed Stack. See the [metadata file](metadata.json) for a complete listing with version information.
 
 Firstly, we wrote some modules ourselves:
-* [praekeltfoundation/consular](https://forge.puppetlabs.com/praekeltfoundation/consular)
 * [praekeltfoundation/marathon](https://forge.puppetlabs.com/praekeltfoundation/marathon)
 * [praekeltfoundation/webupd8_oracle_java](https://forge.puppetlabs.com/praekeltfoundation/webupd8_oracle_java)
 
@@ -124,6 +122,5 @@ The package versions can be seen in the [params class source](manifests/params.p
 | Zookeeper       | System  |
 | Docker          | 1.11.0  |
 | Consul          | 0.6.4   |
-| Consular        | 1.2.0   |
 | Consul Template | 0.14.0  |
 | Nginx           | System  |
