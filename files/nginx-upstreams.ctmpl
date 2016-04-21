@@ -3,8 +3,8 @@
 #       to this file.
 
 {{range ls "marathon"}}{{$app := .Value | parseJSON}}{{if or $app.labels.domain $app.labels.location}}
-upstream {{.Key}} { {{range $app.tasks}}
-    server {{.host}}:{{.ports[0]}};{{end}}
+upstream {{.Key}} { {{range ls (print "marathon/" .Key "/tasks")}}{{$task := .Value | parseJSON}}
+    server {{$task.host}}:{{index $task.ports 0}};{{end}}
 }
 {{else}}
 # Skipped service {{.Key}} as it does not have a KV domain or location entry.
