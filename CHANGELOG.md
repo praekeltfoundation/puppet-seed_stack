@@ -1,3 +1,10 @@
+## 0.9.4 - UNRELEASED
+### Features
+* Consular 1.2.1 (#103)
+
+### Fixes
+* Use full version string for Consular to prevent refreshes on the package resource each Puppet run (#103)
+
 ## 0.9.3 - 2016/03/31
 ### Fixes
 * Start `docker` before `mesos-slave` to avoid crashing on startup. (#97)
