@@ -1,4 +1,4 @@
-## 0.9.4 - UNRELEASED
+## 0.9.4 - 2016/05/11
 ### Features
 * Consular 1.2.1 (#103)
 
