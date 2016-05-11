@@ -2,6 +2,10 @@
 ### Features
 * Docker 1.11.0 (#98)
 * Marathon 1.1.1 and Mesos 0.28.1 (#100)
+* Consular 1.2.1 (#102)
+
+### Fixes
+* Use full version string for Consular to prevent refreshes on the package resource each Puppet run (#102)
 
 ## 0.9.3 - 2016/03/31
 ### Fixes
