@@ -17,7 +17,6 @@ def puppet3_hashlist_to_a(hashlist)
   hashlist
 end
 
-
 def match_json(expected)
   proc { |content| match(expected) === JSON.load(content) }
 end

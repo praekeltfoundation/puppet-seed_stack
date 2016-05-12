@@ -5,6 +5,7 @@ AllCops:
     - 'pkg/**/*'
     - 'spec/fixtures/**/*'
     - 'vendor/**/*'
+  DisplayCopNames: true
 
 Style/HashSyntax:
   EnforcedStyle: hash_rockets
@@ -20,4 +21,16 @@ Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
 Style/WordArray:
+  Enabled: false
+
+Style/FirstParameterIndentation:
+  EnforcedStyle: consistent
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Style/BracesAroundHashParameters:
+  EnforcedStyle: context_dependent
+
+Style/CaseEquality:
   Enabled: false
