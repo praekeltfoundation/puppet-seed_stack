@@ -62,8 +62,6 @@ describe 'seed_stack::mc2' do
         end
 
         it do
-          pending('We need to not ignore this parameter.')
-
           is_expected.to contain_file('/etc/marathon-apps/mc2.marathon.json')
             .with_content(mc2_app_json(
               "container" => include(
