@@ -1,4 +1,4 @@
-## 0.10.0 - UNRELEASED
+## 0.10.0 - 2016/05/13
 ### Features
 * Docker 1.11.1 (#105)
 * Marathon 1.1.1 and Mesos 0.28.1 (#100)
