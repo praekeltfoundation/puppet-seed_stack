@@ -6,6 +6,9 @@
       "cpus": 0.1,
       "mem": 256.0,
       "labels": {
+        <%- @app_labels.each do |key, value| -%>
+        "<%= key %>": "<%= value %>",
+        <%- end -%>
         "domain": "mc2.<%= @infr_domain %>"
       },
       "container": {

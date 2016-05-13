@@ -83,6 +83,45 @@ describe 'seed_stack::mc2' do
             ))
         end
       end
+
+      describe 'when app_labels is passed' do
+        let(:params) do
+          {
+            :infr_domain => 'infr.example.com',
+            :hub_domain => 'hub.example.com',
+            :app_labels => {
+              'HAPROXY_GROUP' => 'external',
+              'HAPROXY_0_VHOST' => 'mc2.example.com',
+            },
+          }
+        end
+
+        it do
+          is_expected.to contain_file('/etc/marathon-apps/mc2.marathon.json')
+            .with_content(mc2_app_json(
+              'container' => include(
+                'type' => 'DOCKER',
+                'docker' => include(
+                  'image' => 'praekeltfoundation/mc2',
+                  'forcePullImage' => true,
+                  'portMappings' => [include('containerPort' => 80)],
+                  'parameters' => contain_exactly(
+                    {'key' => 'volume-driver', 'value' => 'xylem'},
+                    {'key' => 'volume', 'value' => 'seed-infra-mc2:/data'},
+                  ),
+                ),
+              ),
+              'labels' => include(
+                'HAPROXY_GROUP' => 'external',
+                'HAPROXY_0_VHOST' => 'mc2.example.com',
+              ),
+              'env' => include(
+                'MESOS_MARATHON_HOST' => 'http://marathon.service.consul:8080',
+                'HUB_DOMAIN' => 'hub.example.com',
+              ),
+            ))
+        end
+      end
     end
   end
 end
