@@ -122,6 +122,41 @@ describe 'seed_stack::mc2' do
             ))
         end
       end
+
+      describe 'when container_params is passed' do
+        let(:params) do
+          {
+            :infr_domain => 'infr.example.com',
+            :hub_domain => 'hub.example.com',
+            :container_params => {
+              'add-host' => 'servicehost:172.17.0.1',
+            },
+          }
+        end
+
+        it do
+          is_expected.to contain_file('/etc/marathon-apps/mc2.marathon.json')
+            .with_content(mc2_app_json(
+              'container' => include(
+                'type' => 'DOCKER',
+                'docker' => include(
+                  'image' => 'praekeltfoundation/mc2',
+                  'forcePullImage' => true,
+                  'portMappings' => [include('containerPort' => 80)],
+                  'parameters' => contain_exactly(
+                    {'key' => 'add-host', 'value' => 'servicehost:172.17.0.1'},
+                    {'key' => 'volume-driver', 'value' => 'xylem'},
+                    {'key' => 'volume', 'value' => 'seed-infra-mc2:/data'},
+                  ),
+                ),
+              ),
+              'env' => include(
+                'MESOS_MARATHON_HOST' => 'http://marathon.service.consul:8080',
+                'HUB_DOMAIN' => 'hub.example.com',
+              ),
+            ))
+        end
+      end
     end
   end
 end
