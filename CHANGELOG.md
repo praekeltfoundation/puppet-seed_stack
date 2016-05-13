@@ -7,6 +7,13 @@
 ### Fixes
 * Actually use the `marathon_host` parameter in `seed_stack::mc2` (#104)
 
+## 0.9.4 - 2016/05/11
+### Features
+* Consular 1.2.1 (#103)
+
+### Fixes
+* Use full version string for Consular to prevent refreshes on the package resource each Puppet run (#103)
+
 ## 0.9.3 - 2016/03/31
 ### Fixes
 * Start `docker` before `mesos-slave` to avoid crashing on startup. (#97)

@@ -77,7 +77,7 @@ class seed_stack::params {
   $consul_client_addr       = '0.0.0.0'
   $consul_domain            = 'consul.'
 
-  $consular_ensure          = '1.2.0*'
+  $consular_ensure          = '1.2.1-1ppa1'
   $consular_sync_interval   = '300'
 
   $consul_template_version  = '0.14.0'
