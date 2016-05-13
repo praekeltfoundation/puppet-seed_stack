@@ -1,6 +1,6 @@
 ## 0.10.0 - UNRELEASED
 ### Features
-* Docker 1.11.0 (#98)
+* Docker 1.11.1 (#105)
 * Marathon 1.1.1 and Mesos 0.28.1 (#100)
 * More flexible `seed_stack::mc2` class (#104)
 
