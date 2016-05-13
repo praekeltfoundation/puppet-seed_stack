@@ -2,6 +2,10 @@
 ### Features
 * Docker 1.11.0 (#98)
 * Marathon 1.1.1 and Mesos 0.28.1 (#100)
+* More flexible `seed_stack::mc2` class (#104)
+
+### Fixes
+* Actually use the `marathon_host` parameter in `seed_stack::mc2` (#104)
 
 ## 0.9.3 - 2016/03/31
 ### Fixes
