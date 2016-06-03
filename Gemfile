@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 group :test do
   gem 'rake', '<11.0.0' # See https://github.com/invadersmustdie/puppet-catalog-test/pull/29
 
-  puppetversion = ENV['PUPPET_VERSION'] || ['>= 3.4.0', '< 4.0.0']
+  puppetversion = ENV['PUPPET_VERSION'] || '~> 4'
   gem 'puppet', puppetversion
 
   gem 'librarian-puppet'
