@@ -2,6 +2,9 @@
 ### Features
 * Docker 1.11.2 (#108)
 
+### Fixes
+* Consular now listens on and registers for Marathon events with the controller's advertise address. Every Consular instance in the cluster should now receive events, not just the instance on the leading Marathon host. (#106)
+
 ## 0.10.0 - 2016/05/13
 ### Features
 * Docker 1.11.1 (#105)
