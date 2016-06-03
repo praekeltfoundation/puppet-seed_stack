@@ -223,6 +223,7 @@ class seed_stack::controller (
 
   class { 'consular':
     package_ensure => $consular_ensure,
+    host           => $advertise_addr,
     consul         => "http://${consul_client_addr}:8500",
     sync_interval  => $consular_sync_interval,
     purge          => true,
