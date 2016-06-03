@@ -6,6 +6,9 @@
       "cpus": 0.1,
       "mem": 256.0,
       "labels": {
+        <%- @app_labels.each do |key, value| -%>
+        "<%= key %>": "<%= value %>",
+        <%- end -%>
         "domain": "mc2.<%= @infr_domain %>"
       },
       "container": {
@@ -18,13 +21,16 @@
             { "containerPort": 80, "hostPort": 0 }
           ],
           "parameters": [
+            <%- @container_params.each do |key, value| -%>
+            {"key": "<%= key %>", "value": "<%= value %>"},
+            <%- end -%>
             {"key": "volume-driver", "value": "xylem"},
             {"key": "volume", "value": "seed-infra-mc2:/data"}
           ]
         }
       },
       "env": {
-        "MESOS_MARATHON_HOST": "http://marathon.service.consul:8080",
+        "MESOS_MARATHON_HOST": "<%= @marathon_host %>",
         "SECRET_KEY": "seekrit",
         "PROJECT_ROOT": "/deploy/",
         "DATABASE_URL": "sqlite:////data/mc2.db",

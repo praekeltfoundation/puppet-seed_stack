@@ -5,7 +5,9 @@
 class seed_stack::mc2(
   $infr_domain,
   $hub_domain,
-  $marathon_host = 'marathon.service.consul',
+  $marathon_host = 'http://marathon.service.consul:8080',
+  $app_labels = {},
+  $container_params = {},
 ) {
   file { '/etc/marathon-apps': ensure => 'directory' }
   ->

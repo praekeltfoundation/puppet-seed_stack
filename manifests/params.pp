@@ -62,16 +62,16 @@
 #   The ensure value for the Dnsmasq package.
 #
 class seed_stack::params {
-  $docker_ensure            = '1.10.3-0~trusty'
+  $docker_ensure            = '1.11.2-0~trusty'
 
   $zookeeper_ensure         = 'installed'
   $zookeeper_client_addr    = '0.0.0.0'
 
-  $mesos_ensure             = '0.27.2-2.0.15.ubuntu1404'
+  $mesos_ensure             = '0.28.1-2.0.20.ubuntu1404'
   $mesos_listen_addr        = '0.0.0.0'
   $mesos_cluster            = 'seed-stack'
 
-  $marathon_ensure          = '0.15.3-1.0.463.ubuntu1404'
+  $marathon_ensure          = '1.1.1-1.0.472.ubuntu1404'
 
   $consul_version           = '0.6.4'
   $consul_client_addr       = '0.0.0.0'

@@ -6,7 +6,7 @@ matrix:
     - rvm: "1.9.3"
       env: PUPPET_VERSION="~> 3.8.0" # Latest 3.x version
     - rvm: "2.1.8"
-      env: PUPPET_VERSION="~> 4.3.0" # Puppetlabs PC1 (latest 4.x version)
+      env: PUPPET_VERSION="~> 4" # Puppetlabs PC1 (latest 4.x version)
 env:
   global:
     - LIBRARIAN_PUPPET_TMP="$HOME/librarian-puppet"
