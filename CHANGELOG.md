@@ -1,5 +1,6 @@
 ## 0.10.1 - UNRELEASED
-
+### Features
+* Docker 1.11.2 (#108)
 
 ## 0.10.0 - 2016/05/13
 ### Features
