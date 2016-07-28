@@ -13,6 +13,7 @@ group :test do
 
   gem 'librarian-puppet'
   gem 'metadata-json-lint'
+  gem 'puppet-lint', '~> 2.0.0'
   gem 'puppetlabs_spec_helper', '~> 1.1.0'
   gem 'rspec-puppet-facts'
 
