@@ -1,11 +1,6 @@
 source 'https://rubygems.org'
 
 group :test do
-  if RUBY_VERSION < '2.0'
-    # Some things depend on this, and newer versions hate old Ruby.
-    gem 'json_pure', '1.8.3'
-  end
-
   # Rake's 'last_comment', which is used by puppet-catalog-test, was briefly
   # removed in Rake 11.0.x. It will be removed in Rake 12.
   # See release notes for Rake 11.0.0 and 11.1.0:
@@ -24,4 +19,9 @@ group :test do
   gem 'rubocop', '~>0.37.0'
   # On certain setups, rubocop seems to crash without this gem :-/
   gem 'safe_yaml', '~> 1.0.0'
+
+  if RUBY_VERSION < '2.0'
+    # Some things depend on this, and newer versions hate old Ruby.
+    gem 'json_pure', '1.8.3'
+  end
 end
