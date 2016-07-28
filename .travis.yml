@@ -15,4 +15,8 @@ cache:
   - directories:
     - $HOME/librarian-puppet
 
-script: bundle exec rake test
+before_install:
+  - gem install bundler
+
+script:
+  - bundle exec rake test
