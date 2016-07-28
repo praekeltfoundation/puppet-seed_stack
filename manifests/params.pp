@@ -71,7 +71,7 @@ class seed_stack::params {
   $mesos_listen_addr        = '0.0.0.0'
   $mesos_cluster            = 'seed-stack'
 
-  $marathon_ensure          = '0.15.5-1.0.477.ubuntu1404'
+  $marathon_ensure          = '0.15.6-1.0.484.ubuntu1404'
 
   $consul_version           = '0.6.4'
   $consul_client_addr       = '0.0.0.0'
