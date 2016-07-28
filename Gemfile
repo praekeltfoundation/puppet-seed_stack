@@ -24,5 +24,6 @@ group :test do
   if RUBY_VERSION < '2.0'
     # Some things depend on this, and newer versions hate old Ruby.
     gem 'json', '< 2.0.0'
+    gem 'json_pure', '< 2.0.0'
   end
 end
