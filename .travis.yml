@@ -5,7 +5,7 @@ matrix:
       env: PUPPET_VERSION="3.4.3" # Version installed on Trusty
     - rvm: "1.9.3"
       env: PUPPET_VERSION="~> 3.8.0" # Latest 3.x version
-    - rvm: "2.1.8"
+    - rvm: "2.1.9"
       env: PUPPET_VERSION="~> 4" # Puppetlabs PC1 (latest 4.x version)
 env:
   global:
