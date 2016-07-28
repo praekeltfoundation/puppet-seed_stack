@@ -19,4 +19,9 @@ group :test do
   gem 'rubocop', '~>0.37.0'
   # On certain setups, rubocop seems to crash without this gem :-/
   gem 'safe_yaml', '~> 1.0.0'
+
+  if RUBY_VERSION < '2.0'
+    # Some things depend on this, and newer versions hate old Ruby.
+    gem 'json_pure', '1.8.3'
+  end
 end
