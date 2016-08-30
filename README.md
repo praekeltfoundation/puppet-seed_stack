@@ -120,7 +120,7 @@ The package versions can be seen in the [params class source](manifests/params.p
 | Package         | Version |
 |-----------------|---------|
 | Mesos           | 0.27.2  |
-| Marathon        | 0.15.3  |
+| Marathon        | 0.15.6  |
 | Zookeeper       | System  |
 | Docker          | 1.10.3  |
 | Consul          | 0.6.4   |

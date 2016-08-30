@@ -82,7 +82,9 @@ describe 'seed_stack::controller' do
             .with_syslog(false)
             .with_options(
               'hostname' => 'foo.example.com',
-              'event_subscriber' => 'http_callback'
+              'event_subscriber' => 'http_callback',
+              'task_lost_expunge_gc' => 300_000,
+              'task_lost_expunge_interval' => 600_000
             )
         end
 
@@ -201,6 +203,51 @@ describe 'seed_stack::controller' do
           end
         else
           it { is_expected.to contain_package('mesos').without_install_options }
+        end
+      end
+
+      context 'setting the marathon_options parameter' do
+        describe 'when additional options are set' do
+          let(:params) do
+            {
+              :controller_addrs => ['192.168.0.2'],
+              :advertise_addr => '192.168.0.2',
+              :marathon_options => {
+                'artifact_store' => 'file:///var/log/store',
+              }
+            }
+          end
+          it 'should add additional options to the defaults' do
+            is_expected.to contain_class('marathon')
+              .with_options(
+                'hostname' => 'foo.example.com',
+                'event_subscriber' => 'http_callback',
+                'task_lost_expunge_gc' => 300_000,
+                'task_lost_expunge_interval' => 600_000,
+                'artifact_store' => 'file:///var/log/store'
+              )
+          end
+        end
+
+        describe 'when options are overridden' do
+          let(:params) do
+            {
+              :controller_addrs => ['192.168.0.2'],
+              :advertise_addr => '192.168.0.2',
+              :marathon_options => {
+                'hostname' => 'localhost',
+              }
+            }
+          end
+          it 'should override the default options' do
+            is_expected.to contain_class('marathon')
+              .with_options(
+                'hostname' => 'localhost',
+                'event_subscriber' => 'http_callback',
+                'task_lost_expunge_gc' => 300_000,
+                'task_lost_expunge_interval' => 600_000
+              )
+          end
         end
       end
     end
