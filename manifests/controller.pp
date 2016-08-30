@@ -167,8 +167,10 @@ class seed_stack::controller (
 
   $marathon_zk = zookeeper_servers_url($controller_addrs, 'marathon')
   $marathon_opts = merge({
-    hostname         => $hostname,
-    event_subscriber => 'http_callback',
+    hostname                   => $hostname,
+    event_subscriber           => 'http_callback',
+    task_lost_expunge_gc       => 300000, # 5 minutes in milliseconds
+    task_lost_expunge_interval => 600000, # 10 minutes in milliseconds
   }, $marathon_options)
   class { 'marathon':
     package_ensure => $marathon_ensure,

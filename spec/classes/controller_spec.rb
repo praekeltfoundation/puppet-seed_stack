@@ -82,7 +82,9 @@ describe 'seed_stack::controller' do
             .with_syslog(false)
             .with_options(
               'hostname' => 'foo.example.com',
-              'event_subscriber' => 'http_callback'
+              'event_subscriber' => 'http_callback',
+              'task_lost_expunge_gc' => 300_000,
+              'task_lost_expunge_interval' => 600_000
             )
         end
 
@@ -220,6 +222,8 @@ describe 'seed_stack::controller' do
               .with_options(
                 'hostname' => 'foo.example.com',
                 'event_subscriber' => 'http_callback',
+                'task_lost_expunge_gc' => 300_000,
+                'task_lost_expunge_interval' => 600_000,
                 'artifact_store' => 'file:///var/log/store'
               )
           end
@@ -239,7 +243,9 @@ describe 'seed_stack::controller' do
             is_expected.to contain_class('marathon')
               .with_options(
                 'hostname' => 'localhost',
-                'event_subscriber' => 'http_callback'
+                'event_subscriber' => 'http_callback',
+                'task_lost_expunge_gc' => 300_000,
+                'task_lost_expunge_interval' => 600_000
               )
           end
         end

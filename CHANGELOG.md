@@ -2,6 +2,9 @@
 ### Features
 * Ability to specify additional command line options for Marathon (#116)
 
+### Changes
+* Set Marathon's `task_lost_expunge_gc` and `task_lost_expunge_interval` options to 5 and 10 minutes, respectively, by default. (#116)
+
 ## 0.9.6 - 2016/07/28
 * Marathon 0.15.6 (#113)
 
