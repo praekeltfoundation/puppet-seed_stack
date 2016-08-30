@@ -1,5 +1,6 @@
 ## 0.9.7 - UNRELEASED
-
+### Features
+* Ability to specify additional command line options for Marathon (#116)
 
 ## 0.9.6 - 2016/07/28
 * Marathon 0.15.6 (#113)

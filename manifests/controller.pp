@@ -39,6 +39,9 @@
 # [*marathon_ensure*]
 #   The package ensure value for Marathon.
 #
+# [*marathon_options*]
+#   A hash of additional options to configure Marathon with.
+#
 # [*consul_version*]
 #   The version of Consul to install.
 #
@@ -86,6 +89,7 @@ class seed_stack::controller (
 
   # Marathon
   $marathon_ensure        = $seed_stack::params::marathon_ensure,
+  $marathon_options       = {},
 
   # Consul
   $consul_version         = $seed_stack::params::consul_version,
@@ -108,6 +112,7 @@ class seed_stack::controller (
   validate_bool($install_java)
   validate_ip_address($zookeeper_client_addr)
   validate_ip_address($mesos_listen_addr)
+  validate_hash($marathon_options)
   validate_ip_address($consul_client_addr)
   validate_bool($consul_ui)
   validate_integer($consular_sync_interval)
@@ -161,16 +166,17 @@ class seed_stack::controller (
   }
 
   $marathon_zk = zookeeper_servers_url($controller_addrs, 'marathon')
+  $marathon_opts = merge({
+    hostname         => $hostname,
+    event_subscriber => 'http_callback',
+  }, $marathon_options)
   class { 'marathon':
     package_ensure => $marathon_ensure,
     repo_manage    => false,
     zookeeper      => $marathon_zk,
     master         => $mesos_zk,
     syslog         => false,
-    options        => {
-      hostname         => $hostname,
-      event_subscriber => 'http_callback',
-    },
+    options        => $marathon_opts,
   }
   # Ensure Mesos repo is added before installing Marathon
   Class['mesos::repo'] -> Package['marathon']
