@@ -1,5 +1,6 @@
 ## 0.9.8 - UNRELEASED
-
+### Features
+* Marathon 0.15.7 (#117)
 
 ## 0.9.7 - 2016/08/30
 ### Features
