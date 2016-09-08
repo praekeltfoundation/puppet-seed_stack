@@ -51,6 +51,15 @@ describe 'seed_stack::consul_dns' do
           is_expected.to contain_service('dnsmasq')
             .that_subscribes_to('File[/etc/dnsmasq.d/consul]')
         end
+
+        # FIXME: There doesn't seem to be an easy way to check that the reload
+        # command subscribes to all collected host resources.
+        it do
+          is_expected.to contain_exec('dnsmasq_reload')
+            .with_command('kill -HUP $(cat /var/run/dnsmasq/dnsmasq.pid)')
+            .with_path(['/bin'])
+            .with_refreshonly(true)
+        end
       end
 
       describe 'when advertise_addr is not set' do

@@ -2,6 +2,9 @@
 ### Features
 * Marathon 0.15.7 (#117)
 
+### Fixes
+* Reload Dnsmasq on changes to `/etc/hosts` (#118)
+
 ## 0.9.7 - 2016/08/30
 ### Features
 * Ability to specify additional command line options for Marathon (#116)

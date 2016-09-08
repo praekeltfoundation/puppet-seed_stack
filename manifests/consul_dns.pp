@@ -162,4 +162,16 @@ class seed_stack::consul_dns (
   }
   ~>
   service { 'dnsmasq': }
+
+  # See Dnsmasq manpage notes for more information about the ways Dnsmasq
+  # handles signals. SIGHUP clears the cache and reloads certain files (most
+  # notably /etc/hosts) but does not reload /etc/dnsmasq.conf.
+  exec { 'dnsmasq_reload':
+    command     => 'kill -HUP $(cat /var/run/dnsmasq/dnsmasq.pid)',
+    path        => ['/bin'],
+    refreshonly => true,
+  }
+
+  # Reload dnsmasq on any changes to host resources
+  Host <| |> ~> Exec['dnsmasq_reload']
 }
