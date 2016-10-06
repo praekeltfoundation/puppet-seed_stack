@@ -47,6 +47,10 @@
     {
       "name": "KyleAnderson-consul",
       "version_requirement": ">=1.0.4"
+    },
+    {
+      "name": "puppetlabs/firewall",
+      "version_requirement": ">=1.7.0"
     }
   ],
   "requirements": [
