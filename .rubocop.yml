@@ -17,13 +17,13 @@ Style/RegexpLiteral:
 Style/TrailingCommaInLiteral:
   Enabled: false
 
-Style/SpaceInsideHashLiteralBraces:
+Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
 Style/WordArray:
   Enabled: false
 
-Style/FirstParameterIndentation:
+Layout/FirstParameterIndentation:
   EnforcedStyle: consistent
 
 Style/TrailingCommaInArguments:
@@ -33,4 +33,10 @@ Style/BracesAroundHashParameters:
   EnforcedStyle: context_dependent
 
 Style/CaseEquality:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Layout/MultilineMethodCallBraceLayout:
   Enabled: false
