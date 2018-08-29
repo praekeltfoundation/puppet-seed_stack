@@ -1,3 +1,5 @@
+> **DEPRECATION NOTICE**: This Puppet module is no longer maintained and should not be used.
+
 # puppet-seed_stack
 Puppet meta-module for deploying the Seed Stack. This module uses other Puppet modules to install all the basic parts of Praekelt Foundation's Seed Stack.
 
